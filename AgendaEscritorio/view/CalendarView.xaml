@@ -1,0 +1,66 @@
+﻿<Window x:Class="AgendaEscritorio.view.CalendarView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Calendario"
+        Background="#FF1B1448"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <!-- Panel lateral izquierdo -->
+            <ColumnDefinition Width="*" />
+            <!-- Calendario -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Panel lateral izquierdo -->
+        <StackPanel Background="#2B2B2B" Grid.Column="0">
+            <TextBlock Text="Gestión de Eventos" FontSize="18" Foreground="White" Margin="10"/>
+            <Button Content="Crear Evento" Margin="10" Click="CrearEvento_Click" Background="#007BA7" Foreground="White"/>
+            <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
+            <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
+            <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
+        </StackPanel>
+
+        <!-- Calendario -->
+        <Grid Grid.Column="1">
+            <Border CornerRadius="12" Background="#FF1B1448" Margin="0">
+                <Border BorderThickness="2" Opacity="0.95" CornerRadius="10">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#007BA7" Offset="0"/>
+                            <GradientStop Color="#00FFFF" Offset="0.5"/>
+                            <GradientStop Color="#005F6B" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <Border.Background>
+                        <ImageBrush ImageSource="../images/descarga.jpg" Stretch="Fill"/>
+                    </Border.Background>
+                    <Grid>
+                        <Border Background="#CC00AABB" CornerRadius="10" Opacity="0.9">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0">
+                                    <Button Content="-" Width="30" Click="MinimizeButton_Click" Background="Transparent" Foreground="White"/>
+                                    <Button x:Name="MaximizeRestoreButton" Content="☐" Width="30" Click="MaximizeRestoreButton_Click" Background="Transparent" Foreground="White"/>
+                                    <Button Content="X" Width="30" Click="CloseButton_Click" Background="Transparent" Foreground="White"/>
+                                </StackPanel>
+                                <Button Content="Volver" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BackButton_Click" Background="#007BA7" Foreground="White" BorderBrush="#005F6B" />
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                        <Button Content="&lt;" Click="PreviousMonth_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
+                                        <TextBlock x:Name="MonthYearText" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0"/>
+                                        <Button Content="&gt;" Click="NextMonth_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
+                                    </StackPanel>
+                                    <UniformGrid x:Name="DaysGrid" Rows="7" Columns="7" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                                    <!-- Cambiado a 7 filas -->
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,75 @@
+﻿<Window x:Class="AgendaEscritorio.view.loginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Login"
+        Height="600"
+        Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="#FF1B1448" 
+        MouseDown="Window_MouseDown"
+        WindowStartupLocation="CenterScreen">
+
+    <Border CornerRadius="12" Background="#FF1B1448" Margin="0">
+        <Border BorderThickness="2" Opacity="0.95" CornerRadius="10">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <!-- Colores que contrastan mejor -->
+                    <GradientStop Color="#007BA7" Offset="0"/>
+                    <!-- Azul cerúleo -->
+                    <GradientStop Color="#00FFFF" Offset="0.5"/>
+                    <!-- Cian claro -->
+                    <GradientStop Color="#005F6B" Offset="1"/>
+                    <!-- Turquesa oscuro -->
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Border.Background>
+                <ImageBrush ImageSource="../images/descarga.jpg" Stretch="Fill"/>
+            </Border.Background>
+
+            <Grid>
+                <Border Background="#CC00AABB" CornerRadius="10" Opacity="0.9">
+                    <Grid>
+                        <!-- Botones de minimizar y cerrar -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0">
+                            <Button Content="-" Width="30" Click="MinimizeButton_Click" Margin="0,0,5,0" Background="Transparent" Foreground="White"/>
+                            <Button Content="X" Width="30" Click="CloseButton_Click" Background="Transparent" Foreground="White"/>
+                        </StackPanel>
+
+                        <!-- Sección de login centrada -->
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0">
+                            <!-- Logo centrado con espacio encima de la casilla de usuario -->
+                            <Image Source="../images/file.png" Height="68" Margin="0,0,0,20" Width="271"/>
+
+                            <!-- Etiqueta para el nombre de usuario -->
+                            <TextBlock Text="Usuario" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                            <TextBox x:Name="txtUsername" Width="200" Height="30" Margin="0,0,0,5"
+                                     GotFocus="RemoveText" LostFocus="AddText" Tag="Usuario" 
+                                     Background="#FF1B1448" Foreground="White" 
+                                     BorderBrush="#FF1B1448" 
+                                     VerticalContentAlignment="Center"/>
+
+                            <!-- Mensaje de error para el nombre de usuario -->
+                            <TextBlock x:Name="txtUsernameError" Foreground="Red" FontSize="12" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+                            <!-- Etiqueta para la contraseña -->
+                            <TextBlock Text="Contraseña" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                            <PasswordBox x:Name="txtPassword" Width="200" Height="30" Margin="0,0,0,5"
+                                          Background="#FF1B1448" Foreground="White" 
+                                          BorderBrush="#FF1B1448" 
+                                          VerticalContentAlignment="Center"/>
+
+                            <!-- Mensaje de error para la contraseña -->
+                            <TextBlock x:Name="txtPasswordError" Foreground="Red" FontSize="12" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Botón de login -->
+                            <Button Content="Log in" Width="100" Height="30" Margin="0,10" Background="#007BA7" Foreground="White" Click="LoginButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Image Height="100" Width="100"/>
+            </Grid>
+        </Border>
+    </Border>
+</Window>

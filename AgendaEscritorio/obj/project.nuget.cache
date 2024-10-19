@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "8rLivHnxE93w5p9GJvcH7DDKzuwK+ZiTgKog6zS/+l71UT5yK/m3eD/ZE7Dr0xNldqzNsIpshvyjFvk3V6T9NA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Velarde\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
