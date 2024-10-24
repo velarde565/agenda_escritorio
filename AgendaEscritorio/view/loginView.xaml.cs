@@ -1,23 +1,26 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using AgendaEscritorio.service;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
-using System;
-using AgendaEscritorio.view;
-
 
 namespace AgendaEscritorio.view
 {
     public partial class loginView : Window
     {
-        private SocketClient socketClient;
+        private Client client;
 
         public loginView()
         {
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            socketClient = new SocketClient(); // Cliente para el servidor simulado
+            client = new Client(); // Instanciar Client
+            ConnectToServerAsync(); // Llamar a la conexión de manera asincrónica
+        }
+
+        // Método asincrónico para conectarse al servidor
+        private async void ConnectToServerAsync()
+        {
+            await client.ConnectAsync(); // Llamada asincrónica para conectar al servidor
         }
 
         // Método para mover la ventana arrastrándola desde cualquier parte
@@ -83,72 +86,23 @@ namespace AgendaEscritorio.view
                 return;
             }
 
-            // Enviar datos al servidor simulado
-            var loginRequest = new { Username = username, Password = password };
-            string jsonResponse = await socketClient.SendMessageAsync(loginRequest);
+            // Enviar solicitud de login al servidor de manera asincrónica
+            bool loginSuccess = await client.SendLoginAsync(username, password);
 
-            // Verificar si la respuesta es null
-            if (string.IsNullOrEmpty(jsonResponse))
+            if (loginSuccess)
             {
-                MessageBox.Show("No se recibió respuesta del servidor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                // Si el login es exitoso, abrir la ventana del menú principal
+                MainMenuView mainMenuView = new MainMenuView(client); // Cambia "userRole" por el rol real obtenido del servidor
+                mainMenuView.Show();
+                this.Close(); // Cerrar la ventana de login
             }
-
-            try
+            else
             {
-                // Procesar respuesta
-                var response = JsonConvert.DeserializeObject<LoginResponse>(jsonResponse);
-
-                // Verificar si la deserialización fue exitosa
-                if (response == null)
-                {
-                    MessageBox.Show("Respuesta no válida del servidor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                if (response.Success)
-                {
-                    MessageBox.Show($"Login exitoso. Rol: {response.Role}", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Cerrar ventana de login y abrir el Menú Principal con el rol del usuario
-                    this.Hide(); // Ocultar ventana actual de login
-                    MainMenuView mainMenu = new MainMenuView(response.Role); // Pasar el rol a la ventana del menú principal
-                    mainMenu.Show();
-
-                    // Cierra completamente la ventana de login (opcional)
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show(response.ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (JsonReaderException ex)
-            {
-                MessageBox.Show($"Error al procesar la respuesta del servidor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ocurrió un error inesperado: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Manejar el error de login
+                txtUsernameError.Text = "Usuario o contraseña incorrectos.";
+                txtUsernameError.Visibility = Visibility.Visible;
             }
         }
 
-    }
-
-    public class LoginResponse
-    {
-        public bool Success { get; set; } // Cambiar a set para permitir la deserialización
-        public string Role { get; set; } = string.Empty; // Inicializa como cadena vacía
-        public string ErrorMessage { get; set; } = string.Empty; // Inicializa como cadena vacía
-
-        // Constructor
-        public LoginResponse() { } // Constructor predeterminado para la deserialización
-
-        public LoginResponse(bool success, string role = "", string errorMessage = "")
-        {
-            Success = success;
-            Role = role;
-            ErrorMessage = errorMessage;
-        }
     }
 }

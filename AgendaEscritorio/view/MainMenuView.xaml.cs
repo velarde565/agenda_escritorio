@@ -1,16 +1,16 @@
-﻿using System.Windows;
+﻿using AgendaEscritorio.service;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace AgendaEscritorio.view
 {
     public partial class MainMenuView : Window
     {
-        private string userRole; // Variable para almacenar el rol del usuario
-
-        public MainMenuView(string role)
+        private Client client;
+        public MainMenuView(Client client)
         {
             InitializeComponent();
-            userRole = role;
+            this.client = client;
             ConfigureMenuBasedOnRole();
         }
 
@@ -19,41 +19,44 @@ namespace AgendaEscritorio.view
         {
             Dispatcher.Invoke(() =>
             {
-                if (userRole == "admin")
+                if (client.IsAdmin == '1') // Compara si IsAdmin es '1' para tratarlo como un administrador
                 {
-                    btnAjustes.Visibility = Visibility.Visible; // Muestra el botón si el rol es Admin
+                    btnAjustes.Visibility = Visibility.Visible;
                 }
-                else
+                else // Si IsAdmin es false (0), ocultamos el botón
                 {
-                    btnAjustes.Visibility = Visibility.Collapsed; // Oculta el botón si no es Admin
+                    btnAjustes.Visibility = Visibility.Collapsed;
                 }
             });
         }
 
         // Evento para abrir la ventana del calendario
-        // Evento para abrir la ventana del calendario
         private void BtnAgenda_Click(object sender, RoutedEventArgs e)
         {
-            CalendarView calendarView = new CalendarView(userRole); // Pasa el rol de usuario
-            calendarView.Show(); // Abrir CalendarView como nueva ventana
-            this.Close();  // Cerrar el menú principal
+            CalendarView calendarView = new CalendarView(client); // Pasamos la instancia de Client
+            calendarView.Show();
+            this.Close();
         }
 
 
         // Evento para cerrar sesión y volver a la ventana de login
-        private void BtnCerrarSesion_Click(object sender, RoutedEventArgs e)
+        private async void BtnCerrarSesion_Click(object sender, RoutedEventArgs e)
         {
+            await client.SendLogoutAsync(); // Llamar al método a través de la instancia de Client
+
             loginView loginView = new loginView();
-            loginView.Show();
-            this.Close();  // Cerramos el menú principal y abrimos la ventana de login
+            loginView.Show(); // Abre la ventana de login
+            this.Close(); // Luego cierra la ventana actual
         }
+
+
 
         // Evento para abrir la vista de ajustes
         private void BtnAjustes_Click(object sender, RoutedEventArgs e)
         {
             AjustesView ajustesView = new AjustesView();
-            ajustesView.Show(); // Abrir AjustesView como nueva ventana
-            this.Close();  // Cerrar el menú principal
+            ajustesView.Show();
+            this.Close();
         }
 
         // Evento para minimizar la ventana

@@ -1,0 +1,7 @@
+C:\cosas\proyecto\prueba\AgendaEscritorio.pdb
+C:\cosas\proyecto\prueba\D3DCompiler_47_cor3.dll
+C:\cosas\proyecto\prueba\PenImc_cor3.dll
+C:\cosas\proyecto\prueba\PresentationNative_cor3.dll
+C:\cosas\proyecto\prueba\vcruntime140_cor3.dll
+C:\cosas\proyecto\prueba\wpfgfx_cor3.dll
+C:\cosas\proyecto\prueba\AgendaEscritorio.exe

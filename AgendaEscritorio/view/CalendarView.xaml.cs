@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AgendaEscritorio.service;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,12 +11,13 @@ namespace AgendaEscritorio.view
     {
         private DateTime currentDate;
         private string userRole;
+        private Client client;
 
-        public CalendarView(string role)
+        public CalendarView(Client client)
         {
             InitializeComponent();
             this.WindowState = WindowState.Maximized; // Abrir la ventana a pantalla completa
-            userRole = role; // Asignar el rol de usuario
+            this.client = client;
             currentDate = DateTime.Now; // Inicializa con la fecha actual
             PopulateCalendar();
         }
@@ -112,7 +114,7 @@ namespace AgendaEscritorio.view
         // Método para volver al menú principal
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            MainMenuView mainMenuView = new MainMenuView(userRole); // Pasar el rol de usuario
+            MainMenuView mainMenuView = new MainMenuView(client); // Pasar el rol de usuario
             mainMenuView.Show();
             this.Close();
         }
