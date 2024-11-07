@@ -35,6 +35,7 @@
                                 <TextBlock Text="Menú Principal" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
                                     <Button x:Name="btnAgenda" Content="Agenda" Height="50" Click="BtnAgenda_Click" Background="#007BA7" Foreground="White" Margin="0,10,0,0"/>
+                                    <Button x:Name="btnGestionPerfiles" Content="Gestión Perfiles" Height="50" Click="BtnGestionPerfiles_Click" Background="#007BA7" Foreground="White" Margin="0,10,0,0"/>
                                     <Button x:Name="btnAjustes" Content="Ajustes" Height="50" Click="BtnAjustes_Click" Background="#007BA7" Foreground="White" Visibility="Collapsed" Margin="0,10,0,0"/>
                                 </StackPanel>
                                 <Button Content="Cerrar Sesión" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Width="100" Click="BtnCerrarSesion_Click"/>

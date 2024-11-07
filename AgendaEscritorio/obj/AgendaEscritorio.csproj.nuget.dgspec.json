@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj": {}
+    "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj": {
+    "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
+        "projectUniqueName": "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
         "projectName": "AgendaEscritorio",
-        "projectPath": "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
+        "projectPath": "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
         "packagesPath": "C:\\Users\\Velarde\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\obj\\",
+        "outputPath": "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

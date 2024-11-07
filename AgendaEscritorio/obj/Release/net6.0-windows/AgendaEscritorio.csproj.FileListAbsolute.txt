@@ -29,3 +29,5 @@ C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\Agen
 C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\AgendaEscritorio.pdb
 C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\AgendaEscritorio.genruntimeconfig.cache
 C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\ref\AgendaEscritorio.dll
+C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\view\UserManagementView.baml
+C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\view\UserManagementView.g.cs

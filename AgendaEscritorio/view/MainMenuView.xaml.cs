@@ -30,6 +30,12 @@ namespace AgendaEscritorio.view
             });
         }
 
+        private void BtnGestionPerfiles_Click(object sender, RoutedEventArgs e)
+        {
+            UserManagementView userManagementView = new UserManagementView(client);
+            userManagementView.Show();
+        }
+
         // Evento para abrir la ventana del calendario
         private void BtnAgenda_Click(object sender, RoutedEventArgs e)
         {
