@@ -1,0 +1,907 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AgendaEscritorio</name>
+    </assembly>
+    <members>
+        <member name="T:AgendaEscritorio.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.service.Client">
+            <summary>
+            Clase que maneja la conexión cliente-servidor y la gestión de información del usuario.
+            </summary>
+        </member>
+        <member name="P:AgendaEscritorio.service.Client.IsAdmin">
+            <summary>
+            Propiedad que indica si el usuario tiene permisos de administrador.
+            Solo tiene un setter privado, se asigna internamente.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SetSessionToken(System.String)">
+            <summary>
+            Establece el token de sesión para el usuario.
+            </summary>
+            <param name="token">El token de sesión a establecer.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.GetSessionToken">
+            <summary>
+            Obtiene el token de sesión actual.
+            </summary>
+            <returns>El token de sesión.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ConnectAsync">
+            <summary>
+            Establece una conexión asincrónica con el servidor.
+            Si ya está conectado, no intenta reconectar.
+            </summary>
+            <returns>Una tarea que representa la operación asincrónica.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendLoginAsync(System.String,System.String)">
+            <summary>
+            Asynchronously sends a login request to the server with the provided username and password.
+            </summary>
+            <param name="username">The username for login.</param>
+            <param name="password">The password for login.</param>
+            <returns>Returns true if the login was successful, false otherwise.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessLoginResponseAsync(System.String)">
+            <summary>
+            Processes the login response received from the server.
+            </summary>
+            <param name="response">The response message from the server.</param>
+            <returns>Returns true if login is successful, false otherwise.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestUserDataAsync(System.String,System.String,System.String)">
+            <summary>
+            Asynchronously requests the user data from the server using the session token and username.
+            </summary>
+            <param name="sessionToken">The session token to authenticate the request.</param>
+            <param name="username">The username for which to request data.</param>
+            <param name="nombre2">A secondary username (used for additional processing or validation).</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessUserDataResponse(System.String)">
+            <summary>
+            Processes the user data response received from the server.
+            </summary>
+            <param name="response">The response message containing user data.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendLogoutAsync">
+            <summary>
+            Sends a logout request to the server.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessLogoutResponse(System.String)">
+            <summary>
+            Processes the logout response received from the server.
+            </summary>
+            <param name="response">The response message from the server after logout request.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestChangeFullNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Asynchronously sends a request to change the user's full name on the server.
+            </summary>
+            <param name="sessionToken">The session token for authentication.</param>
+            <param name="usernameToChange">The username whose full name is to be changed.</param>
+            <param name="newFullName">The new full name for the user.</param>
+            <returns>Returns a Task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessChangeFullNameResponse(System.String)">
+            <summary>
+            Procesa la respuesta recibida al intentar cambiar el nombre completo de un usuario.
+            </summary>
+            <param name="response">La respuesta recibida del servidor, como una cadena de texto.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestAddPermissionAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Solicita la adición de un permiso a un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión para validar la solicitud.</param>
+            <param name="username">El nombre de usuario al que se le va a agregar el permiso.</param>
+            <param name="roleToAdd">El nombre del rol que se va a agregar al usuario.</param>
+            <param name="permissions">Los permisos que se van a asignar al rol.</param>
+            <returns>Una tarea que representa la operación asíncrona.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessAddPermissionResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor tras la solicitud de adición de permiso.
+            </summary>
+            <param name="response">La respuesta recibida del servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestGetPermissionsAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor los permisos de un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="username">El nombre de usuario al que se le desean obtener los permisos.</param>
+            <returns>Un diccionario con los permisos del usuario.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessGetPermissionsResponse(System.Collections.Generic.List{System.String})">
+            <summary>
+            Procesa una lista de respuestas del servidor y extrae los permisos de los roles.
+            </summary>
+            <param name="responses">Lista de respuestas del servidor que contienen información de permisos.</param>
+            <returns>Un diccionario con los roles y sus permisos.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendEditPermissionsAsync(System.String,System.String,System.String,System.Boolean[])">
+            <summary>
+            Envia una solicitud al servidor para editar los permisos de un usuario.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="username">El nombre de usuario cuyo rol y permisos se van a editar.</param>
+            <param name="rol">El rol que se asignará al usuario.</param>
+            <param name="permisos">El arreglo de permisos (booleanos) que se asignarán al rol del usuario.</param>
+            <returns>Un código de respuesta del servidor (éxito o error).</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendModoGestionAsync(System.String,System.String,System.Boolean)">
+            <summary>
+            Envia una solicitud al servidor para activar o desactivar el modo gestión.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="username">El nombre del usuario que activa o desactiva el modo gestión.</param>
+            <param name="activarModoGestion">Indica si se debe activar o desactivar el modo gestión (true = activar, false = desactivar).</param>
+            <returns>Un código de respuesta del servidor (éxito o error).</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestChangeOtherDataAsync(System.String,System.String,System.String)">
+            <summary>
+            Envía una solicitud asincrónica al servidor para cambiar otros datos de un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión que identifica al usuario conectado.</param>
+            <param name="usernameToChange">El nombre de usuario cuyo "otros datos" serán modificados.</param>
+            <param name="newOtherData">Los nuevos datos que se desean asignar al usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessChangeOtherDataResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de solicitar el cambio de otros datos de un usuario.
+            </summary>
+            <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestChangeBirthDateAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Solicita el cambio de la fecha de nacimiento de un usuario al servidor.
+            </summary>
+            <param name="sessionToken">El token de sesión actual para validar la solicitud.</param>
+            <param name="usernameToChange">El nombre de usuario al que se le cambiará la fecha de nacimiento.</param>
+            <param name="newBirthDate">La nueva fecha de nacimiento que se desea asignar.</param>
+            <param name="connectedUsername">El nombre de usuario conectado que realiza la solicitud, usado para validar permisos.</param>
+            <returns>Una tarea que representa la operación asincrónica.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessChangeBirthDateResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de solicitar un cambio de fecha de nacimiento.
+            </summary>
+            <param name="response">La respuesta del servidor que contiene el código de resultado.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestChangePasswordAsync(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Solicita el cambio de contraseña de un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión que autentica la solicitud.</param>
+            <param name="usernameToEdit">El nombre de usuario cuya contraseña se desea cambiar.</param>
+            <param name="currentPassword">La contraseña actual del usuario.</param>
+            <param name="newPassword">La nueva contraseña para el usuario.</param>
+            <param name="connectedUsername">El nombre de usuario conectado que está realizando la solicitud (debe ser un administrador o el propio usuario).</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessChangeFullPassword(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de una solicitud de cambio de contraseña.
+            </summary>
+            <param name="response">La respuesta recibida del servidor, que contiene información sobre el resultado del cambio de contraseña.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestDeleteUserAsync(System.String,System.String,System.String)">
+            <summary>
+            Solicita la eliminación de un usuario en el servidor.
+            </summary>
+            <param name="sessionToken">El token de sesión actual del usuario conectado, usado para autenticar la solicitud.</param>
+            <param name="usernameToDelete">El nombre de usuario del usuario que se desea eliminar.</param>
+            <param name="connectedUsername">El nombre de usuario del usuario conectado, usado para verificar si tiene permisos para eliminar al otro usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessDeleteUserResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de solicitar la eliminación de un usuario.
+            </summary>
+            <param name="response">La respuesta recibida del servidor, que contiene el código de estado y posible mensaje de error o éxito.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestCreateUserAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Solicita la creación de un nuevo usuario al servidor.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado, usado para autenticar la solicitud.</param>
+            <param name="username">El nombre de usuario que se desea crear.</param>
+            <param name="nombreUsuario">El nombre de usuario (nombre de acceso) para la nueva cuenta.</param>
+            <param name="password">La contraseña asociada al nuevo usuario.</param>
+            <param name="nombreCompleto">El nombre completo del nuevo usuario.</param>
+            <param name="fechaNacimiento">La fecha de nacimiento del nuevo usuario.</param>
+            <param name="otrosDatos">Cualquier otro dato adicional relevante para el usuario.</param>
+            <param name="rolPermisos">El rol y los permisos que tendrá el nuevo usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessCreateUserResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de intentar crear un usuario.
+            </summary>
+            <param name="response">La respuesta recibida del servidor que contiene el estado de la solicitud de creación de usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestCreateDayAsync(System.String,System.String,System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Envía una solicitud asíncrona para crear un nuevo evento (día) en el servidor.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario para autenticar la solicitud.</param>
+            <param name="fecha">La fecha del evento que se va a crear.</param>
+            <param name="contenido">El contenido o descripción del evento.</param>
+            <param name="tags">Etiquetas asociadas al evento.</param>
+            <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
+            <param name="nombreGrupo">El nombre del grupo al que pertenece el evento (si es grupal).</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessCreateDayResponse(System.String)">
+            <summary>
+            Procesa la respuesta recibida del servidor tras solicitar la creación de un evento (día).
+            </summary>
+            <param name="response">La respuesta del servidor que contiene el estado de la solicitud.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.Disconnect">
+            <summary>
+            Cierra la conexión con el servidor, liberando los recursos asociados.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructLoginPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para la solicitud de login.
+            </summary>
+            <param name="username">Nombre de usuario.</param>
+            <param name="password">Contraseña.</param>
+            <returns>El paquete de login en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructUserDataRequestPacket(System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para solicitar la modificación de los datos de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="connectedUsername">Nombre de usuario conectado.</param>
+            <param name="usernameToChange">Nombre de usuario cuyo dato se quiere cambiar.</param>
+            <returns>El paquete para modificar los datos de usuario en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructLogoutPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para el logout de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <returns>El paquete de logout en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructChangeFullNamePacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para cambiar el nombre completo de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="usernameToChange">Nombre de usuario cuyo nombre completo se va a cambiar.</param>
+            <param name="newFullName">Nuevo nombre completo.</param>
+            <param name="connectedUsername">Nombre de usuario conectado (que puede ser el administrador).</param>
+            <returns>El paquete para cambiar el nombre completo en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructChangeBirthDatePacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para cambiar la fecha de nacimiento de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="usernameToChange">Nombre de usuario cuyo fecha de nacimiento se va a cambiar.</param>
+            <param name="newBirthDate">Nueva fecha de nacimiento.</param>
+            <param name="connectedUsername">Nombre de usuario conectado.</param>
+            <returns>El paquete para cambiar la fecha de nacimiento en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructChangePasswordPacket(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para cambiar la contraseña de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="usernameToEdit">Nombre de usuario cuyo contraseña se va a cambiar.</param>
+            <param name="currentPassword">Contraseña actual.</param>
+            <param name="newPassword">Nueva contraseña.</param>
+            <param name="connectedUsername">Nombre de usuario conectado (quien está realizando el cambio).</param>
+            <returns>El paquete para cambiar la contraseña en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructChangeOtherDataPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para cambiar otros datos de un usuario (como dirección, teléfono, etc.).
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="usernameToChange">Nombre de usuario cuyo otros datos se van a cambiar.</param>
+            <param name="connectedUsername">Nombre de usuario conectado.</param>
+            <param name="newOtherData">Nuevo dato (por ejemplo, teléfono o dirección).</param>
+            <returns>El paquete para cambiar otros datos en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructDeleteUserPacket(System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para eliminar un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="usernameToDelete">Nombre de usuario a eliminar.</param>
+            <param name="connectedUsername">Nombre de usuario conectado.</param>
+            <returns>El paquete para eliminar el usuario en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateUserPacket(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para crear un nuevo usuario con los datos proporcionados.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="connectedUsername">El nombre de usuario del usuario conectado.</param>
+            <param name="newUsername">El nombre de usuario para el nuevo usuario.</param>
+            <param name="password">La contraseña del nuevo usuario.</param>
+            <param name="fullName">El nombre completo del nuevo usuario.</param>
+            <param name="birthDate">La fecha de nacimiento del nuevo usuario.</param>
+            <param name="otrosDatos">Otros datos adicionales del nuevo usuario.</param>
+            <param name="rolPermisos">El rol y permisos del nuevo usuario.</param>
+            <returns>El paquete en formato string listo para ser enviado.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAddPermissionPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para añadir permisos a un rol para un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="connectedUsername">El nombre de usuario del usuario conectado.</param>
+            <param name="roleName">El nombre del rol al que se añadirán los permisos.</param>
+            <param name="permissions">Los permisos que se asignarán al rol, en formato de valores separados por comas.</param>
+            <returns>El paquete en formato string listo para ser enviado.</returns>
+            <exception cref="T:System.ArgumentException">Lanzada si los permisos no son exactamente 7 valores separados por comas.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructGetPermissionsPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para obtener los permisos de un usuario específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario conectado.</param>
+            <param name="connectedUsername">El nombre de usuario del usuario conectado.</param>
+            <returns>El paquete en formato string listo para ser enviado.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructEditPermissionsPacket(System.String,System.String,System.String,System.Boolean[])">
+            <summary>
+            Construye un paquete para editar los permisos de un usuario.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario al que se le editarán los permisos.</param>
+            <param name="rol">Rol asignado al usuario.</param>
+            <param name="permisos">Arreglo de permisos que se asignarán al usuario (7 elementos booleanos).</param>
+            <returns>Cadena que representa el paquete de datos para editar los permisos de un usuario.</returns>
+            <exception cref="T:System.ArgumentException">Lanzado si los permisos no tienen exactamente 7 valores (0 o 1).</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructModoGestionPacket(System.String,System.String,System.Boolean)">
+            <summary>
+            Construye un paquete para activar o desactivar el Modo Gestión.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario del usuario conectado.</param>
+            <param name="activarModoGestion">Indica si el Modo Gestión debe ser activado (true) o desactivado (false).</param>
+            <returns>Cadena que representa el paquete de datos para activar o desactivar el Modo Gestión.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateDayPacket(System.String,System.String,System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Construye un paquete para crear un nuevo evento en el sistema, incluyendo la fecha, contenido, tags y detalles sobre si es grupal.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="fecha">Fecha del evento en formato de cadena (por ejemplo, "2024-11-20").</param>
+            <param name="contenido">Descripción o contenido del evento.</param>
+            <param name="tags">Etiquetas asociadas al evento. Puede ser una cadena vacía si no hay etiquetas.</param>
+            <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
+            <param name="nombreGrupo">Nombre del grupo asociado al evento, si es un evento grupal.</param>
+            <returns>Cadena que representa el paquete de datos para crear un evento.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.LecturaPartesPaquete(System.String)">
+            <summary>
+            Extrae la acción y el mensaje de una respuesta de paquete.
+            </summary>
+            <param name="response">La respuesta del paquete que contiene la acción y el mensaje.</param>
+            <returns>Un tuple que contiene un entero (acción) y una cadena (mensaje).</returns>
+            <exception cref="T:System.FormatException">Se lanza si la acción no tiene el formato esperado.</exception>
+        </member>
+        <member name="T:AgendaEscritorio.view.AjustesView">
+            <summary>
+            Lógica de interacción para AjustesView.xaml
+            </summary>
+            <summary>
+            AjustesView
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.AjustesView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.view.CalendarView">
+            <summary>
+            CalendarView
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.#ctor(AgendaEscritorio.service.Client)">
+            <summary>
+            Inicializa la ventana del calendario.
+            </summary>
+            <param name="client">Instancia del cliente que se usará para interactuar con el servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.PopulateCalendar">
+            <summary>
+            Rellena la vista del calendario con los días del mes actual.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.PreviousMonth_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cambia al mes anterior y actualiza el calendario.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de mes anterior).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.NextMonth_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cambia al siguiente mes y actualiza el calendario.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de siguiente mes).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.CloseButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cierra la ventana de la aplicación.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de cerrar).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.MinimizeButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Minimiza la ventana de la aplicación.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de minimizar).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.MaximizeRestoreButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maximiza o restaura la ventana dependiendo del estado actual.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de maximizar/restaurar).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.BackButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Vuelve al menú principal al hacer clic en el botón "Atrás".
+            Cierra la ventana actual y abre la vista del menú principal.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de "Atrás").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.CrearEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Muestra los campos necesarios para crear un evento al hacer clic en el botón "Crear Evento".
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón "Crear Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Envía los datos del evento cuando se hace clic en el botón "Enviar Evento".
+            Recoge los datos de los campos de la interfaz, valida la información, y hace la solicitud al servidor.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón "Enviar Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.VerEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Muestra los detalles del evento cuando se hace clic en el botón "Ver Evento".
+            Este método debe implementar la lógica para mostrar los detalles del evento.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón "Ver Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.ModificarEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Permite modificar un evento cuando se hace clic en el botón "Modificar Evento".
+            Este método debe implementar la lógica para editar un evento existente.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón "Modificar Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EliminarEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Elimina un evento cuando se hace clic en el botón "Eliminar Evento".
+            Este método debe implementar la lógica para eliminar un evento existente.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón "Eliminar Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.view.loginView">
+            <summary>
+            Vista de la ventana de login donde los usuarios ingresan sus credenciales para acceder al sistema.
+            Incluye validación de entrada, conexión con el servidor y manejo de la interfaz.
+            </summary>
+            <summary>
+            loginView
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.#ctor">
+            <summary>
+            Constructor de la clase <see cref="T:AgendaEscritorio.view.loginView"/>. Inicializa los componentes de la interfaz y
+            establece la conexión con el servidor de manera asincrónica.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.ConnectToServerAsync">
+            <summary>
+            Método asincrónico que establece la conexión con el servidor.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.Window_MouseDown(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Permite mover la ventana al arrastrarla desde cualquier parte. Este evento se dispara cuando
+            el usuario hace clic y mantiene presionado el botón izquierdo del ratón.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (ventana de la aplicación).</param>
+            <param name="e">Argumentos del evento que contienen información del ratón.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.MinimizeButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Minimiza la ventana cuando se hace clic en el botón correspondiente.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (botón de minimizar).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.CloseButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cierra la ventana de login cuando el usuario hace clic en el botón de cerrar.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (botón de cerrar).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.RemoveText(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Elimina el texto por defecto del cuadro de texto de nombre de usuario cuando el usuario hace clic
+            en el campo de texto para empezar a escribir.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (campo de texto para nombre de usuario).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.AddText(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Restaura el texto por defecto en el cuadro de texto de nombre de usuario si el campo está vacío
+            y el usuario no ha ingresado ningún valor.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (campo de texto para nombre de usuario).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.LoginButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de login cuando el usuario hace clic en el botón "Iniciar sesión".
+            Valida las credenciales ingresadas y envía la solicitud al servidor para autenticar al usuario.
+            Si el login es exitoso, abre la ventana principal; de lo contrario, muestra un mensaje de error.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (botón de login).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.loginView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.view.MainMenuView">
+            <summary>
+            Ventana principal que muestra el menú según el rol del usuario.
+            Permite acceder a distintas secciones como la gestión de perfiles, agenda, ajustes, y cerrar sesión.
+            </summary>
+            <summary>
+            MainMenuView
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.#ctor(AgendaEscritorio.service.Client)">
+            <summary>
+            Inicializa una nueva instancia de la clase <see cref="T:AgendaEscritorio.view.MainMenuView"/>.
+            </summary>
+            <param name="client">Instancia del cliente que se usará para las comunicaciones con el servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.ConfigureMenuBasedOnRole">
+            <summary>
+            Configura el menú en función del rol del usuario.
+            Si el usuario es administrador, se habilita la opción de ajustes.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnGestionPerfiles_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de gestión de perfiles.
+            Abre la ventana de gestión de usuarios.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnAgenda_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de agenda.
+            Abre la ventana del calendario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnCerrarSesion_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de cerrar sesión.
+            Envia la solicitud de logout y abre la ventana de login.
+            </summary>
+            <param name="sender">El objeto que invoca el evento.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnAjustes_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de ajustes.
+            Abre la ventana de ajustes.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.MinimizeButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de minimizar.
+            Minimiza la ventana.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.MaximizeRestoreButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de maximizar/restaurar.
+            Alterna el estado de la ventana entre maximizado y restaurado.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.CloseButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de cerrar.
+            Cierra la ventana actual.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.Window_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama cuando la ventana se ha cargado.
+            Este método se puede utilizar para agregar lógica adicional al cargar la ventana.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AgendaEscritorio.view.UserManagementView">
+            <summary>
+            Ventana de gestión de usuarios. Permite realizar distintas acciones sobre los usuarios,
+            como editar su nombre completo, fecha de nacimiento, otros datos, contraseña, y rol.
+            </summary>
+            <summary>
+            UserManagementView
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.#ctor(AgendaEscritorio.service.Client)">
+            <summary>
+            Inicializa una nueva instancia de la clase <see cref="T:AgendaEscritorio.view.UserManagementView"/>.
+            </summary>
+            <param name="client">Instancia del cliente que se usará para las comunicaciones con el servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfigureEditMenu">
+            <summary>
+            Configura el menú de edición basado en los privilegios del usuario.
+            Si el usuario es administrador, habilita la opción de cambiar la fecha de nacimiento.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnEditarUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de editar usuario.
+            Oculta el menú principal y muestra el menú de edición de usuario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CambiarNombreCompleto(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de cambiar el nombre completo del usuario.
+            Muestra los campos de entrada para modificar el nombre completo.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CambiarFechaNacimiento(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de cambiar la fecha de nacimiento del usuario.
+            Muestra los campos de entrada para modificar la fecha de nacimiento.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CambiarOtrosDatos(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de cambiar otros datos del usuario.
+            Muestra los campos de entrada para modificar otros datos.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CambiarContrasena(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de cambiar la contraseña del usuario.
+            Muestra los campos de entrada para modificar la contraseña.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.MostrarDatosUsuario(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de mostrar los datos del usuario.
+            Muestra los campos de entrada para visualizar los datos del usuario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CambiarRol(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en la opción de cambiar el rol del usuario.
+            Muestra el panel de creación de rol.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.HideAndClearInputFields">
+            <summary>
+            Oculta y limpia todos los campos de entrada en el formulario de gestión de usuario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCambios_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de confirmar cambios de nombre de usuario.
+            Verifica que los campos estén completos y luego muestra un mensaje con la confirmación.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCambioNombreCompleto_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de confirmar el cambio de nombre completo.
+            Valida que los campos estén completos y luego llama al cliente para realizar la solicitud de cambio de nombre.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCambioFechaNacimiento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón de confirmar el cambio de fecha de nacimiento.
+            Valida el formato y la validez de la fecha antes de realizar la solicitud de cambio.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCambioOtrosDatos_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para confirmar el cambio de otros datos de un usuario.
+            Valida que los campos estén completos, realiza la solicitud de cambio de datos al servidor y muestra una confirmación.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.MostrarDatosUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para mostrar los datos de un usuario.
+            Verifica que el campo de nombre de usuario no esté vacío y luego solicita los datos del usuario al servidor.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCambioContrasena_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para confirmar el cambio de contraseña.
+            Valida que los campos estén completos y realiza la solicitud de cambio de contraseña al servidor.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnCrearUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para crear un nuevo usuario.
+            Este evento oculta los paneles no relacionados y muestra el panel de creación de usuario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCreacionUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para confirmar la creación de un nuevo usuario.
+            Valida los campos de entrada, solicita la creación del usuario al servidor, y limpia los campos después.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnEliminarUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para eliminar un usuario.
+            Este evento oculta los paneles no relacionados y muestra el panel de eliminación de usuario.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarEliminacionUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para confirmar la eliminación de un usuario.
+            Valida el nombre de usuario a eliminar, solicita la eliminación al servidor, y limpia los campos después.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnCrearRol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el clic en el botón "Crear Rol". 
+            Oculta el menú principal y muestra el panel de creación de rol.
+            </summary>
+            <param name="sender">El objeto que genera el evento (en este caso, el botón).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarCreacionRol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el clic en el botón de confirmación para crear un nuevo rol.
+            Valida los campos y llama al cliente para solicitar la creación del rol con los permisos seleccionados.
+            </summary>
+            <param name="sender">El objeto que genera el evento (en este caso, el botón).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="F:AgendaEscritorio.view.UserManagementView.rolesAndPermissions">
+            <summary>
+            Diccionario que almacena los roles y sus permisos asociados.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnMostrarPermisos_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el clic en el botón "Mostrar Permisos". 
+            Oculta el menú principal y muestra el panel de permisos.
+            </summary>
+            <param name="sender">El objeto que genera el evento (en este caso, el botón).</param>
+            <param name="e">Argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConsultarPermisosRol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el clic en el botón "Consultar Permisos de Rol". 
+            Solicita los permisos del rol seleccionado y los muestra en un ComboBox.
+            </summary>
+            <param name="sender">El objeto que genera el evento (en este caso, el botón).</param>
+            <param name="e">Argumentos del evento.</param>
+            <exception cref="T:System.Exception">Se lanza si hay un error al obtener los permisos del rol.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.cmbRolesMostrarPermisos_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Maneja el cambio de selección en el ComboBox de roles para mostrar los permisos asociados.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el ComboBox.</param>
+            <param name="e">Los argumentos del evento, que contienen información sobre la selección.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarEdicion_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Confirma la edición de los permisos para el rol seleccionado y actualiza el servidor.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón de confirmación.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnModoGestion_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Activa el modo gestión para el usuario actual.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón para activar el modo gestión.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnVolver_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja la acción del botón "Volver", cerrando la ventana actual o regresando a la vista anterior.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón "Volver".</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.MinimizeButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja la acción del botón para minimizar la ventana actual.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón de minimizar.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.MaximizeRestoreButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Alterna entre maximizar y restaurar la ventana actual según su estado.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón de maximizar/restaurar.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.CloseButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja la acción del botón para cerrar la ventana actual.
+            </summary>
+            <param name="sender">El objeto que desencadena el evento, en este caso el botón de cerrar.</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -22,7 +22,28 @@
             <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
             <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
             <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
+
+            <!-- Nuevos campos de entrada para el evento -->
+            <TextBlock x:Name="textFechaLabel" Text="Fecha" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            <TextBox x:Name="txtFecha" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+
+            <TextBlock x:Name="textContenidoLabel" Text="Contenido" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            <TextBox x:Name="txtContenido" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+
+            <TextBlock x:Name="textTagsLabel" Text="Tags" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            <TextBox x:Name="txtTags" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+            
+
+            <CheckBox x:Name="chkGrupal" Content="Evento Grupal" Margin="10" Foreground="White" Visibility="Collapsed"/>
+
+            <TextBlock x:Name="textNombreGrupoLabel" Text="Nombre del Grupo (opcional)" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            <TextBox x:Name="txtNombreGrupo" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+
+            <Button x:Name="btnEnviar" Content="Enviar Evento" Width="200" Height="30" Margin="10" Visibility="Collapsed" Click="EnviarEvento_Click"/>
+
         </StackPanel>
+        
+        
 
         <!-- Calendario -->
         <Grid Grid.Column="1">

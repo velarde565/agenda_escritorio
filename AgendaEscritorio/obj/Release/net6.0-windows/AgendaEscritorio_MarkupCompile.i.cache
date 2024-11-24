@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NET;NET6_0;NETCOREAPP
 C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\App.xaml
-5-303091302
+632055880
 
-14-1447102943
+17-1547615318
 195259658810
-MainWindow.xaml;view\AjustesView.xaml;view\CalendarView.xaml;view\loginView.xaml;view\MainMenuView.xaml;
+MainWindow.xaml;view\AjustesView.xaml;view\CalendarView.xaml;view\loginView.xaml;view\MainMenuView.xaml;view\UserManagementView.xaml;
 
 False
 

@@ -1,0 +1,176 @@
+﻿<Window x:Class="AgendaEscritorio.view.UserManagementView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestión de Usuarios"
+        Height="450" Width="800"
+        Background="#FF1B1448"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
+    <Grid>
+        <Border CornerRadius="12" Background="#FF1B1448" Margin="0">
+            <Border BorderThickness="2" Opacity="0.95" CornerRadius="10">
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#007BA7" Offset="0"/>
+                        <GradientStop Color="#00FFFF" Offset="0.5"/>
+                        <GradientStop Color="#005F6B" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Border.Background>
+                    <ImageBrush ImageSource="../images/descarga.jpg" Stretch="Fill"/>
+                </Border.Background>
+                <Grid>
+                    <Border Background="#CC00AABB" CornerRadius="10" Opacity="0.9">
+                        <Grid>
+                            <!-- Controles de ventana: Minimizar, Maximizar y Cerrar -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0">
+                                <Button Content="-" Width="30" Background="Transparent" Foreground="White" Click="MinimizeButton_Click"/>
+                                <Button x:Name="MaximizeRestoreButton" Content="☐" Width="30" Background="Transparent" Foreground="White" Click="MaximizeRestoreButton_Click"/>
+                                <Button Content="X" Width="30" Background="Transparent" Foreground="White" Click="CloseButton_Click"/>
+                            </StackPanel>
+
+                            <!-- Menú principal con opciones de usuario -->
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0">
+                                <TextBlock Text="Gestión de Usuarios" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+                                <StackPanel x:Name="mainMenu" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+                                    <Button x:Name="btnCrearUsuario" Content="Crear Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearUsuario_Click"/>
+                                    <Button x:Name="btnEditarUsuario" Content="Editar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEditarUsuario_Click"/>
+                                    <Button x:Name="btnEliminarUsuario" Content="Eliminar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEliminarUsuario_Click"/>
+                                    <Button x:Name="btnCrearRol" Content="Crear Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearRol_Click"/>
+                                    <Button x:Name="btnMostrarPermisos" Content="Mostrar Permisos" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnMostrarPermisos_Click"/>
+                                    
+
+
+                                </StackPanel>
+
+                                <!-- Menú de opciones de edición -->
+                                <StackPanel x:Name="editMenu" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+                                    <Button Content="Cambiar Contraseña" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarContrasena"/>
+                                    <Button Content="Cambiar Nombre Completo" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarNombreCompleto"/>
+                                    <Button x:Name="btnCambiarFechaNacimiento" Content="Cambiar Fecha de Nacimiento" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarFechaNacimiento"/>
+                                    <Button Content="Cambiar Otros Datos" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarOtrosDatos"/>
+                                    <Button Content="Mostrar Datos de Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="MostrarDatosUsuario"/>
+                                    <Button Content="Volver" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para cambiar el nombre completo -->
+                                <StackPanel x:Name="inputFields" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Usuario a cambiar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioCambio" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Nuevo nombre completo:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtNuevoNombre" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioNombreCompleto_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para cambiar fecha de nacimiento -->
+                                <StackPanel x:Name="inputFieldsFechaNacimiento" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Usuario a cambiar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioCambioFecha" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Nueva fecha de nacimiento (dd/mm/yyyy):" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtNuevaFechaNacimiento" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioFechaNacimiento_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para cambiar otros datos -->
+                                <StackPanel x:Name="inputFieldsOtrosDatos" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Usuario a cambiar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioCambioOtros" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Otros datos:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtOtrosDatos" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioOtrosDatos_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para cambiar la contraseña -->
+                                <StackPanel x:Name="inputFieldsCambioContrasena" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Usuario a editar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioCambioContrasena" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Contraseña actual:" Foreground="White" Margin="0,5,0,0"/>
+                                    <PasswordBox x:Name="txtContrasenaActual" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Nueva contraseña:" Foreground="White" Margin="0,5,0,0"/>
+                                    <PasswordBox x:Name="txtNuevaContrasena" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioContrasena_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para mostrar datos del usuario -->
+                                <StackPanel x:Name="inputFieldsMostrarDatos" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Ver datos del usuario:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioAMostrar" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Mostrar Datos" Width="200" Margin="0,10,0,0" Click="MostrarDatosUsuario_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para eliminar usuario -->
+                                <StackPanel x:Name="inputFieldsEliminarUsuario" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Usuario a eliminar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtUsuarioAEliminar" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Eliminación" Width="200" Margin="0,10,0,0" Click="ConfirmarEliminacionUsuario_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para crear usuario -->
+                                <StackPanel x:Name="inputFieldsCrearUsuario" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Nuevo nombre de usuario:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtCrearUsuarioNombreUsuario" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Contraseña:" Foreground="White" Margin="0,5,0,0"/>
+                                    <PasswordBox x:Name="txtCrearUsuarioContrasena" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Nombre completo:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtCrearUsuarioNombreCompleto" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Fecha de nacimiento (dd/mm/yyyy):" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtCrearUsuarioFechaNacimiento" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Otros datos:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtCrearUsuarioOtrosDatos" Width="200" Margin="0,5,0,10"/>
+                                    <TextBlock Text="Rol/Permisos:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtCrearUsuarioRolPermisos" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Creación" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionUsuario_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para crear rol -->
+                                <StackPanel x:Name="inputFieldsCrearRol" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Nuevo rol:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtNuevoRol" Width="200" Margin="0,5,0,10"/>
+
+                                    <TextBlock Text="Permisos:" Foreground="White" Margin="0,5,0,10"/>
+
+                                    <CheckBox Content="Admin" x:Name="chkAdmin" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Crear agenda" x:Name="chkCrearAgenda" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Crear grupos" x:Name="chkCrearGrupos" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Crear agenda grupal" x:Name="chkCrearAgendaGrupal" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Eliminar agenda propia" x:Name="chkEliminarAgendaPropia" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Eliminar grupos" x:Name="chkEliminarGrupos" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Eliminar agenda grupal" x:Name="chkEliminarAgendaGrupal" Foreground="White" Margin="0,5"/>
+
+                                    <Button Content="Confirmar Creación de Rol" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionRol_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para mostrar permisos de un rol -->
+                                <StackPanel x:Name="inputFieldsMostrarPermisos" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Rol:" Foreground="White" Margin="0,5,0,0"/>
+                                    <ComboBox x:Name="cmbRolesMostrarPermisos" SelectionChanged="cmbRolesMostrarPermisos_SelectionChanged" Width="200" Margin="0,5,0,10" IsEnabled="True"/>
+
+                                    <TextBlock Text="Permisos:" Foreground="White" Margin="0,5,0,10"/>
+
+                                    <CheckBox Content="Admin" x:Name="chkAdminMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Crear agenda" x:Name="chkCrearAgendaMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Crear grupos" x:Name="chkCrearGruposMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Crear agenda grupal" x:Name="chkCrearAgendaGrupalMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Eliminar agenda propia" x:Name="chkEliminarAgendaPropiaMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Eliminar grupos" x:Name="chkEliminarGruposMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+                                    <CheckBox Content="Eliminar agenda grupal" x:Name="chkEliminarAgendaGrupalMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
+
+                                    <Button Content="Consultar Permisos" Width="200" Margin="0,10,0,0" Click="ConsultarPermisosRol_Click"/>
+                                    <Button Content="Confirmar Edición" Width="200" Margin="0,10,0,0" Click="ConfirmarEdicion_Click"/>
+                                    <Button Content="Activar/Desactivar Modo Gestión" Click="BtnModoGestion_Click" />
+
+                                </StackPanel>
+
+
+
+
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</Window>
