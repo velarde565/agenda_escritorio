@@ -42,11 +42,22 @@ namespace AgendaEscritorio.view
             });
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de gestión de perfiles.
         /// Abre la ventana de gestión de usuarios.
         /// </summary>
         private void BtnGestionPerfiles_Click(object sender, RoutedEventArgs e)
+=======
+        private void BtnGestionPerfiles_Click(object sender, RoutedEventArgs e)
+        {
+            UserManagementView userManagementView = new UserManagementView(client);
+            userManagementView.Show();
+        }
+
+        // Evento para abrir la ventana del calendario
+        private void BtnAgenda_Click(object sender, RoutedEventArgs e)
+>>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         {
             UserManagementView userManagementView = new UserManagementView(client);
             userManagementView.Show(); // Muestra la ventana de gestión de perfiles

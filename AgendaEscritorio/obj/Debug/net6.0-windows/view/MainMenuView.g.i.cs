@@ -84,7 +84,7 @@ namespace AgendaEscritorio.view {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/AgendaEscritorio;component/view/mainmenuview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/AgendaEscritorio;V1.0.0.0;component/view/mainmenuview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\view\MainMenuView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

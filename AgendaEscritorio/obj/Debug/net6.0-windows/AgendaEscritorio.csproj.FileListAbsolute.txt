@@ -64,5 +64,8 @@ C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Debug\net6.0
 C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Debug\net6.0-windows\AgendaEscritorio.pdb
 C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Debug\net6.0-windows\AgendaEscritorio.genruntimeconfig.cache
 C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Debug\net6.0-windows\ref\AgendaEscritorio.dll
+<<<<<<< HEAD
 C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\bin\Debug\net6.0-windows\AgendaEscritorio.xml
 C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Debug\net6.0-windows\AgendaEscritorio.xml
+=======
+>>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7

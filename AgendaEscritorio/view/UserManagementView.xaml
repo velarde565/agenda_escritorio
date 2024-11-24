@@ -38,11 +38,14 @@
                                     <Button x:Name="btnCrearUsuario" Content="Crear Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearUsuario_Click"/>
                                     <Button x:Name="btnEditarUsuario" Content="Editar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEditarUsuario_Click"/>
                                     <Button x:Name="btnEliminarUsuario" Content="Eliminar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEliminarUsuario_Click"/>
+<<<<<<< HEAD
                                     <Button x:Name="btnCrearRol" Content="Crear Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearRol_Click"/>
                                     <Button x:Name="btnMostrarPermisos" Content="Mostrar Permisos" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnMostrarPermisos_Click"/>
                                     
 
 
+=======
+>>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                                 </StackPanel>
 
                                 <!-- Menú de opciones de edición -->
@@ -124,6 +127,7 @@
                                     <Button Content="Confirmar Creación" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionUsuario_Click"/>
                                 </StackPanel>
 
+<<<<<<< HEAD
                                 <!-- Panel para crear rol -->
                                 <StackPanel x:Name="inputFieldsCrearRol" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
                                     <TextBlock Text="Nuevo rol:" Foreground="White" Margin="0,5,0,0"/>
@@ -165,6 +169,8 @@
 
 
 
+=======
+>>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 
                             </StackPanel>
                         </Grid>
