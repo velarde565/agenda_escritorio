@@ -156,29 +156,51 @@ namespace AgendaEscritorio.view
             this.Close(); // Cierra la ventana actual.
         }
 
+
+
+        /// <summary>
+        /// Gestiona la visibilidad de los paneles en función de la acción seleccionada.
+        /// </summary>
+        /// <param name="mostrarPanel">El panel que debe mostrarse. Los demás se ocultarán.</param>
+        private void MostrarUnicoPanel(UIElement mostrarPanel)
+        {
+            // Oculta todos los paneles
+            crearEventoPanel.Visibility = Visibility.Collapsed;
+            crearGrupoPanel.Visibility = Visibility.Collapsed;
+            eliminarGrupoPanel.Visibility = Visibility.Collapsed;
+
+            // Muestra el panel solicitado, si no es nulo
+            if (mostrarPanel != null)
+            {
+                mostrarPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+
+
+
         /// <summary>
         /// Muestra los campos necesarios para crear un evento al hacer clic en el botón "Crear Evento".
         /// </summary>
         /// <param name="sender">El objeto que disparó el evento (el botón "Crear Evento").</param>
         /// <param name="e">Los argumentos del evento.</param>
-        private async void CrearEvento_Click(object sender, RoutedEventArgs e)
+        private void CrearEvento_Click(object sender, RoutedEventArgs e)
         {
-            // Muestra los campos de entrada y las etiquetas cuando se presiona el botón "Crear Evento"
+            MostrarUnicoPanel(crearEventoPanel);
+
+            // Configurar visibilidad de controles específicos
+            textFechaLabel.Visibility = Visibility.Visible;
             txtFecha.Visibility = Visibility.Visible;
+            textContenidoLabel.Visibility = Visibility.Visible;
             txtContenido.Visibility = Visibility.Visible;
+            textTagsLabel.Visibility = Visibility.Visible;
             txtTags.Visibility = Visibility.Visible;
             chkGrupal.Visibility = Visibility.Visible;
-            txtNombreGrupo.Visibility = Visibility.Visible;
-
-            // Hace visibles las etiquetas correspondientes
-            textFechaLabel.Visibility = Visibility.Visible;
-            textContenidoLabel.Visibility = Visibility.Visible;
-            textTagsLabel.Visibility = Visibility.Visible;
             textNombreGrupoLabel.Visibility = Visibility.Visible;
-
-            // Muestra el botón de "Enviar Evento" para enviar la información
+            txtNombreGrupo.Visibility = Visibility.Visible;
             btnEnviar.Visibility = Visibility.Visible;
         }
+
 
         /// <summary>
         /// Envía los datos del evento cuando se hace clic en el botón "Enviar Evento".
@@ -211,7 +233,7 @@ namespace AgendaEscritorio.view
             try
             {
                 // Llama al método del cliente para enviar la solicitud de creación de evento
-                await client.RequestCreateDayAsync(client.SessionToken, fecha, contenido, tags, esGrupal, nombreGrupo);
+                await client.RequestCreateDayAsync(client.SessionToken, client.Username, fecha, contenido, tags, esGrupal, nombreGrupo);
 
                 // Muestra un mensaje de éxito
                 MessageBox.Show("Evento creado exitosamente.");
@@ -222,6 +244,193 @@ namespace AgendaEscritorio.view
                 MessageBox.Show($"Error al crear el evento: {ex.Message}");
             }
         }
+
+
+
+        private void CrearGrupo_Click(object sender, RoutedEventArgs e)
+        {
+            MostrarUnicoPanel(crearGrupoPanel);
+
+            // Configurar visibilidad de controles específicos
+            textNombreGrupoLabelCrear.Visibility = Visibility.Visible;
+            txtNombreGrupoCrear.Visibility = Visibility.Visible;
+            btnEnviarGrupo.Visibility = Visibility.Visible;
+        }
+
+
+
+
+        // Este es el método para manejar el clic del botón "Enviar Grupo"
+        private async void EnviarGrupo_Click(object sender, RoutedEventArgs e)
+        {
+            // Recoge los datos de la interfaz de usuario
+            string nombreGrupo = txtNombreGrupoCrear.Text.Trim();
+
+            // Validación básica del campo
+            if (string.IsNullOrEmpty(nombreGrupo))
+            {
+                MessageBox.Show("Por favor, introduce un nombre para el grupo.");
+                return;
+            }
+
+            try
+            {
+                // Llama al método del cliente para enviar la solicitud de creación de grupo
+                await client.RequestCreateGroupAsync(client.SessionToken, client.Username, nombreGrupo);
+
+                // Muestra un mensaje de éxito
+                MessageBox.Show("Grupo creado exitosamente.");
+
+                // Oculta los controles después de crear el grupo exitosamente
+                textNombreGrupoLabelCrear.Visibility = Visibility.Collapsed;
+                txtNombreGrupoCrear.Visibility = Visibility.Collapsed;
+                btnEnviarGrupo.Visibility = Visibility.Collapsed;
+
+                // (Opcional) Limpia el campo de texto
+                txtNombreGrupoCrear.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al crear el grupo: {ex.Message}");
+
+                // Opcional: También puedes ocultar los controles aquí si lo deseas
+                textNombreGrupoLabelCrear.Visibility = Visibility.Collapsed;
+                txtNombreGrupoCrear.Visibility = Visibility.Collapsed;
+                btnEnviarGrupo.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+
+        private void EliminarGrupo_Click(object sender, RoutedEventArgs e)
+        {
+            MostrarUnicoPanel(eliminarGrupoPanel);
+
+            // Configurar visibilidad de controles específicos
+            textNombreGrupoLabelEliminar.Visibility = Visibility.Visible;
+            txtNombreGrupoEliminar.Visibility = Visibility.Visible;
+            btnEnviarEliminarGrupo.Visibility = Visibility.Visible;
+        }
+
+
+
+        private async void EnviarEliminarGrupo_Click(object sender, RoutedEventArgs e)
+        {
+            // Recoge los datos de la interfaz de usuario
+            string nombreGrupo = txtNombreGrupoEliminar.Text.Trim();
+
+            // Validación básica del campo
+            if (string.IsNullOrEmpty(nombreGrupo))
+            {
+                MessageBox.Show("Por favor, introduce un nombre para el grupo.");
+                return;
+            }
+
+            try
+            {
+                // Llama al método del cliente para enviar la solicitud de eliminación de grupo
+                await client.RequestDeleteGroupAsync(client.SessionToken, client.Username, nombreGrupo);
+
+                // Muestra un mensaje de éxito
+                MessageBox.Show("Grupo eliminado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al eliminar el grupo: {ex.Message}");
+            }
+        }
+
+
+        private async void VerGruposPropietario_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Llama al método del cliente para enviar la solicitud de ver grupos propios
+                var grupos = await client.RequestViewOwnedGroupsAsync(client.SessionToken, client.Username);
+
+                // Verifica si se encontraron grupos
+                if (grupos.Count > 0)
+                {
+                    // Muestra los grupos en la interfaz (puedes adaptarlo a cómo deseas mostrar la información)
+                    string gruposList = string.Join("\n", grupos);
+                    MessageBox.Show($"Grupos propios:\n{gruposList}");
+
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron grupos propios.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al obtener los grupos propios: {ex.Message}");
+            }
+        }
+
+
+
+        private async void VerGruposMembresia_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Llama al método del cliente para enviar la solicitud de ver grupos donde es miembro
+                var grupos = await client.RequestViewMembershipGroupsAsync(client.SessionToken, client.Username);
+
+                // Verifica si se encontraron grupos
+                if (grupos.Count > 0)
+                {
+                    // Muestra los grupos en la interfaz
+                    string gruposList = string.Join("\n", grupos);
+                    MessageBox.Show($"Grupos donde eres miembro:\n{gruposList}");
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron grupos donde seas miembro.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al obtener los grupos de membresía: {ex.Message}");
+            }
+        }
+
+
+
+
+        private async void VerTodosGrupos_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Llama al método del cliente para enviar la solicitud de ver todos los grupos
+                var grupos = await client.RequestViewAllGroupsAsync(client.SessionToken, client.Username);
+
+                // Verifica si se encontraron grupos
+                if (grupos.Count > 0)
+                {
+                    // Muestra los grupos en la interfaz
+                    string gruposList = string.Join("\n", grupos);
+                    MessageBox.Show($"Todos los grupos:\n{gruposList}");
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron grupos en el servidor.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al obtener los grupos: {ex.Message}");
+            }
+        }
+
+
+
+
+
 
 
         /// <summary>

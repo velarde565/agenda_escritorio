@@ -1,8 +1,5 @@
 ﻿using System;
-<<<<<<< HEAD
 using System.Linq;
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 using System.Windows;
 
 namespace AgendaEscritorio.service
@@ -29,7 +26,6 @@ namespace AgendaEscritorio.service
             return $"1{"01"}{usernameLengthStr}{username}{passwordLengthStr}{password}\n";
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Genera un paquete para solicitar la modificación de los datos de un usuario.
         /// </summary>
@@ -40,18 +36,11 @@ namespace AgendaEscritorio.service
         public static string ConstructUserDataRequestPacket(string sessionToken, string connectedUsername, string usernameToChange)
         {
             // Longitudes de los parámetros
-=======
-        public static string ConstructUserDataRequestPacket(string sessionToken, string connectedUsername, string usernameToChange)
-        {
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string tokenLengthStr = sessionToken.Length.ToString("D2");
             string connectedUsernameLengthStr = connectedUsername.Length.ToString("D2");
             string usernameToChangeLengthStr = usernameToChange.Length.ToString("D2");
 
-<<<<<<< HEAD
             // Construcción del paquete siguiendo el protocolo
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             return $"2{"05"}{tokenLengthStr}{sessionToken}{usernameToChangeLengthStr}{usernameToChange}{connectedUsernameLengthStr}{connectedUsername}\n";
         }
 
@@ -71,7 +60,6 @@ namespace AgendaEscritorio.service
             return $"1{"02"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}\n";
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Genera un paquete para cambiar el nombre completo de un usuario.
         /// </summary>
@@ -83,16 +71,11 @@ namespace AgendaEscritorio.service
         public static string ConstructChangeFullNamePacket(string sessionToken, string usernameToChange, string newFullName, string connectedUsername)
         {
             // Longitudes de los parámetros
-=======
-        public static string ConstructChangeFullNamePacket(string sessionToken, string usernameToChange, string newFullName, string connectedUsername)
-        {
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
             string usernameToChangeOffset = usernameToChange.Length.ToString("D2");
             string newFullNameOffset = newFullName.Length.ToString("D2");
             string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
 
-<<<<<<< HEAD
             // Construcción del paquete siguiendo el protocolo
             return $"2{"02"}{sessionTokenOffset}{sessionToken}{usernameToChangeOffset}{usernameToChange}{newFullNameOffset}{newFullName}{connectedUsernameOffset}{connectedUsername}\n";
         }
@@ -108,19 +91,11 @@ namespace AgendaEscritorio.service
         public static string ConstructChangeBirthDatePacket(string sessionToken, string usernameToChange, string newBirthDate, string connectedUsername)
         {
             // Longitudes de los parámetros
-=======
-            return $"2{"02"}{sessionTokenOffset}{sessionToken}{usernameToChangeOffset}{usernameToChange}{newFullNameOffset}{newFullName}{connectedUsernameOffset}{connectedUsername}\n";
-        }
-
-        public static string ConstructChangeBirthDatePacket(string sessionToken, string usernameToChange, string newBirthDate, string connectedUsername)
-        {
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
             string usernameToChangeOffset = usernameToChange.Length.ToString("D2");
             string newBirthDateOffset = newBirthDate.Length.ToString("D2");
             string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
 
-<<<<<<< HEAD
             // Construcción del paquete siguiendo el protocolo
             string response = $"2{"03"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{usernameToChangeOffset}{usernameToChange}{newBirthDateOffset}{newBirthDate}\n";
 
@@ -142,24 +117,12 @@ namespace AgendaEscritorio.service
         public static string ConstructChangePasswordPacket(string sessionToken, string usernameToEdit, string currentPassword, string newPassword, string connectedUsername)
         {
             // Longitudes de los parámetros
-=======
-            string response;
-            response = $"2{"03"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{usernameToChangeOffset}{usernameToChange}{newBirthDateOffset}{newBirthDate}\n";
-            MessageBox.Show(response);
-            return $"2{"03"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{usernameToChangeOffset}{usernameToChange}{newBirthDateOffset}{newBirthDate}\n";
-        }
-
-
-        public static string ConstructChangePasswordPacket(string sessionToken, string usernameToEdit, string currentPassword, string newPassword, string connectedUsername)
-        {
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string tokenLengthStr = sessionToken.Length.ToString("D2");
             string usernameToEditLengthStr = usernameToEdit.Length.ToString("D2");
             string currentPasswordLengthStr = currentPassword.Length.ToString("D2");
             string newPasswordLengthStr = newPassword.Length.ToString("D2");
             string connectedUsernameLengthStr = connectedUsername.Length.ToString("D2");
 
-<<<<<<< HEAD
             // Construcción del paquete siguiendo el protocolo
             string response = $"2{"01"}{tokenLengthStr}{sessionToken}" +
                               $"{usernameToEditLengthStr}{usernameToEdit}" +
@@ -181,29 +144,11 @@ namespace AgendaEscritorio.service
         /// <param name="connectedUsername">Nombre de usuario conectado.</param>
         /// <param name="newOtherData">Nuevo dato (por ejemplo, teléfono o dirección).</param>
         /// <returns>El paquete para cambiar otros datos en formato string.</returns>
-=======
-            string response= $"2{"01"}{tokenLengthStr}{sessionToken}" +
-                   $"{usernameToEditLengthStr}{usernameToEdit}" +
-                   $"{currentPasswordLengthStr}{currentPassword}" +
-                   $"{newPasswordLengthStr}{newPassword}" +
-                   $"{connectedUsernameLengthStr}{connectedUsername}\n";
-            MessageBox.Show(response);
-
-            return $"2{"01"}{tokenLengthStr}{sessionToken}" +
-                   $"{usernameToEditLengthStr}{usernameToEdit}" +
-                   $"{currentPasswordLengthStr}{currentPassword}" +
-                   $"{newPasswordLengthStr}{newPassword}" +
-                   $"{connectedUsernameLengthStr}{connectedUsername}\n";
-        }
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         public static string ConstructChangeOtherDataPacket(string sessionToken, string usernameToChange, string connectedUsername, string newOtherData)
         {
             // Verificación temporal de valores
             Console.WriteLine($"Connected Username: '{connectedUsername}', Length: {connectedUsername.Length}");
 
-<<<<<<< HEAD
             // Longitudes de los parámetros
             string tokenOffset = $"{sessionToken.Length:D2}";
             string usernameOffset = $"{connectedUsername.Length:D2}";
@@ -214,21 +159,11 @@ namespace AgendaEscritorio.service
             string response = $"2{"04"}{tokenOffset}{sessionToken}{targetUsernameOffset}{usernameToChange}{usernameOffset}{connectedUsername}{otherDataOffset}{newOtherData}";
 
             // Mensaje de verificación temporal
-=======
-            string tokenOffset = $"{sessionToken.Length:D2}";
-            string usernameOffset = $"{connectedUsername.Length:D2}";
-            string targetUsernameOffset = $"{usernameToChange.Length:D2}";
-            string otherDataOffset = $"{newOtherData.Length:D4}"; // Zero-fill to 4 characters
-
-            string response = $"2{"04"}{tokenOffset}{sessionToken}{targetUsernameOffset}{usernameToChange}{usernameOffset}{connectedUsername}{otherDataOffset}{newOtherData}";
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             MessageBox.Show(response);
 
             return response;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Genera un paquete para eliminar un usuario.
         /// </summary>
@@ -264,22 +199,6 @@ namespace AgendaEscritorio.service
         public static string ConstructCreateUserPacket(string sessionToken, string connectedUsername, string newUsername, string password, string fullName, string birthDate, string otrosDatos, string rolPermisos)
         {
             // Calcular los offsets para cada campo de acuerdo a su longitud.
-=======
-        public static string ConstructDeleteUserPacket(string sessionToken, string usernameToDelete, string connectedUsername)
-        {
-        string sessionTokenOffset = sessionToken.Length.ToString("D2");
-        string usernameToDeleteOffset = usernameToDelete.Length.ToString("D2");
-        string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
-
-        // Paquete: Acción 07 para eliminar usuario
-        string packet = $"2{"07"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{usernameToDeleteOffset}{usernameToDelete}\n";
-    
-        return packet;
-        }
-
-        public static string ConstructCreateUserPacket(string sessionToken, string connectedUsername, string newUsername, string password, string fullName, string birthDate, string otrosDatos, string rolPermisos)
-        {
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
             string newUsernameOffset = newUsername.Length.ToString("D2");
             string passwordOffset = password.Length.ToString("D2");
@@ -312,17 +231,12 @@ namespace AgendaEscritorio.service
                              $"Rol Permisos Offset: {rolPermisosOffset}\n" +
                              $"Rol Permisos: {rolPermisos}";
 
-<<<<<<< HEAD
             // Mostrar el mensaje en MessageBox para visualización.
-=======
-            // Mostrar el mensaje en MessageBox.
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             MessageBox.Show(message, "Detalle del Paquete");
 
             return packet;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Construye un paquete para añadir permisos a un rol para un usuario específico.
         /// </summary>
@@ -365,10 +279,6 @@ namespace AgendaEscritorio.service
             // Construir el paquete
             return $"2{"12"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}\n";
         }
-=======
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 
 
 
@@ -435,12 +345,13 @@ namespace AgendaEscritorio.service
         /// <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
         /// <param name="nombreGrupo">Nombre del grupo asociado al evento, si es un evento grupal.</param>
         /// <returns>Cadena que representa el paquete de datos para crear un evento.</returns>
-        public static string ConstructCreateDayPacket(string sessionToken, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
+        public static string ConstructCreateDayPacket(string sessionToken, string username, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
         {
-            // Calcular los offsets para el token de sesión, fecha, contenido y etiquetas
+            // Calcular los offsets para el token de sesión, usuario, fecha, contenido y etiquetas
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string fechaOffset = fecha.Length.ToString("D2");               // Longitud de la fecha
-            string contenidoOffset = contenido.Length.ToString("D4");       // Longitud del contenido (cuatro dígitos)
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre del usuario
+            string fechaOffset = fecha.Length.ToString("D2");                // Longitud de la fecha
+            string contenidoOffset = contenido.Length.ToString("D4");        // Longitud del contenido (cuatro dígitos)
             string tagsOffset = string.IsNullOrEmpty(tags) ? "0000" : tags.Length.ToString("D4"); // Longitud de los tags (cuatro dígitos)
 
             // Establecer un flag (1 para grupal, 0 para individual)
@@ -455,9 +366,94 @@ namespace AgendaEscritorio.service
                                ? nombreGrupo // Nombre del grupo si es un evento grupal
                                : "";
 
+            // Añadir los 2 bytes adicionales requeridos por la especificación
+            string unusedBytes = "00"; 
+
             // Construir y devolver el paquete final para crear el evento
-            return $"4{"06"}{sessionTokenOffset}{sessionToken}{fechaOffset}{fecha}{contenidoOffset}{contenido}{tagsOffset}{tags}{grupalFlag}{groupNameOffset}{groupName}\n";
+            return $"4{"06"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{fechaOffset}{fecha}{contenidoOffset}{contenido}{tagsOffset}{tags}{unusedBytes}{grupalFlag}{groupNameOffset}{groupName}\n";
         }
+
+
+
+
+        public static string ConstructCreateGroupPacket(string sessionToken, string username, string nombreGrupo)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
+
+            // Construir y devolver el paquete
+            return $"2{"15"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+        }
+
+
+        public static string ConstructDeleteGroupPacket(string sessionToken, string username, string nombreGrupo)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
+
+            // Construir y devolver el paquete
+            return $"2{"16"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+        }
+
+
+        // Método para construir el paquete de solicitud de grupos propios
+        public static string ConstructViewOwnedGroupsPacket(string sessionToken, string username)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+
+            // Construir y devolver el paquete
+            return $"2{"18"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
+        }
+
+
+        // Método para construir el paquete de solicitud de grupos donde el usuario es miembro
+        public static string ConstructViewMembershipGroupsPacket(string sessionToken, string username)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+
+            // Construir y devolver el paquete
+            return $"2{"19"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
+        }
+
+
+
+        // Método para construir el paquete de solicitud de ver todos los grupos
+        public static string ConstructViewAllGroupsPacket(string sessionToken, string username)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+
+            // Construir y devolver el paquete
+            return $"2{"20"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
+        }
+
+
+
+        public static string ConstructShowMonthPacket(string sessionToken, string username)
+        {
+            // Calcular los offsets basados en las longitudes de los datos
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");
+            string usernameOffset = username.Length.ToString("D2");
+
+            // El conjunto de 2 bytes (cualquier valor, en este caso 00) 
+            string filler = "00";
+
+            // Crear el paquete con la estructura adecuada
+            return $"4{"01"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{filler}109IOCtest11\n";
+
+
+        }
+
+
 
 
 

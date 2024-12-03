@@ -15,35 +15,69 @@
             <!-- Calendario -->
         </Grid.ColumnDefinitions>
 
-        <!-- Panel lateral izquierdo -->
-        <StackPanel Background="#2B2B2B" Grid.Column="0">
-            <TextBlock Text="Gestión de Eventos" FontSize="18" Foreground="White" Margin="10"/>
-            <Button Content="Crear Evento" Margin="10" Click="CrearEvento_Click" Background="#007BA7" Foreground="White"/>
-            <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
-            <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
-            <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
+        <!-- Panel lateral izquierdo con TabControl para organizar por pestañas -->
+        <Grid Background="#2B2B2B" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <!-- Nuevos campos de entrada para el evento -->
-            <TextBlock x:Name="textFechaLabel" Text="Fecha" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
-            <TextBox x:Name="txtFecha" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+            <TabControl Background="#2B2B2B" Grid.Row="0" Margin="5" VerticalAlignment="Top">
+                <!-- Pestaña de Eventos -->
+                <TabItem Header="Eventos">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock Text="Gestión de Eventos" FontSize="18" Foreground="White" Margin="10"/>
+                        <Button Content="Crear Evento" Margin="10" Click="CrearEvento_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
+                    </StackPanel>
+                </TabItem>
 
-            <TextBlock x:Name="textContenidoLabel" Text="Contenido" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
-            <TextBox x:Name="txtContenido" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+                <!-- Pestaña de Grupos -->
+                <TabItem Header="Grupos">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock Text="Gestión de Grupos" FontSize="18" Foreground="White" Margin="10"/>
+                        <Button Content="Crear Grupo" Margin="10" Click="CrearGrupo_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Eliminar Grupo" Margin="10" Click="EliminarGrupo_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Ver Grupos (propietario)" Margin="10" Click="VerGruposPropietario_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Ver Grupos(miembro)" Margin="10" Click="VerGruposMembresia_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Ver Todos los Grupos" Margin="10" Click="VerTodosGrupos_Click" Background="#007BA7" Foreground="White"/>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
 
-            <TextBlock x:Name="textTagsLabel" Text="Tags" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
-            <TextBox x:Name="txtTags" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
-            
+            <!-- Panel dinámico para crear o eliminar eventos y grupos -->
+            <StackPanel x:Name="crearEventoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <!-- Contenido del crearEventoPanel -->
+                <TextBlock x:Name="textFechaLabel" Text="Fecha" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtFecha" Margin="10" Width="200" Height="30"/>
+                <TextBlock x:Name="textContenidoLabel" Text="Contenido" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtContenido" Margin="10" Width="200" Height="30"/>
+                <TextBlock x:Name="textTagsLabel" Text="Tags" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtTags" Margin="10" Width="200" Height="30"/>
+                <CheckBox x:Name="chkGrupal" Content="Evento Grupal" Margin="10" Foreground="White"/>
+                <TextBlock x:Name="textNombreGrupoLabel" Text="Nombre del Grupo (opcional)" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNombreGrupo" Margin="10" Width="200" Height="30"/>
+                <Button x:Name="btnEnviar" Content="Enviar Evento" Width="200" Height="30" Margin="10" Click="EnviarEvento_Click"/>
+            </StackPanel>
 
-            <CheckBox x:Name="chkGrupal" Content="Evento Grupal" Margin="10" Foreground="White" Visibility="Collapsed"/>
+            <StackPanel x:Name="crearGrupoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <!-- Contenido del crearGrupoPanel -->
+                <TextBlock x:Name="textNombreGrupoLabelCrear" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNombreGrupoCrear" Margin="10" Width="200" Height="30"/>
+                <Button x:Name="btnEnviarGrupo" Content="Crear Grupo" Width="200" Height="30" Margin="10" Click="EnviarGrupo_Click"/>
+            </StackPanel>
 
-            <TextBlock x:Name="textNombreGrupoLabel" Text="Nombre del Grupo (opcional)" Foreground="White" Margin="10" HorizontalAlignment="Center" Visibility="Collapsed"/>
-            <TextBox x:Name="txtNombreGrupo" Margin="10" Width="200" Height="30" Visibility="Collapsed"/>
+            <StackPanel x:Name="eliminarGrupoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <!-- Contenido del eliminarGrupoPanel -->
+                <TextBlock x:Name="textNombreGrupoLabelEliminar" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNombreGrupoEliminar" Margin="10" Width="200" Height="30"/>
+                <Button x:Name="btnEnviarEliminarGrupo" Content="Eliminar Grupo" Width="200" Height="30" Margin="10" Click="EnviarEliminarGrupo_Click"/>
+            </StackPanel>
+        </Grid>
 
-            <Button x:Name="btnEnviar" Content="Enviar Evento" Width="200" Height="30" Margin="10" Visibility="Collapsed" Click="EnviarEvento_Click"/>
-
-        </StackPanel>
-        
-        
 
         <!-- Calendario -->
         <Grid Grid.Column="1">

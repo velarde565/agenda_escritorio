@@ -17,7 +17,6 @@ namespace AgendaEscritorio.service
         private StreamWriter writer;  // Escribiente para enviar datos al servidor
         private StreamReader reader;  // Lector para recibir datos del servidor
 
-<<<<<<< HEAD
         // Dirección y puerto del servidor
         private const string ServerAddress = "localhost";  // Dirección del servidor
         private const int Port = 12522;  // Puerto para la conexión
@@ -30,28 +29,6 @@ namespace AgendaEscritorio.service
         private string fullName;  // Nombre completo del usuario
         private string birthDate;  // Fecha de nacimiento del usuario
         private string otherData;  // Otros datos adicionales del usuario
-=======
-        // Campos que almacenan información del usuario
-        private string sessionToken;
-        private string username;
-        private string username2;
-        private string role;
-        private string fullName;
-        private string birthDate;
-        private string otherData;
-        public char IsAdmin { get; private set; }  // Solo tiene un setter privado
-
-        // Propiedades de solo lectura
-        public string SessionToken => sessionToken;  // Propiedad de solo lectura para el token de sesión
-        public string Username => username;  // Propiedad de solo lectura para el nombre de usuario
-        public string Role => role;  // Propiedad de solo lectura
-        public string FullName => fullName;  // Propiedad de solo lectura
-        public string BirthDate => birthDate;  // Propiedad de solo lectura
-        public string OtherData => otherData;  // Propiedad de solo lectura
-        public void SetSessionToken(string token) => sessionToken = token;
-        public string GetSessionToken() => sessionToken;
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 
         /// <summary>
         /// Propiedad que indica si el usuario tiene permisos de administrador.
@@ -88,20 +65,14 @@ namespace AgendaEscritorio.service
         {
             try
             {
-<<<<<<< HEAD
                 // Verifica si ya hay una conexión activa
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 if (client != null && client.Connected)
                 {
                     MessageBox.Show("Ya estás conectado al servidor.");
                     return; // Evita volver a conectar si ya está conectado
                 }
 
-<<<<<<< HEAD
                 // Crea una nueva conexión al servidor
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 client = new TcpClient();
                 await client.ConnectAsync(ServerAddress, Port);  // Conecta al servidor en la dirección y puerto definidos
 
@@ -126,14 +97,9 @@ namespace AgendaEscritorio.service
         /// <returns>Returns true if the login was successful, false otherwise.</returns>
         public async Task<bool> SendLoginAsync(string username, string password)
         {
-<<<<<<< HEAD
             this.username = username; // Save the username for later use
             this.username2 = username; // Assign the username to a secondary variable (possibly for backup or logging)
 
-=======
-            this.username = username; // Guardar el nombre de usuario
-            this.username2 = username;
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             try
             {
                 // Construct the login packet using a helper method
@@ -180,15 +146,10 @@ namespace AgendaEscritorio.service
                         string token = DataExtractor.ExtractToken(message); // Extract the token from the message
                         SetSessionToken(token); // Store the session token
                         MessageBox.Show($"Login successful! Token: {token}");
-<<<<<<< HEAD
 
                         // Request user data after successful login
                         await RequestUserDataAsync(sessionToken, username, username2);
                         return true; // Return true to indicate successful login
-=======
-                        await RequestUserDataAsync(sessionToken, username, username2);
-                        return true;
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                     }
                     else
                     {
@@ -207,27 +168,20 @@ namespace AgendaEscritorio.service
             }
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Asynchronously requests the user data from the server using the session token and username.
         /// </summary>
         /// <param name="sessionToken">The session token to authenticate the request.</param>
         /// <param name="username">The username for which to request data.</param>
         /// <param name="nombre2">A secondary username (used for additional processing or validation).</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         public async Task RequestUserDataAsync(string sessionToken, string username, string nombre2)
         {
             try
             {
-<<<<<<< HEAD
                 // Construct the user data request packet
                 string requestPacket = ProtocolHelper.ConstructUserDataRequestPacket(sessionToken, username, nombre2);
 
                 // Send the request packet to the server asynchronously
-=======
-                string requestPacket = ProtocolHelper.ConstructUserDataRequestPacket(sessionToken, username, nombre2);
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 await writer.WriteLineAsync(requestPacket);
                 await writer.FlushAsync();
 
@@ -246,13 +200,10 @@ namespace AgendaEscritorio.service
         }
 
 
-<<<<<<< HEAD
         /// <summary>
         /// Processes the user data response received from the server.
         /// </summary>
         /// <param name="response">The response message containing user data.</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void ProcessUserDataResponse(string response)
         {
             // Check if the response is too short to contain valid data
@@ -287,24 +238,14 @@ namespace AgendaEscritorio.service
             MessageBox.Show($"Token: {sessionToken}\nUsername: {username}\nRole: {role}\nFull Name: {fullName}\nBirth Date: {birthDate}\nOther Data: {otherData}\nIs Admin: {IsAdmin}");
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Sends a logout request to the server.
         /// </summary>
-=======
-
-
-       
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         public async Task SendLogoutAsync()
         {
             try
             {
-<<<<<<< HEAD
                 // Construct the logout packet using the session token and username
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 string logoutPacket = ProtocolHelper.ConstructLogoutPacket(sessionToken, username);
                 MessageBox.Show($"Logout Packet Sent: {logoutPacket}");
 
@@ -356,7 +297,6 @@ namespace AgendaEscritorio.service
             }
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Asynchronously sends a request to change the user's full name on the server.
         /// </summary>
@@ -386,343 +326,6 @@ namespace AgendaEscritorio.service
             {
                 // Handle any errors that occur during the request for changing the full name
                 MessageBox.Show($"Error al solicitar el cambio de nombre completo: {ex.Message}");
-=======
-        public async Task RequestChangeFullNameAsync(string sessionToken, string usernameToChange, string newFullName)
-        {
-            try
-            {
-                // Construir el paquete de solicitud usando ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructChangeFullNamePacket(sessionToken, usernameToChange, newFullName, username);
-
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                // Procesar la respuesta
-                ProcessChangeFullNameResponse(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al solicitar el cambio de nombre completo: {ex.Message}");
-            }
-        }
-
-
-        private void ProcessChangeFullNameResponse(string response)
-        {
-            MessageBox.Show(response);
-            if (response.Length < 3)
-            {
-                MessageBox.Show("Response too short.");
-                return;
-            }
-            char protocol = response[0];
-            int action = int.Parse(response.Substring(1, 2));
-
-
-            if (protocol != '2' || action != 20)
-            {
-                MessageBox.Show($"Unexpected protocol or action: {protocol}, {action}");
-                return;
-            }
-
-            int index = 3;
-            string Token = DataExtractor.ExtractData(response, ref index);
-
-            if (Token == SessionToken)
-            {
-                MessageBox.Show("Confirmacion cambio de nombre");
-            }
-
-        }
-
-
-
-        public async Task RequestChangeOtherDataAsync(string sessionToken, string usernameToChange, string newOtherData)
-        {
-            try
-            {
-                // Construir el paquet de sol·licitud usant ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructChangeOtherDataPacket(sessionToken, usernameToChange, username, newOtherData);
-
-                // Enviar la sol·licitud
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                // Llegir la resposta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                // Processar la resposta
-                ProcessChangeOtherDataResponse(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al sol·licitar el canvi d'altres dades: {ex.Message}");
-            }
-        }
-
-        private void ProcessChangeOtherDataResponse(string response)
-        {
-            if (response == "112")
-            {
-                MessageBox.Show("Error 112: No tienes permisos para cambiar el nombre de este usuario.");
-                return;
-            }
-
-            MessageBox.Show("Nombre completo cambiado con éxito.");
-        }
-
-
-        public async Task RequestChangeBirthDateAsync(string sessionToken, string usernameToChange, string newBirthDate, string connectedUsername)
-        {
-            try
-            {
-                // Construir el paquete de solicitud usando ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructChangeBirthDatePacket(sessionToken, usernameToChange, newBirthDate, connectedUsername);
-
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                // Procesar la respuesta
-                ProcessChangeBirthDateResponse(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al solicitar el cambio de fecha de nacimiento: {ex.Message}");
-            }
-        }
-
-        private void ProcessChangeBirthDateResponse(string response)
-        {
-            if (response == "112")
-            {
-                MessageBox.Show("Error 112: No tienes permisos para cambiar la fecha de este usuario.");
-                return;
-            }
-            else if (response == "1105")
-            {
-                MessageBox.Show("Error 1105: La fecha de nacimiento no puede ser posterior a la fecha actual.");
-                return;
-            }
-
-            MessageBox.Show("Fecha de nacimiento cambiada con éxito.");
-        }
-
-
-        public async Task RequestChangePasswordAsync(string sessionToken, string usernameToEdit, string currentPassword, string newPassword, string connectedUsername)
-        {
-            try
-            {
-                string requestPacket = ProtocolHelper.ConstructChangePasswordPacket(sessionToken, usernameToEdit, currentPassword, newPassword, connectedUsername);
-
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                ProcessChangeFullPassword(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al solicitar el cambio de contraseña: {ex.Message}");
-            }
-        }
-
-
-
-        private void ProcessChangeFullPassword(string response)
-        {
-            MessageBox.Show(response);
-            if (response.Length < 3)
-            {
-                MessageBox.Show("Response too short.");
-                return;
-            }
-            char protocol = response[0];
-            int action = int.Parse(response.Substring(1, 2));
-
-            // Mostrar el valor de protocol y luego el valor de action
-            MessageBox.Show($"Protocol: {protocol}");
-            MessageBox.Show($"Action: {action}");
-
-
-
-            if (protocol != '1' || action != 04)
-            {
-                MessageBox.Show($"Unexpected protocol or action: {protocol}, {action}");
-                return;
-            }
-
-            int index = 3;
-            string Token = DataExtractor.ExtractData(response, ref index);
-
-            if (Token == SessionToken)
-            {
-                MessageBox.Show("Confirmacion cambio de contraseña");
-            }
-
-        }
-
-        public async Task RequestDeleteUserAsync(string sessionToken, string usernameToDelete, string connectedUsername)
-        {
-            try
-            {
-                // Construir el paquete de solicitud de eliminación usando ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructDeleteUserPacket(sessionToken, usernameToDelete, connectedUsername);
-
-                // Enviar la solicitud al servidor
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                // Procesar la respuesta del servidor
-                ProcessDeleteUserResponse(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al solicitar la eliminación del usuario: {ex.Message}");
-            }
-        }
-
-        private void ProcessDeleteUserResponse(string response)
-        {
-            // Suponiendo que la respuesta del servidor es un código como "224" para eliminación exitosa
-            if (response.StartsWith("216"))
-            {
-                // Confirmación de eliminación de usuario (Protocolo 2, Acción 24)
-                MessageBox.Show("El usuario ha sido eliminado exitosamente.");
-            }
-            else if (response.StartsWith("9")) // Protocolo 9 para errores
-            {
-                // Extraer el código de error
-                string errorCode = response.Substring(1); // Tomar el resto después de "9"
-
-                switch (errorCode)
-                {
-                    case "112":
-                        MessageBox.Show("Error: No autorizado para eliminar el usuario.");
-                        break;
-                    case "1205":
-                        MessageBox.Show("Error: El usuario especificado no existe.");
-                        break;
-                    default:
-                        MessageBox.Show("Error al procesar la solicitud. Detalles: No hay detalles adicionales.");
-                        break;
-                }
-            }
-            else
-            {
-                // Respuesta inesperada del servidor
-                MessageBox.Show("Respuesta inesperada del servidor.");
-            }
-        }
-
-        public async Task RequestCreateUserAsync(string sessionToken,string username, string nombreUsuario, string password, string nombreCompleto, string fechaNacimiento, string otrosDatos, string rolPermisos)
-        {
-            try
-            {
-                // Construir el paquete de solicitud de creación usando ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructCreateUserPacket(sessionToken,username, nombreUsuario, password, nombreCompleto, fechaNacimiento, otrosDatos, rolPermisos);
-
-                // Enviar la solicitud al servidor
-                await writer.WriteLineAsync(requestPacket);
-                await writer.FlushAsync();
-
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
-
-                // Procesar la respuesta del servidor
-                ProcessCreateUserResponse(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al solicitar la creación del usuario: {ex.Message}");
-            }
-        }
-
-        private void ProcessCreateUserResponse(string response)
-        {
-            // Verificar si la respuesta comienza con "223" para confirmación de creación de usuario
-            if (response.StartsWith("223"))
-            {
-                // Confirmación de creación de usuario
-                MessageBox.Show("El usuario ha sido creado exitosamente.");
-            }
-            else if (response.StartsWith("9")) // Protocolo 9 para errores
-            {
-                // Extraer el código de error
-                string errorCode = response.Substring(1); // Tomar el resto después de "9"
-
-                switch (errorCode)
-                {
-                    case "105":
-                        MessageBox.Show("Error: No autorizado para crear el usuario.");
-                        break;
-                    case "1205":
-                        MessageBox.Show("Error: El nombre de usuario ya existe.");
-                        break;
-                    case "112":
-                        MessageBox.Show("Error: No autorizado.");
-                        break;
-                    default:
-                        MessageBox.Show("Error al procesar la solicitud. Detalles: No hay detalles adicionales.");
-                        break;
-                }
-            }
-            else
-            {
-                // Respuesta inesperada del servidor
-                MessageBox.Show("Respuesta inesperada del servidor.");
-            }
-        }
-
-
-
-
-
-
-
-
-
-        public void Disconnect()
-        {
-            try
-            {
-                if (writer != null)
-                {
-                    writer.Close();
-                    writer = null;
-                }
-                if (reader != null)
-                {
-                    reader.Close();
-                    reader = null;
-                }
-                if (client != null)
-                {
-                    client.Close();
-                    client = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error during disconnection: {ex.Message}");
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             }
         }
 
@@ -879,38 +482,49 @@ namespace AgendaEscritorio.service
                 await writer.WriteLineAsync(requestPacket);
                 await writer.FlushAsync();
 
-                // Lista para almacenar todas las respuestas del servidor
+                // Lista para almacenar todas las respuestas relevantes del servidor
                 List<string> responses = new List<string>();
 
-                // Establecer un tiempo máximo de espera para recibir respuestas (5 segundos)
-                int timeout = 5000; // 5 segundos (ajustar según sea necesario)
-
-                // Crear una tarea que se complete tras el timeout
-                var timeoutTask = Task.Delay(timeout);
-
-                // Leer las respuestas del servidor y agregarlas a la lista
+                bool isReceivingPermissions = false; // Indica si estamos en el rango de permisos
                 string response;
-                while (true)
-                {
-                    // Esperar a que se complete la lectura o el timeout, lo que ocurra primero
-                    var readTask = reader.ReadLineAsync();
-                    var completedTask = await Task.WhenAny(readTask, timeoutTask);
 
-                    if (completedTask == readTask && readTask.Result != null)
+                // Leer respuestas del servidor hasta encontrar acción 43 (fin de la lista)
+                while ((response = await reader.ReadLineAsync()) != null)
+                {
+                    // Extraer protocolo y acción de la respuesta
+                    if (response.Length < 3)
+                        continue; // Ignorar respuestas inválidas
+
+                    char protocol = response[0];
+                    int action = int.Parse(response.Substring(1, 2));
+
+                    // Verificar si es el protocolo esperado
+                    if (protocol != '2')
+                        continue; // Ignorar respuestas de otros protocolos
+
+                    // Manejar las acciones 42 y 43
+                    if (action == 42)
                     {
-                        // Si se recibe una respuesta, agregarla a la lista
-                        response = readTask.Result;
-                        responses.Add(response);
+                        // Inicio de transmisión de permisos
+                        isReceivingPermissions = true;
+                        continue;
                     }
-                    else
+                    else if (action == 43)
                     {
-                        // Si el timeout ocurre, salir del bucle
-                        break;
+                        // Fin de transmisión de permisos
+                        isReceivingPermissions = false;
+                        break; // Salir del bucle
+                    }
+
+                    // Almacenar respuestas solo si estamos recibiendo permisos
+                    if (isReceivingPermissions)
+                    {
+                        responses.Add(response);
                     }
                 }
 
                 // Mostrar mensaje indicando que todas las respuestas fueron recibidas
-                MessageBox.Show("Respuesta del servidor: todo bien");
+                MessageBox.Show("Respuesta del servidor: permisos recibidos correctamente.");
 
                 // Concatenar todas las respuestas en un solo mensaje
                 string allResponses = string.Join(Environment.NewLine, responses);
@@ -927,6 +541,7 @@ namespace AgendaEscritorio.service
                 throw new Exception($"Error al solicitar los permisos del rol: {ex.Message}");
             }
         }
+
 
 
 
@@ -1445,12 +1060,12 @@ namespace AgendaEscritorio.service
         /// <param name="tags">Etiquetas asociadas al evento.</param>
         /// <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
         /// <param name="nombreGrupo">El nombre del grupo al que pertenece el evento (si es grupal).</param>
-        public async Task RequestCreateDayAsync(string sessionToken, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
+        public async Task RequestCreateDayAsync(string sessionToken,string username, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
         {
             try
             {
                 // Construir el paquete de solicitud
-                string requestPacket = ProtocolHelper.ConstructCreateDayPacket(sessionToken, fecha, contenido, tags, esGrupal, nombreGrupo);
+                string requestPacket = ProtocolHelper.ConstructCreateDayPacket(sessionToken, username, fecha, contenido, tags, esGrupal, nombreGrupo);
 
                 // Enviar la solicitud
                 await writer.WriteLineAsync(requestPacket);
@@ -1527,6 +1142,427 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        public async Task RequestCreateGroupAsync(string sessionToken, string username, string nombreGrupo)
+        {
+            try
+            {
+                // Construir el paquete de solicitud
+                string requestPacket = ProtocolHelper.ConstructCreateGroupPacket(sessionToken, username, nombreGrupo);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Leer la respuesta
+                string response = await reader.ReadLineAsync();
+                Console.WriteLine($"Server Response: {response}");
+
+                // Procesar la respuesta
+                ProcessCreateGroupResponse(response);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud de creación del grupo: {ex.Message}");
+            }
+        }
+
+        // Procesar la respuesta del servidor
+        private void ProcessCreateGroupResponse(string response)
+        {
+            if (response.StartsWith("226"))
+            {
+                // Grupo creado exitosamente
+                Console.WriteLine("Grupo creado correctamente.");
+            }
+            else if (response.StartsWith("9"))
+            {
+                // Procesar errores específicos según el protocolo
+                string errorCode = response.Substring(1, 4); // Asumiendo que el código de error está en esta posición
+                switch (errorCode)
+                {
+                    case "112":
+                        throw new Exception("El usuario no tiene permisos para crear un grupo.");
+                    case "1406":
+                        throw new Exception("El usuario ya tiene el número máximo de grupos permitidos.");
+                    case "1401":
+                        throw new Exception("El grupo con el nombre dado ya existe.");
+                    default:
+                        throw new Exception("Error desconocido al crear el grupo.");
+                }
+            }
+            else
+            {
+                throw new Exception("Respuesta desconocida del servidor.");
+            }
+        }
+
+
+
+        public async Task RequestDeleteGroupAsync(string sessionToken, string username, string nombreGrupo)
+        {
+            try
+            {
+                // Construir el paquete de solicitud
+                string requestPacket = ProtocolHelper.ConstructDeleteGroupPacket(sessionToken, username, nombreGrupo);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Leer la respuesta
+                string response = await reader.ReadLineAsync();
+                Console.WriteLine($"Server Response: {response}");
+
+                // Procesar la respuesta
+                ProcessDeleteGroupResponse(response);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud de eliminación del grupo: {ex.Message}");
+            }
+        }
+
+        // Procesar la respuesta del servidor
+        private void ProcessDeleteGroupResponse(string response)
+        {
+            if (response.StartsWith("218"))
+            {
+                // Confirmación de eliminación para el usuario que lo solicita
+                Console.WriteLine("Grupo eliminado correctamente.");
+            }
+            else if (response.StartsWith("9"))
+            {
+                // Procesar errores específicos según el protocolo
+                string errorCode = response.Substring(1, 4); // Asumiendo que el código de error está en esta posición
+                switch (errorCode)
+                {
+                    case "112":
+                        throw new Exception("El usuario no tiene permisos para eliminar este grupo.");
+                    case "1402":
+                        throw new Exception("El grupo no existe.");
+                    default:
+                        throw new Exception("Error desconocido al eliminar el grupo.");
+                }
+            }
+            else
+            {
+                throw new Exception("Respuesta desconocida del servidor.");
+            }
+        }
+
+
+        public async Task<List<string>> RequestViewOwnedGroupsAsync(string sessionToken, string username)
+        {
+            try
+            {
+                // Construir el paquete de solicitud
+                string requestPacket = ProtocolHelper.ConstructViewOwnedGroupsPacket(sessionToken, username);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Lista para almacenar los grupos propios
+                var grupos = new List<string>();
+                bool endOfGroups = false; // Bandera para identificar fin de envío
+
+                while (!endOfGroups)
+                {
+                    // Leer la respuesta del servidor
+                    string response = await reader.ReadLineAsync();
+
+                    if (response.StartsWith("244")) // Acción 44: Inicio de envío
+                    {
+                        continue;
+                    }
+                    else if (response.StartsWith("245")) // Acción 45: Fin de envío
+                    {
+                        endOfGroups = true;
+                        continue;
+                    }
+                    else if (response.StartsWith("210")) // Acción 10: Datos del grupo
+                    {
+                        string groupName = ProcessViewOwnedGroupsResponse(response);
+                        grupos.Add(groupName);
+                    }
+                    else if (response.StartsWith("9")) // Protocolo 9: errores
+                    {
+                        string errorCode = response.Substring(1, 4); // Extraer código de error
+                        switch (errorCode)
+                        {
+                            case "1410": // No hay grupos propios
+                                return grupos; // Retornar lista vacía
+                            default:
+                                throw new Exception($"Error desconocido: {errorCode}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Respuesta inesperada del servidor: {response}");
+                    }
+                }
+
+                return grupos;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud de grupos propios: {ex.Message}");
+            }
+        }
+
+
+
+
+        // Método para procesar las respuestas de "Ver Grupos Propios"
+        private string ProcessViewOwnedGroupsResponse(string response)
+        {
+            try
+            {
+
+                // Extraer datos según el formato del protocolo
+                char protocol = response[0];
+
+
+                int action = int.Parse(response.Substring(1, 2));
+
+
+                // Verificar protocolo y acción
+                if (protocol != '2' || action != 10)
+                {
+                    MessageBox.Show($"Protocolo o acción inesperada: {protocol}, {action}");
+                    throw new Exception($"Protocolo o acción inesperada: {protocol}, {action}");
+                }
+
+                // Extraer el offset del token (2 caracteres)
+                int index = 3; // Comenzar después del protocolo y la acción
+                int tokenOffset = int.Parse(response.Substring(index, 2));
+
+
+                index += 2;
+                string token = response.Substring(index, tokenOffset);
+
+                index += tokenOffset;
+
+                // Verificar el token de sesión
+                if (token != SessionToken)
+                {
+                    MessageBox.Show("Token incorrecto en la respuesta.");
+                    throw new Exception("Token incorrecto en la respuesta.");
+                }
+
+                // Leer el offset del nombre del grupo (1 carácter)
+                int groupNameOffset = int.Parse(response.Substring(index, 1)); // Solo un carácter para el offset
+
+                index += 1; // Incrementar el índice por el tamaño del offset
+
+                // Extraer el nombre del grupo
+                string groupName = response.Substring(index, groupNameOffset);
+
+
+                return groupName;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al procesar la respuesta del grupo: {ex.Message}");
+                throw new Exception($"Error al procesar la respuesta del grupo: {ex.Message}");
+            }
+        }
+
+
+        public async Task<List<string>> RequestViewMembershipGroupsAsync(string sessionToken, string username)
+        {
+            try
+            {
+                // Construir el paquete de solicitud
+                string requestPacket = ProtocolHelper.ConstructViewMembershipGroupsPacket(sessionToken, username);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Lista para almacenar los grupos de membresía
+                var grupos = new List<string>();
+                bool endOfGroups = false; // Bandera para identificar fin de envío
+
+                while (!endOfGroups)
+                {
+                    // Leer la respuesta del servidor
+                    string response = await reader.ReadLineAsync();
+
+                    if (response.StartsWith("244")) // Acción 44: Inicio de envío
+                    {
+                        continue;
+                    }
+                    else if (response.StartsWith("245")) // Acción 45: Fin de envío
+                    {
+                        endOfGroups = true;
+                        continue;
+                    }
+                    else if (response.StartsWith("210")) // Acción 10: Datos del grupo
+                    {
+                        string groupName = ProcessViewGroupResponse(response);
+                        grupos.Add(groupName);
+                    }
+                    else if (response.StartsWith("9")) // Protocolo 9: errores
+                    {
+                        string errorCode = response.Substring(1, 4); // Extraer código de error
+                        switch (errorCode)
+                        {
+                            case "1410": // No hay grupos de membresía
+                                return grupos; // Retornar lista vacía
+                            default:
+                                throw new Exception($"Error desconocido: {errorCode}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Respuesta inesperada del servidor: {response}");
+                    }
+                }
+
+                return grupos;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud de grupos de membresía: {ex.Message}");
+            }
+        }
+
+
+
+
+        // Método para solicitar todos los grupos
+        public async Task<List<string>> RequestViewAllGroupsAsync(string sessionToken, string username)
+        {
+            try
+            {
+                // Construir el paquete de solicitud
+                string requestPacket = ProtocolHelper.ConstructViewAllGroupsPacket(sessionToken, username);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Lista para almacenar los grupos
+                var grupos = new List<string>();
+                bool endOfGroups = false; // Bandera para identificar fin de envío
+
+                while (!endOfGroups)
+                {
+                    // Leer la respuesta del servidor
+                    string response = await reader.ReadLineAsync();
+
+                    if (response.StartsWith("244")) // Acción 44: Inicio de envío
+                    {
+                        continue;
+                    }
+                    else if (response.StartsWith("245")) // Acción 45: Fin de envío
+                    {
+                        endOfGroups = true;
+                        continue;
+                    }
+                    else if (response.StartsWith("210")) // Acción 10: Datos del grupo
+                    {
+                        string groupName = ProcessViewGroupResponse(response);
+                        grupos.Add(groupName);
+                    }
+                    else if (response.StartsWith("9")) // Protocolo 9: errores
+                    {
+                        string errorCode = response.Substring(1, 4); // Extraer código de error
+                        switch (errorCode)
+                        {
+                            case "1410": // No hay grupos
+                                return grupos; // Retornar lista vacía
+                            default:
+                                throw new Exception($"Error desconocido: {errorCode}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Respuesta inesperada del servidor: {response}");
+                    }
+                }
+
+                return grupos;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud de todos los grupos: {ex.Message}");
+            }
+        }
+
+
+
+
+
+        // Método para procesar las respuestas de "Ver Grupos"
+        private string ProcessViewGroupResponse(string response)
+        {
+            try
+            {
+                // Extraer datos según el formato del protocolo
+                int index = 3; // Comenzar después del protocolo y la acción
+                int tokenOffset = int.Parse(response.Substring(index, 2));
+
+                index += 2;
+                string token = response.Substring(index, tokenOffset);
+
+                index += tokenOffset;
+
+                // Verificar el token de sesión
+                if (token != SessionToken)
+                {
+                    throw new Exception("Token incorrecto en la respuesta.");
+                }
+
+                // Leer el offset del nombre del grupo
+                int groupNameOffset = int.Parse(response.Substring(index, 1));
+
+                index += 1;
+
+                // Extraer el nombre del grupo
+                string groupName = response.Substring(index, groupNameOffset);
+
+                return groupName;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al procesar la respuesta del grupo: {ex.Message}");
+            }
+        }
+
+
+
+        public async Task RequestShowMonthAsync(string sessionToken, string username)
+        {
+            try
+            {
+                // Construir el paquete de solicitud (Acción 01: Mostrar mes)
+                string requestPacket = ProtocolHelper.ConstructShowMonthPacket(sessionToken, username);
+
+                // Enviar la solicitud
+                await writer.WriteLineAsync(requestPacket);
+                await writer.FlushAsync();
+
+                // Leer la respuesta (esperamos recibir 401, 402 o 403)
+                string response = await reader.ReadLineAsync();
+                Console.WriteLine($"Server Response: {response}");
+
+                // Procesar la respuesta
+                await ProcessShowMonthResponse(response);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error en la solicitud para mostrar el mes: {ex.Message}");
+            }
+        }
+
+
+        private async Task ProcessShowMonthResponse(string response)
+        {
+
+        }
 
 
 

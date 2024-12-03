@@ -249,7 +249,7 @@
             </summary>
             <param name="response">La respuesta recibida del servidor que contiene el estado de la solicitud de creación de usuario.</param>
         </member>
-        <member name="M:AgendaEscritorio.service.Client.RequestCreateDayAsync(System.String,System.String,System.String,System.String,System.Boolean,System.String)">
+        <member name="M:AgendaEscritorio.service.Client.RequestCreateDayAsync(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.String)">
             <summary>
             Envía una solicitud asíncrona para crear un nuevo evento (día) en el servidor.
             </summary>
@@ -399,7 +399,7 @@
             <param name="activarModoGestion">Indica si el Modo Gestión debe ser activado (true) o desactivado (false).</param>
             <returns>Cadena que representa el paquete de datos para activar o desactivar el Modo Gestión.</returns>
         </member>
-        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateDayPacket(System.String,System.String,System.String,System.String,System.Boolean,System.String)">
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateDayPacket(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.String)">
             <summary>
             Construye un paquete para crear un nuevo evento en el sistema, incluyendo la fecha, contenido, tags y detalles sobre si es grupal.
             </summary>
@@ -490,6 +490,12 @@
             </summary>
             <param name="sender">El objeto que disparó el evento (el botón de "Atrás").</param>
             <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.MostrarUnicoPanel(System.Windows.UIElement)">
+            <summary>
+            Gestiona la visibilidad de los paneles en función de la acción seleccionada.
+            </summary>
+            <param name="mostrarPanel">El panel que debe mostrarse. Los demás se ocultarán.</param>
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.CrearEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>

@@ -1,4 +1,5 @@
 ﻿using AgendaEscritorio.service;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -42,22 +43,11 @@ namespace AgendaEscritorio.view
             });
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de gestión de perfiles.
         /// Abre la ventana de gestión de usuarios.
         /// </summary>
         private void BtnGestionPerfiles_Click(object sender, RoutedEventArgs e)
-=======
-        private void BtnGestionPerfiles_Click(object sender, RoutedEventArgs e)
-        {
-            UserManagementView userManagementView = new UserManagementView(client);
-            userManagementView.Show();
-        }
-
-        // Evento para abrir la ventana del calendario
-        private void BtnAgenda_Click(object sender, RoutedEventArgs e)
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         {
             UserManagementView userManagementView = new UserManagementView(client);
             userManagementView.Show(); // Muestra la ventana de gestión de perfiles
@@ -67,11 +57,23 @@ namespace AgendaEscritorio.view
         /// Evento que se llama al hacer clic en el botón de agenda.
         /// Abre la ventana del calendario.
         /// </summary>
-        private void BtnAgenda_Click(object sender, RoutedEventArgs e)
+        private async void BtnAgenda_Click(object sender, RoutedEventArgs e)
         {
-            CalendarView calendarView = new CalendarView(client); // Pasa la instancia de Client
-            calendarView.Show(); // Muestra la ventana del calendario
-            this.Close(); // Cierra la ventana actual
+            try
+            {
+                // Llamar al método RequestShowMonthAsync de manera asíncrona
+                await client.RequestShowMonthAsync(client.SessionToken, client.Username);
+
+                // Abrir la ventana del calendario después de la llamada asíncrona
+                CalendarView calendarView = new CalendarView(client); // Pasa la instancia de Client
+                calendarView.Show(); // Muestra la ventana del calendario
+                this.Close(); // Cierra la ventana actual
+            }
+            catch (Exception ex)
+            {
+                // Maneja cualquier excepción que pueda ocurrir
+                MessageBox.Show($"Error al mostrar el mes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>

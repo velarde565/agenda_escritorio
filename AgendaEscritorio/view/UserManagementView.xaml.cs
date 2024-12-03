@@ -1,37 +1,27 @@
 ﻿using AgendaEscritorio.service;
 using System;
-<<<<<<< HEAD
 using System.Collections.Generic;
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 using System.Windows;
 using System.Windows.Controls;
 
 namespace AgendaEscritorio.view
 {
-<<<<<<< HEAD
     /// <summary>
     /// Ventana de gestión de usuarios. Permite realizar distintas acciones sobre los usuarios,
     /// como editar su nombre completo, fecha de nacimiento, otros datos, contraseña, y rol.
     /// </summary>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
     public partial class UserManagementView : Window
     {
         private Client client;
 
-<<<<<<< HEAD
         /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="UserManagementView"/>.
         /// </summary>
         /// <param name="client">Instancia del cliente que se usará para las comunicaciones con el servidor.</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         public UserManagementView(Client client)
         {
             InitializeComponent();
             this.client = client;
-<<<<<<< HEAD
             ConfigureEditMenu(); // Configura el menú de edición según el rol del usuario
         }
 
@@ -39,24 +29,15 @@ namespace AgendaEscritorio.view
         /// Configura el menú de edición basado en los privilegios del usuario.
         /// Si el usuario es administrador, habilita la opción de cambiar la fecha de nacimiento.
         /// </summary>
-=======
-            ConfigureEditMenu();
-        }
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void ConfigureEditMenu()
         {
             Dispatcher.Invoke(() =>
             {
-<<<<<<< HEAD
                 // Si el cliente es administrador, se muestra el botón de cambiar fecha de nacimiento
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 btnCambiarFechaNacimiento.Visibility = client.IsAdmin == '1' ? Visibility.Visible : Visibility.Collapsed;
             });
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de editar usuario.
         /// Oculta el menú principal y muestra el menú de edición de usuario.
@@ -134,46 +115,6 @@ namespace AgendaEscritorio.view
         /// <summary>
         /// Oculta y limpia todos los campos de entrada en el formulario de gestión de usuario.
         /// </summary>
-=======
-        private void BtnEditarUsuario_Click(object sender, RoutedEventArgs e)
-        {
-            mainMenu.Visibility = Visibility.Collapsed; // Ocultar el menú principal
-            editMenu.Visibility = Visibility.Visible; // Mostrar el menú de edición
-            HideAndClearInputFields(); // Ocultar y limpiar todos los campos de entrada
-        }
-
-        private void CambiarNombreCompleto(object sender, RoutedEventArgs e)
-        {
-            HideAndClearInputFields(); // Ocultar y limpiar otros campos de entrada
-            inputFields.Visibility = Visibility.Visible; // Mostrar los campos de entrada para el cambio de nombre
-        }
-
-        private void CambiarFechaNacimiento(object sender, RoutedEventArgs e)
-        {
-            HideAndClearInputFields(); // Ocultar y limpiar otros campos de entrada
-            inputFieldsFechaNacimiento.Visibility = Visibility.Visible; // Mostrar los campos de entrada para la fecha de nacimiento
-        }
-
-        private void CambiarOtrosDatos(object sender, RoutedEventArgs e)
-        {
-            HideAndClearInputFields(); // Ocultar y limpiar otros campos de entrada
-            inputFieldsOtrosDatos.Visibility = Visibility.Visible; // Mostrar los campos de entrada para otros datos
-        }
-
-        private void CambiarContrasena(object sender, RoutedEventArgs e)
-        {
-            HideAndClearInputFields(); // Ocultar y limpiar otros campos de entrada
-            inputFieldsCambioContrasena.Visibility = Visibility.Visible; // Mostrar los campos de entrada para cambiar contraseña
-        }
-
-        private void MostrarDatosUsuario(object sender, RoutedEventArgs e)
-        {
-            HideAndClearInputFields();
-            inputFieldsMostrarDatos.Visibility = Visibility.Visible;
-        }
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void HideAndClearInputFields()
         {
             // Ocultar todos los campos de entrada
@@ -182,11 +123,8 @@ namespace AgendaEscritorio.view
             inputFieldsOtrosDatos.Visibility = Visibility.Collapsed;
             inputFieldsCambioContrasena.Visibility = Visibility.Collapsed;
             inputFieldsMostrarDatos.Visibility = Visibility.Collapsed;
-<<<<<<< HEAD
             inputFieldsCrearRol.Visibility = Visibility.Collapsed;
             inputFieldsMostrarPermisos.Visibility = Visibility.Collapsed; // Ocultar el panel de mostrar permisos
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
 
             // Limpiar los campos de entrada
             txtUsuarioCambio.Clear();
@@ -199,7 +137,6 @@ namespace AgendaEscritorio.view
             txtContrasenaActual.Clear();
             txtNuevaContrasena.Clear();
             txtUsuarioAMostrar.Clear();
-<<<<<<< HEAD
             txtNuevoRol.Clear();
             chkAdmin.IsChecked = false; // Limpiar los checkboxes
             chkCrearAgenda.IsChecked = false;
@@ -214,60 +151,41 @@ namespace AgendaEscritorio.view
         /// Evento que se llama al hacer clic en el botón de confirmar cambios de nombre de usuario.
         /// Verifica que los campos estén completos y luego muestra un mensaje con la confirmación.
         /// </summary>
-=======
-        }
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void ConfirmarCambios_Click(object sender, RoutedEventArgs e)
         {
             string usuarioCambio = txtUsuarioCambio.Text.Trim();
             string nuevoNombre = txtNuevoNombre.Text.Trim();
 
-<<<<<<< HEAD
             // Validar que los campos no estén vacíos
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioCambio) || string.IsNullOrEmpty(nuevoNombre))
             {
                 MessageBox.Show("Por favor, completa todos los campos.");
                 return;
             }
 
-<<<<<<< HEAD
             // Mostrar el mensaje de confirmación
-=======
-            // Aquí simplemente recoges los datos
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             MessageBox.Show($"Nombre de usuario '{usuarioCambio}' cambiado a '{nuevoNombre}'.");
 
             // Limpiar los campos después de la acción
             HideAndClearInputFields(); // Ocultar y limpiar todos los campos de entrada nuevamente
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de confirmar el cambio de nombre completo.
         /// Valida que los campos estén completos y luego llama al cliente para realizar la solicitud de cambio de nombre.
         /// </summary>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private async void ConfirmarCambioNombreCompleto_Click(object sender, RoutedEventArgs e)
         {
             string usuarioACambiar = txtUsuarioCambio.Text.Trim();
             string nuevoNombreCompleto = txtNuevoNombre.Text.Trim();
 
-<<<<<<< HEAD
             // Validar que los campos no estén vacíos
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioACambiar) || string.IsNullOrEmpty(nuevoNombreCompleto))
             {
                 MessageBox.Show("Por favor, completa todos los campos.");
                 return;
             }
 
-<<<<<<< HEAD
             // Llamar al cliente para realizar la solicitud de cambio de nombre completo
             await client.RequestChangeFullNameAsync(client.SessionToken, usuarioACambiar, nuevoNombreCompleto);
 
@@ -279,25 +197,12 @@ namespace AgendaEscritorio.view
         /// Evento que se llama al hacer clic en el botón de confirmar el cambio de fecha de nacimiento.
         /// Valida el formato y la validez de la fecha antes de realizar la solicitud de cambio.
         /// </summary>
-=======
-            await client.RequestChangeFullNameAsync(client.SessionToken, usuarioACambiar, nuevoNombreCompleto);
-
-            // Limpiar los campos de entrada después de la acción
-            HideAndClearInputFields();
-        }
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private async void ConfirmarCambioFechaNacimiento_Click(object sender, RoutedEventArgs e)
         {
             string usuarioCambio = txtUsuarioCambioFecha.Text.Trim();
             string nuevaFechaNacimiento = txtNuevaFechaNacimiento.Text.Trim();
 
-<<<<<<< HEAD
             // Validar que los campos no estén vacíos
-=======
-            // Validar el formato de la fecha
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioCambio) || string.IsNullOrEmpty(nuevaFechaNacimiento))
             {
                 MessageBox.Show("Por favor, completa todos los campos.");
@@ -311,11 +216,7 @@ namespace AgendaEscritorio.view
                 return;
             }
 
-<<<<<<< HEAD
             // Llamar al cliente para solicitar el cambio de fecha de nacimiento
-=======
-            // Llamar al cliente para solicitar el cambio
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             await client.RequestChangeBirthDateAsync(client.SessionToken, usuarioCambio, nuevaFechaNacimiento, client.Username);
 
             // Limpiar los campos después de la acción
@@ -323,22 +224,16 @@ namespace AgendaEscritorio.view
         }
 
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para confirmar el cambio de otros datos de un usuario.
         /// Valida que los campos estén completos, realiza la solicitud de cambio de datos al servidor y muestra una confirmación.
         /// </summary>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private async void ConfirmarCambioOtrosDatos_Click(object sender, RoutedEventArgs e)
         {
             string usuarioCambio = txtUsuarioCambioOtros.Text.Trim();
             string otrosDatos = txtOtrosDatos.Text.Trim();
 
-<<<<<<< HEAD
             // Validar que los campos no estén vacíos
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioCambio) || string.IsNullOrEmpty(otrosDatos))
             {
                 MessageBox.Show("Por favor, completa todos los campos.");
@@ -357,30 +252,20 @@ namespace AgendaEscritorio.view
             }
             catch (Exception ex)
             {
-<<<<<<< HEAD
                 // Mostrar mensaje de error si ocurre algún problema
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
                 MessageBox.Show($"Error al cambiar los otros datos: {ex.Message}");
             }
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para mostrar los datos de un usuario.
         /// Verifica que el campo de nombre de usuario no esté vacío y luego solicita los datos del usuario al servidor.
         /// </summary>
-=======
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private async void MostrarDatosUsuario_Click(object sender, RoutedEventArgs e)
         {
             string usuarioAMostrar = txtUsuarioAMostrar.Text.Trim(); // Obtener el nombre de usuario del TextBox
 
-<<<<<<< HEAD
             // Validar que el campo no esté vacío
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioAMostrar))
             {
                 MessageBox.Show("Por favor, introduce un nombre de usuario.");
@@ -393,7 +278,6 @@ namespace AgendaEscritorio.view
             // Llama al método RequestUserDataAsync con el token de sesión y el nombre de usuario a mostrar
             await client.RequestUserDataAsync(client.SessionToken, client.Username, usernameToChange); // Usa el token, el usuario a mostrar y el usuario conectado
 
-<<<<<<< HEAD
             // Limpiar los campos de entrada después de la acción
             HideAndClearInputFields();
 
@@ -405,44 +289,23 @@ namespace AgendaEscritorio.view
         /// Evento que se llama al hacer clic en el botón para confirmar el cambio de contraseña.
         /// Valida que los campos estén completos y realiza la solicitud de cambio de contraseña al servidor.
         /// </summary>
-=======
-            HideAndClearInputFields();
-
-            // Limpiar el campo de entrada después de la acción (opcional)
-            txtUsuarioAMostrar.Clear();
-        }
-
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private async void ConfirmarCambioContrasena_Click(object sender, RoutedEventArgs e)
         {
             string usuarioCambio = txtUsuarioCambioContrasena.Text.Trim();
             string contrasenaActual = txtContrasenaActual.Password.Trim(); // Usar .Password para obtener el texto
             string nuevaContrasena = txtNuevaContrasena.Password.Trim(); // Usar .Password para obtener el texto
 
-<<<<<<< HEAD
             // Validar que los campos no estén vacíos
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioCambio) || string.IsNullOrEmpty(contrasenaActual) || string.IsNullOrEmpty(nuevaContrasena))
             {
                 MessageBox.Show("Por favor, completa todos los campos.");
                 return;
             }
 
-<<<<<<< HEAD
             // Llamada asíncrona para solicitar el cambio de contraseña al servidor
             await client.RequestChangePasswordAsync(client.SessionToken, usuarioCambio, contrasenaActual, nuevaContrasena, client.Username);
 
             // Limpiar los campos de entrada después de la acción
-=======
-            await client.RequestChangePasswordAsync(client.SessionToken, usuarioCambio, contrasenaActual, nuevaContrasena, client.Username);
-            // Aquí simplemente recoges los datos
-
-
-            // Limpiar los campos después de la acción
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             HideAndClearInputFields(); // Ocultar y limpiar todos los campos de entrada nuevamente
         }
 
@@ -452,13 +315,10 @@ namespace AgendaEscritorio.view
 
 
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para crear un nuevo usuario.
         /// Este evento oculta los paneles no relacionados y muestra el panel de creación de usuario.
         /// </summary>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void BtnCrearUsuario_Click(object sender, RoutedEventArgs e)
         {
             // Ocultar otros paneles
@@ -475,7 +335,6 @@ namespace AgendaEscritorio.view
             inputFieldsCrearUsuario.Visibility = Visibility.Visible;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para confirmar la creación de un nuevo usuario.
         /// Valida los campos de entrada, solicita la creación del usuario al servidor, y limpia los campos después.
@@ -483,11 +342,6 @@ namespace AgendaEscritorio.view
         private async void ConfirmarCreacionUsuario_Click(object sender, RoutedEventArgs e)
         {
             // Obtener los datos del nuevo usuario desde los controles del formulario
-=======
-        private async void ConfirmarCreacionUsuario_Click(object sender, RoutedEventArgs e)
-        {
-            // Actualiza los nombres de las variables para que coincidan con los controles en el XAML
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             string nuevoNombreUsuario = txtCrearUsuarioNombreUsuario.Text.Trim();
             string nuevaContrasena = txtCrearUsuarioContrasena.Password.Trim();
             string nuevoNombreCompleto = txtCrearUsuarioNombreCompleto.Text.Trim();
@@ -495,10 +349,7 @@ namespace AgendaEscritorio.view
             string otrosDatos = txtCrearUsuarioOtrosDatos.Text.Trim();
             string rolPermisos = txtCrearUsuarioRolPermisos.Text.Trim();
 
-<<<<<<< HEAD
             // Validación de campos obligatorios
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(nuevoNombreUsuario) || string.IsNullOrEmpty(nuevaContrasena) ||
                 string.IsNullOrEmpty(nuevoNombreCompleto) || string.IsNullOrEmpty(nuevaFechaNacimiento) ||
                 string.IsNullOrEmpty(rolPermisos))
@@ -521,15 +372,10 @@ namespace AgendaEscritorio.view
             mainMenu.Visibility = Visibility.Visible;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para eliminar un usuario.
         /// Este evento oculta los paneles no relacionados y muestra el panel de eliminación de usuario.
         /// </summary>
-=======
-
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void BtnEliminarUsuario_Click(object sender, RoutedEventArgs e)
         {
             // Ocultar otros paneles
@@ -545,7 +391,6 @@ namespace AgendaEscritorio.view
             inputFieldsEliminarUsuario.Visibility = Visibility.Visible;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para confirmar la eliminación de un usuario.
         /// Valida el nombre de usuario a eliminar, solicita la eliminación al servidor, y limpia los campos después.
@@ -556,24 +401,13 @@ namespace AgendaEscritorio.view
             string usuarioAEliminar = txtUsuarioAEliminar.Text.Trim();
 
             // Validación de campo obligatorio
-=======
-        // Confirmación de eliminación
-        private async void ConfirmarEliminacionUsuario_Click(object sender, RoutedEventArgs e)
-        {
-            string usuarioAEliminar = txtUsuarioAEliminar.Text.Trim();
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             if (string.IsNullOrEmpty(usuarioAEliminar))
             {
                 MessageBox.Show("Por favor, ingrese el nombre de usuario a eliminar.");
                 return;
             }
 
-<<<<<<< HEAD
             // Llamar al cliente para solicitar la eliminación del usuario
-=======
-            // Llamar al cliente para solicitar la eliminación
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
             await client.RequestDeleteUserAsync(client.SessionToken, usuarioAEliminar, client.Username);
 
             // Limpiar y ocultar el campo de entrada después de la eliminación
@@ -583,7 +417,6 @@ namespace AgendaEscritorio.view
         }
 
 
-<<<<<<< HEAD
         /// <summary>
         /// Maneja el clic en el botón "Crear Rol". 
         /// Oculta el menú principal y muestra el panel de creación de rol.
@@ -751,13 +584,13 @@ namespace AgendaEscritorio.view
             // Obtener los permisos de los CheckBoxes
             bool[] permisos = new bool[]
             {
-        chkAdmin.IsChecked ?? false,
-        chkCrearAgendaMostrar.IsChecked ?? false,
-        chkCrearGruposMostrar.IsChecked ?? false,
-        chkCrearAgendaGrupalMostrar.IsChecked ?? false,
-        chkEliminarAgendaPropiaMostrar.IsChecked ?? false,
-        chkEliminarGruposMostrar.IsChecked ?? false,
-        chkEliminarAgendaGrupalMostrar.IsChecked ?? false
+                chkAdmin.IsChecked ?? false,
+                chkCrearAgendaMostrar.IsChecked ?? false,
+                chkCrearGruposMostrar.IsChecked ?? false,
+                chkCrearAgendaGrupalMostrar.IsChecked ?? false,
+                chkEliminarAgendaPropiaMostrar.IsChecked ?? false,
+                chkEliminarGruposMostrar.IsChecked ?? false,
+                chkEliminarAgendaGrupalMostrar.IsChecked ?? false
             };
 
             // Llamar al método de envío de permisos
@@ -827,35 +660,26 @@ namespace AgendaEscritorio.view
         /// </summary>
         /// <param name="sender">El objeto que desencadena el evento, en este caso el botón "Volver".</param>
         /// <param name="e">Los argumentos del evento.</param>
-=======
-
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
             this.Close(); // Cerrar la ventana o volver a la vista anterior
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Maneja la acción del botón para minimizar la ventana actual.
         /// </summary>
         /// <param name="sender">El objeto que desencadena el evento, en este caso el botón de minimizar.</param>
         /// <param name="e">Los argumentos del evento.</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Alterna entre maximizar y restaurar la ventana actual según su estado.
         /// </summary>
         /// <param name="sender">El objeto que desencadena el evento, en este caso el botón de maximizar/restaurar.</param>
         /// <param name="e">Los argumentos del evento.</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
         {
             if (this.WindowState == WindowState.Normal)
@@ -864,21 +688,15 @@ namespace AgendaEscritorio.view
                 this.WindowState = WindowState.Normal;
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Maneja la acción del botón para cerrar la ventana actual.
         /// </summary>
         /// <param name="sender">El objeto que desencadena el evento, en este caso el botón de cerrar.</param>
         /// <param name="e">Los argumentos del evento.</param>
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
-<<<<<<< HEAD
 
-=======
->>>>>>> 89df6b4b1f1043e90658fa9d098020598874adf7
     }
 }
