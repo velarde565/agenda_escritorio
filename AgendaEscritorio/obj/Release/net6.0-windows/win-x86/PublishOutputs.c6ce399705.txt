@@ -4,4 +4,5 @@ C:\cosas\proyecto\prueba1\PenImc_cor3.dll
 C:\cosas\proyecto\prueba1\PresentationNative_cor3.dll
 C:\cosas\proyecto\prueba1\vcruntime140_cor3.dll
 C:\cosas\proyecto\prueba1\wpfgfx_cor3.dll
+C:\cosas\proyecto\prueba1\AgendaEscritorio.xml
 C:\cosas\proyecto\prueba1\AgendaEscritorio.exe

@@ -65,6 +65,13 @@
             </summary>
             <returns>Una tarea que representa la operación asincrónica.</returns>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.SendCustomPacketAsync(System.String)">
+            <summary>
+            Asynchronously sends a custom packet to the server.
+            </summary>
+            <param name="customPacket">The custom packet to send.</param>
+            <returns>Returns true if the packet was sent successfully, false otherwise.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.SendLoginAsync(System.String,System.String)">
             <summary>
             Asynchronously sends a login request to the server with the provided username and password.
@@ -83,6 +90,7 @@
         <member name="M:AgendaEscritorio.service.Client.RequestUserDataAsync(System.String,System.String,System.String)">
             <summary>
             Asynchronously requests the user data from the server using the session token and username.
+            The request and response are encrypted using AES.
             </summary>
             <param name="sessionToken">The session token to authenticate the request.</param>
             <param name="username">The username for which to request data.</param>
@@ -96,7 +104,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendLogoutAsync">
             <summary>
-            Sends a logout request to the server.
+            Sends a logout request to the server with AES encryption.
             </summary>
         </member>
         <member name="M:AgendaEscritorio.service.Client.ProcessLogoutResponse(System.String)">
@@ -107,7 +115,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestChangeFullNameAsync(System.String,System.String,System.String)">
             <summary>
-            Asynchronously sends a request to change the user's full name on the server.
+            Asynchronously sends a request to change the user's full name on the server. The request and response are encrypted using AES.
             </summary>
             <param name="sessionToken">The session token for authentication.</param>
             <param name="usernameToChange">The username whose full name is to be changed.</param>
@@ -122,7 +130,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestAddPermissionAsync(System.String,System.String,System.String,System.String)">
             <summary>
-            Solicita la adición de un permiso a un usuario específico.
+            Solicita la adición de un permiso a un usuario específico. Los datos de la solicitud y respuesta están cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión para validar la solicitud.</param>
             <param name="username">El nombre de usuario al que se le va a agregar el permiso.</param>
@@ -134,11 +142,11 @@
             <summary>
             Procesa la respuesta del servidor tras la solicitud de adición de permiso.
             </summary>
-            <param name="response">La respuesta recibida del servidor.</param>
+            <param name="response">La respuesta desencriptada recibida del servidor.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestGetPermissionsAsync(System.String,System.String)">
             <summary>
-            Solicita al servidor los permisos de un usuario específico.
+            Solicita al servidor los permisos de un usuario específico. Los datos se envían y reciben cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión del usuario conectado.</param>
             <param name="username">El nombre de usuario al que se le desean obtener los permisos.</param>
@@ -153,7 +161,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendEditPermissionsAsync(System.String,System.String,System.String,System.Boolean[])">
             <summary>
-            Envia una solicitud al servidor para editar los permisos de un usuario.
+            Envía una solicitud al servidor para editar los permisos de un usuario. Los datos se envían y reciben cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión del usuario conectado.</param>
             <param name="username">El nombre de usuario cuyo rol y permisos se van a editar.</param>
@@ -163,7 +171,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendModoGestionAsync(System.String,System.String,System.Boolean)">
             <summary>
-            Envia una solicitud al servidor para activar o desactivar el modo gestión.
+            Envía una solicitud al servidor para activar o desactivar el modo gestión. Los datos se envían y reciben cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión del usuario conectado.</param>
             <param name="username">El nombre del usuario que activa o desactiva el modo gestión.</param>
@@ -173,6 +181,7 @@
         <member name="M:AgendaEscritorio.service.Client.RequestChangeOtherDataAsync(System.String,System.String,System.String)">
             <summary>
             Envía una solicitud asincrónica al servidor para cambiar otros datos de un usuario específico.
+            Los datos se envían y reciben cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión que identifica al usuario conectado.</param>
             <param name="usernameToChange">El nombre de usuario cuyo "otros datos" serán modificados.</param>
@@ -187,6 +196,7 @@
         <member name="M:AgendaEscritorio.service.Client.RequestChangeBirthDateAsync(System.String,System.String,System.String,System.String)">
             <summary>
             Solicita el cambio de la fecha de nacimiento de un usuario al servidor.
+            Los datos se envían y reciben cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión actual para validar la solicitud.</param>
             <param name="usernameToChange">El nombre de usuario al que se le cambiará la fecha de nacimiento.</param>
@@ -202,7 +212,7 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestChangePasswordAsync(System.String,System.String,System.String,System.String,System.String)">
             <summary>
-            Solicita el cambio de contraseña de un usuario específico.
+            Solicita el cambio de contraseña de un usuario específico con cifrado AES.
             </summary>
             <param name="sessionToken">El token de sesión que autentica la solicitud.</param>
             <param name="usernameToEdit">El nombre de usuario cuya contraseña se desea cambiar.</param>
@@ -230,7 +240,7 @@
             </summary>
             <param name="response">La respuesta recibida del servidor, que contiene el código de estado y posible mensaje de error o éxito.</param>
         </member>
-        <member name="M:AgendaEscritorio.service.Client.RequestCreateUserAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:AgendaEscritorio.service.Client.RequestCreateUserAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             Solicita la creación de un nuevo usuario al servidor.
             </summary>
@@ -346,7 +356,7 @@
             <param name="connectedUsername">Nombre de usuario conectado.</param>
             <returns>El paquete para eliminar el usuario en formato string.</returns>
         </member>
-        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateUserPacket(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateUserPacket(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             Construye un paquete para crear un nuevo usuario con los datos proporcionados.
             </summary>
@@ -358,6 +368,7 @@
             <param name="birthDate">La fecha de nacimiento del nuevo usuario.</param>
             <param name="otrosDatos">Otros datos adicionales del nuevo usuario.</param>
             <param name="rolPermisos">El rol y permisos del nuevo usuario.</param>
+            <param name="apodo">El apodo del nuevo usuario.</param>
             <returns>El paquete en formato string listo para ser enviado.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAddPermissionPacket(System.String,System.String,System.String,System.String)">

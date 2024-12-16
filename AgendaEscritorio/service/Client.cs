@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -16,6 +18,9 @@ namespace AgendaEscritorio.service
         private TcpClient client;  // Objeto TcpClient para gestionar la conexión al servidor
         private StreamWriter writer;  // Escribiente para enviar datos al servidor
         private StreamReader reader;  // Lector para recibir datos del servidor
+        private CryptographyService cryptoService;
+
+
 
         // Dirección y puerto del servidor
         private const string ServerAddress = "localhost";  // Dirección del servidor
@@ -29,6 +34,9 @@ namespace AgendaEscritorio.service
         private string fullName;  // Nombre completo del usuario
         private string birthDate;  // Fecha de nacimiento del usuario
         private string otherData;  // Otros datos adicionales del usuario
+
+        
+
 
         /// <summary>
         /// Propiedad que indica si el usuario tiene permisos de administrador.
@@ -55,6 +63,109 @@ namespace AgendaEscritorio.service
         /// </summary>
         /// <returns>El token de sesión.</returns>
         public string GetSessionToken() => sessionToken;
+
+
+        public Client()
+        {
+            cryptoService = new CryptographyService(); // Inicializa el servicio de criptografía
+        }
+
+
+
+        public async Task SendClientPublicKeyAsync()
+        {
+            try
+            {
+                if (writer == null)
+                {
+                    MessageBox.Show("No estás conectado al servidor.");
+                    return;
+                }
+
+                // Paso 1: Obtener y enviar la clave pública del cliente al servidor.
+                string publicKey = cryptoService.GetPublicKey();
+                string packet = "301" + publicKey.Length.ToString("D4") + publicKey;
+
+                await writer.WriteLineAsync(packet); // Enviar la clave pública al servidor
+                await writer.FlushAsync();
+
+                // Paso 2: Leer la respuesta del servidor tras enviar la clave pública.
+                string response = await reader.ReadLineAsync();
+
+                if (response.StartsWith("302"))
+                {
+                    // Éxito: El servidor ha confirmado recibir la clave pública.
+                    MessageBox.Show("Clave pública enviada correctamente. El servidor ha respondido con 302.");
+
+                    // Enviar nuestro propio 302 de vuelta al servidor.
+                    await writer.WriteLineAsync("302");
+                    await writer.FlushAsync();
+
+                    // Paso 3: Leer la respuesta del servidor después de nuestro 302.
+                    string nextResponse = await reader.ReadLineAsync();
+
+                    if (nextResponse.StartsWith("304"))
+                    {
+                        // Procesar la clave AES encriptada.
+                        await ProcessEncryptedAESKeyAsync(nextResponse);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Respuesta inesperada del servidor: {nextResponse}");
+                    }
+                }
+                else if (response.StartsWith("303"))
+                {
+                    // Error: El servidor no pudo procesar la clave pública.
+                    MessageBox.Show("Error al enviar la clave pública. El servidor ha respondido con 303.");
+                }
+                else
+                {
+                    // Respuesta inesperada del servidor.
+                    MessageBox.Show($"Respuesta inesperada del servidor: {response}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al enviar la clave pública: {ex.Message}");
+            }
+        }
+
+
+
+        private async Task ProcessEncryptedAESKeyAsync(string response)
+        {
+            try
+            {
+                // Extraer los 4 bytes del offset (longitud de la clave AES encriptada).
+                int keyLength = int.Parse(response.Substring(3, 4)); // Offset desde el cuarto carácter.
+
+                // Extraer la clave AES encriptada.
+                string encryptedAESKeyBase64 = response.Substring(7, keyLength); // Desde el índice 7.
+                byte[] encryptedAESKey = Convert.FromBase64String(encryptedAESKeyBase64); // Convertir el Base64 a bytes.
+
+                // Desencriptar la clave AES usando la clave privada del cliente.
+                byte[] decryptedAESKey = cryptoService.DecryptDataWithPrivateKey(encryptedAESKey);
+
+                // Delegar el almacenamiento de la clave AES al CryptographyService
+                cryptoService.SetAESKey(decryptedAESKey);
+
+                MessageBox.Show("Clave AES procesada y almacenada correctamente en CryptographyService.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al procesar la clave AES encriptada: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Establece una conexión asincrónica con el servidor.
@@ -89,6 +200,84 @@ namespace AgendaEscritorio.service
             }
         }
 
+
+
+
+        /// <summary>
+        /// Asynchronously sends a custom packet to the server.
+        /// </summary>
+        /// <param name="customPacket">The custom packet to send.</param>
+        /// <returns>Returns true if the packet was sent successfully, false otherwise.</returns>
+        public async Task<bool> SendCustomPacketAsync(string customPacket)
+        {
+            try
+            {
+                // Validar que el paquete no esté vacío
+                if (string.IsNullOrWhiteSpace(customPacket))
+                {
+                    MessageBox.Show("El paquete no puede estar vacío. Por favor, introduce un paquete válido.");
+                    return false;
+                }
+
+                // Agregar un carácter de fin (`\n`) si no está presente
+                if (!customPacket.EndsWith("\n"))
+                {
+                    customPacket += "\n";
+                }
+
+                // Convertir el paquete a un arreglo de bytes
+                byte[] packetBytes = Encoding.UTF8.GetBytes(customPacket);
+
+                // Verificar que la clave AES ya esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return false;
+                }
+
+                // Encriptar el paquete con AES
+                byte[] encryptedPacket = cryptoService.EncryptDataWithAES(packetBytes);
+                string encryptedPacketBase64 = Convert.ToBase64String(encryptedPacket);
+                MessageBox.Show($"Encrypted Custom Packet: {encryptedPacketBase64}");
+
+                // Enviar el paquete encriptado al servidor
+                await writer.WriteLineAsync(encryptedPacketBase64);
+                await writer.FlushAsync();
+
+                // Esperar la respuesta del servidor
+                string response = await reader.ReadLineAsync();
+                if (response == null)
+                {
+                    MessageBox.Show("El servidor no envió ninguna respuesta.");
+                    return false;
+                }
+
+                MessageBox.Show($"Server Response (Encrypted): {response}");
+
+                // Convertir la respuesta en base64 a un arreglo de bytes
+                byte[] encryptedResponse = Convert.FromBase64String(response);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponseString = Encoding.UTF8.GetString(decryptedResponse);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponseString}");
+
+                // Aquí podrías procesar la respuesta si es necesario
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción que ocurra durante el envío del paquete
+                MessageBox.Show($"Error sending custom packet: {ex.Message}");
+                return false;
+            }
+        }
+
+
+
+
         /// <summary>
         /// Asynchronously sends a login request to the server with the provided username and password.
         /// </summary>
@@ -97,33 +286,66 @@ namespace AgendaEscritorio.service
         /// <returns>Returns true if the login was successful, false otherwise.</returns>
         public async Task<bool> SendLoginAsync(string username, string password)
         {
-            this.username = username; // Save the username for later use
-            this.username2 = username; // Assign the username to a secondary variable (possibly for backup or logging)
+            this.username = username; // Guardar el nombre de usuario para usarlo después
+            this.username2 = username; // Asignar el nombre de usuario a una segunda variable (posiblemente para respaldo o registro)
 
             try
             {
-                // Construct the login packet using a helper method
+                // Construir el paquete de login
                 string loginPacket = ProtocolHelper.ConstructLoginPacket(username, password);
-                Console.WriteLine($"Login Packet Sent: {loginPacket}");
+                MessageBox.Show($"Login Packet (Original): {loginPacket}");
 
-                // Send the login packet to the server asynchronously
-                await writer.WriteLineAsync(loginPacket);
+                // Convertir el paquete de login a un arreglo de bytes
+                byte[] loginPacketBytes = Encoding.UTF8.GetBytes(loginPacket);
+
+                // Verificar que la clave AES ya esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return false;
+                }
+
+                // Encriptar el paquete de login con AES
+                byte[] encryptedLoginPacket = cryptoService.EncryptDataWithAES(loginPacketBytes);
+                string encryptedLoginPacketBase64 = Convert.ToBase64String(encryptedLoginPacket);
+                MessageBox.Show($"Encrypted Login Packet: {encryptedLoginPacketBase64}");
+
+                // Enviar el paquete encriptado al servidor
+                await writer.WriteLineAsync(encryptedLoginPacketBase64);
                 await writer.FlushAsync();
 
-                // Wait for the server's response
+                // Esperar la respuesta del servidor
                 string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                MessageBox.Show($"Server Response (Encrypted): {response}");
 
-                // Process the login response from the server
-                return await ProcessLoginResponseAsync(response);
+                // Convertir la respuesta en base64 a un arreglo de bytes
+                byte[] encryptedResponse = Convert.FromBase64String(response);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponseString = Encoding.UTF8.GetString(decryptedResponse);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponseString}");
+
+                // Procesar la respuesta desencriptada del login
+                return await ProcessLoginResponseAsync(decryptedResponseString);
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that occur during the login process
+                // Manejar cualquier excepción que ocurra durante el proceso de login
                 MessageBox.Show($"Error sending login: {ex.Message}");
-                return false; // Return false if an error occurs
+                return false; // Retornar false si ocurre un error
             }
         }
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Processes the login response received from the server.
@@ -139,8 +361,7 @@ namespace AgendaEscritorio.service
 
             switch (action)
             {
-                case 103:
-                    // If the action is 103 (successful login), extract the session token
+                case 103: // Successful login
                     if (message.Length >= 2)
                     {
                         string token = DataExtractor.ExtractToken(message); // Extract the token from the message
@@ -153,23 +374,44 @@ namespace AgendaEscritorio.service
                     }
                     else
                     {
-                        // If the token could not be extracted, show an error
                         MessageBox.Show("Error: Could not extract token.");
-                        return false; // Return false if the token extraction failed
+                        return false;
                     }
-                case 9:
-                    // If the action code is 9, it indicates a login error
+
+                case 107: // Login successful but server is insecure
+                    if (message.Length >= 2)
+                    {
+                        string token = DataExtractor.ExtractToken(message); // Extract the token from the message
+                        SetSessionToken(token); // Store the session token
+                        MessageBox.Show($"Login successful, but the server is not secure. You must change the password. Token: {token}");
+                        return true; // Return true to indicate successful login with restrictions
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error: Could not extract token.");
+                        return false;
+                    }
+
+                case 9: // Login error
                     MessageBox.Show($"Login error: {message}");
-                    return false; // Return false for login error
-                default:
-                    // If the action is not recognized, show an unexpected response error
+                    return false;
+
+                default: // Unexpected response
                     MessageBox.Show($"Unexpected response: {response}");
-                    return false; // Return false for unexpected responses
+                    return false;
             }
         }
 
+
+
+
+
+
+
+
         /// <summary>
         /// Asynchronously requests the user data from the server using the session token and username.
+        /// The request and response are encrypted using AES.
         /// </summary>
         /// <param name="sessionToken">The session token to authenticate the request.</param>
         /// <param name="username">The username for which to request data.</param>
@@ -178,26 +420,53 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construct the user data request packet
+                // Construir el paquete de solicitud de datos del usuario
                 string requestPacket = ProtocolHelper.ConstructUserDataRequestPacket(sessionToken, username, nombre2);
+                MessageBox.Show($"User Data Request Packet (Original): {requestPacket}");
 
-                // Send the request packet to the server asynchronously
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete de solicitud a un arreglo de bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES ya esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Encriptar el paquete de solicitud con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted User Data Request Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete encriptado al servidor
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                // Wait for the server's response
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Esperar la respuesta del servidor (en formato Base64 y encriptada con AES)
+                string encryptedResponse = await reader.ReadLineAsync();
+                MessageBox.Show($"Server Response (Encrypted): {encryptedResponse}");
 
-                // Process the user data response from the server
-                ProcessUserDataResponse(response);
+                // Convertir la respuesta del servidor (Base64) a un arreglo de bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta con AES
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Procesar la respuesta desencriptada
+                ProcessUserDataResponse(decryptedResponse);
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that occur during the user data request process
+                // Manejar cualquier excepción que ocurra durante el proceso de solicitud de datos
                 MessageBox.Show($"Error requesting user data: {ex.Message}");
             }
         }
+
 
 
         /// <summary>
@@ -239,7 +508,7 @@ namespace AgendaEscritorio.service
         }
 
         /// <summary>
-        /// Sends a logout request to the server.
+        /// Sends a logout request to the server with AES encryption.
         /// </summary>
         public async Task SendLogoutAsync()
         {
@@ -247,7 +516,7 @@ namespace AgendaEscritorio.service
             {
                 // Construct the logout packet using the session token and username
                 string logoutPacket = ProtocolHelper.ConstructLogoutPacket(sessionToken, username);
-                MessageBox.Show($"Logout Packet Sent: {logoutPacket}");
+                MessageBox.Show($"Logout Packet Before Encryption: {logoutPacket}");
 
                 // Check if the writer is initialized before sending the packet
                 if (writer == null)
@@ -256,13 +525,24 @@ namespace AgendaEscritorio.service
                     return;
                 }
 
-                // Send the logout packet to the server asynchronously
-                await writer.WriteLineAsync(logoutPacket);
+                // Encrypt the logout packet with AES
+                byte[] encryptedLogoutPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(logoutPacket));
+
+                // Convert the encrypted packet to Base64 for transmission
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedLogoutPacket));
                 await writer.FlushAsync();
 
-                // Wait for the server's response
-                string response = await reader.ReadLineAsync();
-                MessageBox.Show($"Server Response: {response}");
+                // Wait for the server's encrypted response
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                MessageBox.Show($"Encrypted Server Response: {encryptedResponseBase64}");
+
+                // Decode the Base64 response and decrypt it
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convert the decrypted response back to a string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                MessageBox.Show($"Decrypted Server Response: {response}");
 
                 // Process the logout response
                 ProcessLogoutResponse(response);
@@ -273,6 +553,7 @@ namespace AgendaEscritorio.service
                 MessageBox.Show($"Error during logout: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Processes the logout response received from the server.
@@ -298,7 +579,7 @@ namespace AgendaEscritorio.service
         }
 
         /// <summary>
-        /// Asynchronously sends a request to change the user's full name on the server.
+        /// Asynchronously sends a request to change the user's full name on the server. The request and response are encrypted using AES.
         /// </summary>
         /// <param name="sessionToken">The session token for authentication.</param>
         /// <param name="usernameToChange">The username whose full name is to be changed.</param>
@@ -308,23 +589,49 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construct the packet for changing the full name
+                // Construir el paquete para solicitar el cambio de nombre completo
                 string requestPacket = ProtocolHelper.ConstructChangeFullNamePacket(sessionToken, usernameToChange, newFullName, username);
+                MessageBox.Show($"Change Full Name Request Packet (Original): {requestPacket}");
 
-                // Send the request packet to the server asynchronously
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a un arreglo de bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES ya esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Encriptar el paquete de solicitud con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Change Full Name Request Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete encriptado al servidor
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                // Wait for the server's response
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Esperar la respuesta del servidor (en formato Base64 y encriptada con AES)
+                string encryptedResponse = await reader.ReadLineAsync();
+                MessageBox.Show($"Server Response (Encrypted): {encryptedResponse}");
 
-                // Process the response from the server
-                ProcessChangeFullNameResponse(response);
+                // Convertir la respuesta del servidor (Base64) a un arreglo de bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta con AES
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Procesar la respuesta desencriptada
+                ProcessChangeFullNameResponse(decryptedResponse);
             }
             catch (Exception ex)
             {
-                // Handle any errors that occur during the request for changing the full name
+                // Manejar cualquier error que ocurra durante la solicitud de cambio de nombre completo
                 MessageBox.Show($"Error al solicitar el cambio de nombre completo: {ex.Message}");
             }
         }
@@ -378,12 +685,8 @@ namespace AgendaEscritorio.service
 
 
 
-
-
-
-
         /// <summary>
-        /// Solicita la adición de un permiso a un usuario específico.
+        /// Solicita la adición de un permiso a un usuario específico. Los datos de la solicitud y respuesta están cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión para validar la solicitud.</param>
         /// <param name="username">El nombre de usuario al que se le va a agregar el permiso.</param>
@@ -394,71 +697,100 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construir el paquete de solicitud utilizando un helper de protocolo
+                // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructAddPermissionPacket(sessionToken, username, roleToAdd, permissions);
+                MessageBox.Show($"Add Permission Request Packet (Original): {requestPacket}");
 
-                // Enviar la solicitud al servidor utilizando el escritor asíncrono
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Add Permission Request Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete cifrado al servidor
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
+                MessageBox.Show($"Server Response (Encrypted): {encryptedResponse}");
 
-                // Procesar la respuesta recibida del servidor
-                ProcessAddPermissionResponse(response);
+                // Convertir la respuesta del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Procesar la respuesta desencriptada
+                ProcessAddPermissionResponse(decryptedResponse);
             }
             catch (Exception ex)
             {
-                // En caso de error, mostrar un mensaje con la excepción capturada
+                // Manejar errores
                 MessageBox.Show($"Error al solicitar la adición de permiso: {ex.Message}");
             }
         }
 
-
-
-
         /// <summary>
         /// Procesa la respuesta del servidor tras la solicitud de adición de permiso.
         /// </summary>
-        /// <param name="response">La respuesta recibida del servidor.</param>
+        /// <param name="response">La respuesta desencriptada recibida del servidor.</param>
         private void ProcessAddPermissionResponse(string response)
         {
-            // Mostrar la respuesta completa en un MessageBox
-            MessageBox.Show(response);
-
-            // Verificar si la respuesta tiene una longitud mínima (3 caracteres)
-            if (response.Length < 3)
+            try
             {
-                MessageBox.Show("Respuesta demasiado corta.");
-                return;
+                // Mostrar la respuesta completa
+                MessageBox.Show(response);
+
+                // Validar la longitud mínima de la respuesta
+                if (response.Length < 3)
+                {
+                    MessageBox.Show("Respuesta demasiado corta.");
+                    return;
+                }
+
+                // Extraer el protocolo y la acción
+                char protocol = response[0];
+                int action = int.Parse(response.Substring(1, 2));
+
+                // Validar protocolo y acción esperados
+                if (protocol != '2' || action != 9)
+                {
+                    MessageBox.Show($"Protocolo o acción inesperada: {protocol}, {action}");
+                    return;
+                }
+
+                // Extraer el token desde la respuesta
+                int index = 3;
+                string token = DataExtractor.ExtractData(response, ref index);
+
+                // Validar el token con el de la sesión
+                if (token == SessionToken)
+                {
+                    MessageBox.Show("Permiso agregado exitosamente.");
+                }
+                else
+                {
+                    MessageBox.Show("Token incorrecto o acción no permitida.");
+                }
             }
-
-            // Extraer el protocolo y la acción de la respuesta
-            char protocol = response[0];
-            int action = int.Parse(response.Substring(1, 2));
-
-            // Verificar si el protocolo es '2' y la acción es '9' (Afegeix permís)
-            if (protocol != '2' || action != 9)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Protocolo o acción inesperada: {protocol}, {action}");
-                return;
-            }
-
-            // Extraer el token de la respuesta comenzando desde el índice 3
-            int index = 3;
-            string token = DataExtractor.ExtractData(response, ref index);
-
-            // Verificar si el token extraído coincide con el token de la sesión
-            if (token == SessionToken)
-            {
-                // Si el token es correcto, mostrar mensaje de éxito
-                MessageBox.Show("Permiso agregado exitosamente.");
-            }
-            else
-            {
-                // Si el token no coincide, mostrar mensaje de error
-                MessageBox.Show("Token incorrecto o acción no permitida.");
+                // Manejar errores en el procesamiento
+                MessageBox.Show($"Error al procesar la respuesta de adición de permiso: {ex.Message}");
             }
         }
 
@@ -466,7 +798,7 @@ namespace AgendaEscritorio.service
 
 
         /// <summary>
-        /// Solicita al servidor los permisos de un usuario específico.
+        /// Solicita al servidor los permisos de un usuario específico. Los datos se envían y reciben cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión del usuario conectado.</param>
         /// <param name="username">El nombre de usuario al que se le desean obtener los permisos.</param>
@@ -477,26 +809,52 @@ namespace AgendaEscritorio.service
             {
                 // Construir el paquete de solicitud utilizando el protocolo adecuado
                 string requestPacket = ProtocolHelper.ConstructGetPermissionsPacket(sessionToken, username);
+                MessageBox.Show($"Get Permissions Request Packet (Original): {requestPacket}");
 
-                // Enviar la solicitud al servidor
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return null;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Get Permissions Request Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete cifrado al servidor
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
                 // Lista para almacenar todas las respuestas relevantes del servidor
                 List<string> responses = new List<string>();
 
                 bool isReceivingPermissions = false; // Indica si estamos en el rango de permisos
-                string response;
+                string encryptedResponse;
 
-                // Leer respuestas del servidor hasta encontrar acción 43 (fin de la lista)
-                while ((response = await reader.ReadLineAsync()) != null)
+                // Leer respuestas del servidor cifradas hasta encontrar acción 43 (fin de la lista)
+                while ((encryptedResponse = await reader.ReadLineAsync()) != null)
                 {
+                    // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                    byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                    // Desencriptar la respuesta
+                    byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                    // Convertir los bytes desencriptados a un string
+                    string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                    MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
                     // Extraer protocolo y acción de la respuesta
-                    if (response.Length < 3)
+                    if (decryptedResponse.Length < 3)
                         continue; // Ignorar respuestas inválidas
 
-                    char protocol = response[0];
-                    int action = int.Parse(response.Substring(1, 2));
+                    char protocol = decryptedResponse[0];
+                    int action = int.Parse(decryptedResponse.Substring(1, 2));
 
                     // Verificar si es el protocolo esperado
                     if (protocol != '2')
@@ -519,7 +877,7 @@ namespace AgendaEscritorio.service
                     // Almacenar respuestas solo si estamos recibiendo permisos
                     if (isReceivingPermissions)
                     {
-                        responses.Add(response);
+                        responses.Add(decryptedResponse);
                     }
                 }
 
@@ -544,7 +902,6 @@ namespace AgendaEscritorio.service
 
 
 
-
         private Dictionary<string, string> rolesAndPermissions = new Dictionary<string, string>();
 
         /// <summary>
@@ -557,71 +914,73 @@ namespace AgendaEscritorio.service
             // Limpiar el diccionario antes de usarlo para almacenar los nuevos datos
             rolesAndPermissions.Clear();
 
-            // Iterar sobre cada respuesta recibida
-            foreach (var response in responses)
+            try
             {
-                // Verificar que la respuesta tiene un mínimo de longitud suficiente para ser procesada
-                if (response.Length < 3)
-                    throw new Exception("Respuesta demasiado corta.");
-
-                // Extraer el protocolo (primer carácter) y la acción (siguientes dos caracteres)
-                char protocol = response[0];
-                int action = int.Parse(response.Substring(1, 2));
-
-                // Verificar que el protocolo y la acción son los esperados
-                if (protocol != '2' || action != 17) // Acción 17: Consultar permisos
-                    throw new Exception($"Protocolo o acción inesperada: {protocol}, {action}");
-
-                // Inicializar el índice para comenzar a extraer datos después del protocolo y la acción
-                int index = 3;
-
-                // Extraer el offset del token y luego el token en sí
-                int tokenOffset = int.Parse(response.Substring(index, 2)); // Leer el offset del token
-                index += 2;
-                string token = response.Substring(index, tokenOffset); // Extraer el token
-                index += tokenOffset;
-
-                // Verificar si el token coincide con el de la sesión actual
-                if (token != SessionToken)
-                    throw new Exception("Token incorrecto o acción no permitida.");
-
-                // Extraer el nombre del rol
-                // Verificar si el offset del nombre del rol tiene 1 o 2 dígitos
-                int roleNameOffsetLength = char.IsDigit(response[index + 1]) ? 2 : 1; // Verificar si el segundo carácter es un dígito
-                int roleNameOffset = int.Parse(response.Substring(index, roleNameOffsetLength)); // Obtener el offset del nombre del rol
-                index += roleNameOffsetLength;
-                string roleName = response.Substring(index, roleNameOffset); // Extraer el nombre del rol
-                index += roleNameOffset;
-
-                // Extraer los permisos (longitud fija de 7 caracteres según el ejemplo proporcionado)
-                int permissionsLength = 7;
-                if (response.Length < index + permissionsLength)
-                    throw new Exception("La longitud de los permisos es inválida.");
-                string permissions = response.Substring(index, permissionsLength); // Extraer los permisos
-                index += permissionsLength;
-
-                // Almacenar el nombre del rol y sus permisos en el diccionario
-                if (!rolesAndPermissions.ContainsKey(roleName))
+                // Iterar sobre cada respuesta recibida
+                foreach (var response in responses)
                 {
-                    // Si el rol no está presente, agregarlo con los permisos
-                    rolesAndPermissions.Add(roleName, permissions);
+                    // Verificar que la respuesta tiene un mínimo de longitud suficiente para ser procesada
+                    if (response.Length < 3)
+                        throw new Exception("Respuesta demasiado corta.");
+
+                    // Extraer el protocolo (primer carácter) y la acción (siguientes dos caracteres)
+                    char protocol = response[0];
+                    int action = int.Parse(response.Substring(1, 2));
+
+                    // Verificar que el protocolo y la acción son los esperados
+                    if (protocol != '2' || action != 17) // Acción 17: Consultar permisos
+                        throw new Exception($"Protocolo o acción inesperada: {protocol}, {action}");
+
+                    // Inicializar el índice para comenzar a extraer datos después del protocolo y la acción
+                    int index = 3;
+
+                    // Extraer el offset del token y luego el token en sí
+                    int tokenOffset = int.Parse(response.Substring(index, 2)); // Leer el offset del token
+                    index += 2;
+                    string token = response.Substring(index, tokenOffset); // Extraer el token
+                    index += tokenOffset;
+
+                    // Verificar si el token coincide con el de la sesión actual
+                    if (token != SessionToken)
+                        throw new Exception("Token incorrecto o acción no permitida.");
+
+                    // Extraer el nombre del rol
+                    int roleNameOffsetLength = char.IsDigit(response[index + 1]) ? 2 : 1; // Verificar si el segundo carácter es un dígito
+                    int roleNameOffset = int.Parse(response.Substring(index, roleNameOffsetLength)); // Obtener el offset del nombre del rol
+                    index += roleNameOffsetLength;
+                    string roleName = response.Substring(index, roleNameOffset); // Extraer el nombre del rol
+                    index += roleNameOffset;
+
+                    // Extraer los permisos (longitud fija de 7 caracteres)
+                    int permissionsLength = 7;
+                    if (response.Length < index + permissionsLength)
+                        throw new Exception("La longitud de los permisos es inválida.");
+                    string permissions = response.Substring(index, permissionsLength); // Extraer los permisos
+                    index += permissionsLength;
+
+                    // Almacenar el nombre del rol y sus permisos en el diccionario
+                    if (!rolesAndPermissions.ContainsKey(roleName))
+                    {
+                        rolesAndPermissions.Add(roleName, permissions);
+                    }
+                    else
+                    {
+                        rolesAndPermissions[roleName] = permissions;
+                    }
                 }
-                else
-                {
-                    // Si el rol ya existe, actualizar los permisos
-                    rolesAndPermissions[roleName] = permissions;
-                }
+
+                return rolesAndPermissions;
             }
-
-            // Retornar el diccionario con todos los roles y sus permisos procesados
-            return rolesAndPermissions;
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al procesar la respuesta: {ex.Message}");
+            }
         }
 
 
 
-
         /// <summary>
-        /// Envia una solicitud al servidor para editar los permisos de un usuario.
+        /// Envía una solicitud al servidor para editar los permisos de un usuario. Los datos se envían y reciben cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión del usuario conectado.</param>
         /// <param name="username">El nombre de usuario cuyo rol y permisos se van a editar.</param>
@@ -633,23 +992,43 @@ namespace AgendaEscritorio.service
             try
             {
                 // Construir el paquete de permisos utilizando el Helper
-                // Esta función crea el paquete de solicitud para editar permisos
                 string paquete = ProtocolHelper.ConstructEditPermissionsPacket(sessionToken, username, rol, permisos);
-                Console.WriteLine($"Sending Edit Permissions Packet: {paquete}");
+                MessageBox.Show($"Edit Permissions Request Packet (Original): {paquete}");
 
-                // Enviar el paquete al servidor de forma asíncrona
-                // Se utiliza 'WriteLineAsync' para enviar el paquete y 'FlushAsync' para asegurar que se envíe
-                await writer.WriteLineAsync(paquete);
+                // Convertir el paquete a bytes
+                byte[] paqueteBytes = Encoding.UTF8.GetBytes(paquete);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return -1;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] paqueteCifrado = cryptoService.EncryptDataWithAES(paqueteBytes);
+                string paqueteCifradoBase64 = Convert.ToBase64String(paqueteCifrado);
+                MessageBox.Show($"Encrypted Edit Permissions Packet: {paqueteCifradoBase64}");
+
+                // Enviar el paquete cifrado al servidor de forma asíncrona
+                await writer.WriteLineAsync(paqueteCifradoBase64);
                 await writer.FlushAsync();
 
-                // Leer la respuesta del servidor
-                // 'ReadLineAsync' lee la respuesta una vez que el servidor la envía
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
+
+                // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
 
                 // Verificar si la respuesta del servidor es un código numérico válido
-                // Si la respuesta se puede convertir a un número entero, se devuelve ese código
-                if (int.TryParse(response, out int responseCode))
+                if (int.TryParse(decryptedResponse, out int responseCode))
                 {
                     return responseCode;  // Retorna el código de respuesta obtenido del servidor
                 }
@@ -670,8 +1049,9 @@ namespace AgendaEscritorio.service
 
 
 
+
         /// <summary>
-        /// Envia una solicitud al servidor para activar o desactivar el modo gestión.
+        /// Envía una solicitud al servidor para activar o desactivar el modo gestión. Los datos se envían y reciben cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión del usuario conectado.</param>
         /// <param name="username">El nombre del usuario que activa o desactiva el modo gestión.</param>
@@ -682,45 +1062,65 @@ namespace AgendaEscritorio.service
             try
             {
                 // Construir el paquete de solicitud utilizando el Helper
-                // Esta función crea el paquete necesario para activar o desactivar el modo gestión
                 string paquete = ProtocolHelper.ConstructModoGestionPacket(sessionToken, username, activarModoGestion);
-                Console.WriteLine($"Sending Modo Gestion Packet: {paquete}");
+                MessageBox.Show($"Modo Gestion Request Packet (Original): {paquete}");
 
-                // Enviar el paquete al servidor de manera asíncrona
-                await writer.WriteLineAsync(paquete);
+                // Convertir el paquete a bytes
+                byte[] paqueteBytes = Encoding.UTF8.GetBytes(paquete);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return -1;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] paqueteCifrado = cryptoService.EncryptDataWithAES(paqueteBytes);
+                string paqueteCifradoBase64 = Convert.ToBase64String(paqueteCifrado);
+                MessageBox.Show($"Encrypted Modo Gestion Packet: {paqueteCifradoBase64}");
+
+                // Enviar el paquete cifrado al servidor de forma asíncrona
+                await writer.WriteLineAsync(paqueteCifradoBase64);
                 await writer.FlushAsync();
 
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
 
-                // Verificar si la respuesta es un código numérico
-                if (int.TryParse(response, out int responseCode))
+                // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Verificar si la respuesta del servidor es un código numérico válido
+                if (int.TryParse(decryptedResponse, out int responseCode))
                 {
-                    return responseCode;  // Retorna el código de respuesta (éxito o error)
+                    return responseCode;  // Retorna el código de respuesta obtenido del servidor
                 }
                 else
                 {
-                    // Si la respuesta no es válida (no es un número entero)
-                    MessageBox.Show("Error: Respuesta del servidor inválida.");
-                    return -1;  // Error en la respuesta
+                    // Si la respuesta no es válida (no se puede convertir a entero)
+                    MessageBox.Show("Error: Invalid server response.");
+                    return -1;  // Indica error en la respuesta del servidor
                 }
             }
             catch (Exception ex)
             {
                 // Si ocurre algún error durante el envío o procesamiento
-                MessageBox.Show($"Error al enviar el paquete para activar/desactivar el modo gestión: {ex.Message}");
+                MessageBox.Show($"Error sending mode gestion request: {ex.Message}");
                 return -1;  // Error en el envío de la solicitud
             }
         }
 
 
-
-
-
-
         /// <summary>
         /// Envía una solicitud asincrónica al servidor para cambiar otros datos de un usuario específico.
+        /// Los datos se envían y reciben cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión que identifica al usuario conectado.</param>
         /// <param name="usernameToChange">El nombre de usuario cuyo "otros datos" serán modificados.</param>
@@ -729,24 +1129,49 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construir el paquet de sol·licitud usant ProtocolHelper
+                // Construir el paquete de solicitud utilizando el helper
                 string requestPacket = ProtocolHelper.ConstructChangeOtherDataPacket(sessionToken, usernameToChange, username, newOtherData);
+                MessageBox.Show($"Change Other Data Request Packet (Original): {requestPacket}");
 
-                // Enviar la sol·licitud
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Change Other Data Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete cifrado al servidor de forma asíncrona
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                // Llegir la resposta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
 
-                // Processar la resposta
-                ProcessChangeOtherDataResponse(response);
+                // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Procesar la respuesta
+                ProcessChangeOtherDataResponse(decryptedResponse);
             }
             catch (Exception ex)
             {
-                // Mostrar un mensaje de error si ocurre alguna excepción
-                MessageBox.Show($"Error al sol·licitar el canvi d'altres dades: {ex.Message}");
+                // Si ocurre algún error durante el envío o procesamiento
+                MessageBox.Show($"Error al solicitar el cambio de otros datos: {ex.Message}");
             }
         }
 
@@ -774,6 +1199,7 @@ namespace AgendaEscritorio.service
 
         /// <summary>
         /// Solicita el cambio de la fecha de nacimiento de un usuario al servidor.
+        /// Los datos se envían y reciben cifrados con AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión actual para validar la solicitud.</param>
         /// <param name="usernameToChange">El nombre de usuario al que se le cambiará la fecha de nacimiento.</param>
@@ -784,25 +1210,52 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construir el paquete de solicitud usando ProtocolHelper
+                // Construir el paquete de solicitud utilizando el helper
                 string requestPacket = ProtocolHelper.ConstructChangeBirthDatePacket(sessionToken, usernameToChange, newBirthDate, connectedUsername);
+                MessageBox.Show($"Change Birth Date Request Packet (Original): {requestPacket}");
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Change Birth Date Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete cifrado al servidor de forma asíncrona
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
+
+                // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
 
                 // Procesar la respuesta
-                ProcessChangeBirthDateResponse(response);
+                ProcessChangeBirthDateResponse(decryptedResponse);
             }
             catch (Exception ex)
             {
+                // Si ocurre algún error durante el envío o procesamiento
                 MessageBox.Show($"Error al solicitar el cambio de fecha de nacimiento: {ex.Message}");
             }
         }
+
 
 
 
@@ -829,7 +1282,7 @@ namespace AgendaEscritorio.service
 
 
         /// <summary>
-        /// Solicita el cambio de contraseña de un usuario específico.
+        /// Solicita el cambio de contraseña de un usuario específico con cifrado AES.
         /// </summary>
         /// <param name="sessionToken">El token de sesión que autentica la solicitud.</param>
         /// <param name="usernameToEdit">El nombre de usuario cuya contraseña se desea cambiar.</param>
@@ -840,23 +1293,51 @@ namespace AgendaEscritorio.service
         {
             try
             {
+                // Construir el paquete de solicitud utilizando el helper
                 string requestPacket = ProtocolHelper.ConstructChangePasswordPacket(sessionToken, usernameToEdit, currentPassword, newPassword, connectedUsername);
+                MessageBox.Show($"Password Change Request Packet (Original): {requestPacket}");
 
-                await writer.WriteLineAsync(requestPacket);
+                // Convertir el paquete a bytes
+                byte[] requestPacketBytes = Encoding.UTF8.GetBytes(requestPacket);
+
+                // Verificar que la clave AES esté inicializada
+                if (cryptoService.GetAESKey() == null)
+                {
+                    MessageBox.Show("Clave AES no disponible. Asegúrese de haber recibido y desencriptado la clave del servidor.");
+                    return;
+                }
+
+                // Cifrar el paquete con AES
+                byte[] encryptedRequestPacket = cryptoService.EncryptDataWithAES(requestPacketBytes);
+                string encryptedRequestPacketBase64 = Convert.ToBase64String(encryptedRequestPacket);
+                MessageBox.Show($"Encrypted Password Change Request Packet: {encryptedRequestPacketBase64}");
+
+                // Enviar el paquete cifrado al servidor de forma asíncrona
+                await writer.WriteLineAsync(encryptedRequestPacketBase64);
                 await writer.FlushAsync();
 
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponse = await reader.ReadLineAsync();
 
-                ProcessChangeFullPassword(response);
+                // Convertir la respuesta cifrada del servidor (Base64) a bytes
+                byte[] encryptedResponseBytes = Convert.FromBase64String(encryptedResponse);
+
+                // Desencriptar la respuesta
+                byte[] decryptedResponseBytes = cryptoService.DecryptDataWithAES(encryptedResponseBytes);
+
+                // Convertir los bytes desencriptados a un string
+                string decryptedResponse = Encoding.UTF8.GetString(decryptedResponseBytes);
+                MessageBox.Show($"Server Response (Decrypted): {decryptedResponse}");
+
+                // Procesar la respuesta
+                ProcessChangeFullPassword(decryptedResponse);
             }
             catch (Exception ex)
             {
+                // Si ocurre algún error durante el envío o procesamiento
                 MessageBox.Show($"Error al solicitar el cambio de contraseña: {ex.Message}");
             }
         }
-
-
 
         /// <summary>
         /// Procesa la respuesta del servidor después de una solicitud de cambio de contraseña.
@@ -895,7 +1376,7 @@ namespace AgendaEscritorio.service
             // Verificar si el token coincide con el token de sesión actual
             if (Token == SessionToken)
             {
-                MessageBox.Show("Confirmacion cambio de contraseña");
+                MessageBox.Show("Confirmación de cambio de contraseña");
             }
         }
 
@@ -913,13 +1394,24 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud de eliminación usando ProtocolHelper
                 string requestPacket = ProtocolHelper.ConstructDeleteUserPacket(sessionToken, usernameToDelete, connectedUsername);
 
-                // Enviar la solicitud al servidor
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES antes de enviarlo
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
 
                 // Procesar la respuesta del servidor
                 ProcessDeleteUserResponse(response);
@@ -929,7 +1421,6 @@ namespace AgendaEscritorio.service
                 MessageBox.Show($"Error al solicitar la eliminación del usuario: {ex.Message}");
             }
         }
-
 
         /// <summary>
         /// Procesa la respuesta del servidor después de solicitar la eliminación de un usuario.
@@ -981,20 +1472,31 @@ namespace AgendaEscritorio.service
         /// <param name="fechaNacimiento">La fecha de nacimiento del nuevo usuario.</param>
         /// <param name="otrosDatos">Cualquier otro dato adicional relevante para el usuario.</param>
         /// <param name="rolPermisos">El rol y los permisos que tendrá el nuevo usuario.</param>
-        public async Task RequestCreateUserAsync(string sessionToken, string username, string nombreUsuario, string password, string nombreCompleto, string fechaNacimiento, string otrosDatos, string rolPermisos)
+        public async Task RequestCreateUserAsync(string sessionToken, string username, string nombreUsuario, string password, string nombreCompleto, string fechaNacimiento, string otrosDatos, string rolPermisos, string apodo)
         {
             try
             {
                 // Construir el paquete de solicitud de creación usando ProtocolHelper
-                string requestPacket = ProtocolHelper.ConstructCreateUserPacket(sessionToken, username, nombreUsuario, password, nombreCompleto, fechaNacimiento, otrosDatos, rolPermisos);
+                string requestPacket = ProtocolHelper.ConstructCreateUserPacket(sessionToken, username, nombreUsuario, password, nombreCompleto, fechaNacimiento, otrosDatos, rolPermisos, apodo);
 
-                // Enviar la solicitud al servidor
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta del servidor
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
 
                 // Procesar la respuesta del servidor
                 ProcessCreateUserResponse(response);
@@ -1004,7 +1506,6 @@ namespace AgendaEscritorio.service
                 MessageBox.Show($"Error al solicitar la creación del usuario: {ex.Message}");
             }
         }
-
 
 
 
@@ -1060,22 +1561,33 @@ namespace AgendaEscritorio.service
         /// <param name="tags">Etiquetas asociadas al evento.</param>
         /// <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
         /// <param name="nombreGrupo">El nombre del grupo al que pertenece el evento (si es grupal).</param>
-        public async Task RequestCreateDayAsync(string sessionToken,string username, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
+        public async Task RequestCreateDayAsync(string sessionToken, string username, string fecha, string contenido, string tags, bool esGrupal, string nombreGrupo)
         {
             try
             {
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructCreateDayPacket(sessionToken, username, fecha, contenido, tags, esGrupal, nombreGrupo);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Procesar la respuesta
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
+
+                // Procesar la respuesta del servidor
                 ProcessCreateDayResponse(response);
             }
             catch (Exception ex)
@@ -1150,15 +1662,26 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructCreateGroupPacket(sessionToken, username, nombreGrupo);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Procesar la respuesta
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
+
+                // Procesar la respuesta del servidor
                 ProcessCreateGroupResponse(response);
             }
             catch (Exception ex)
@@ -1206,15 +1729,26 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructDeleteGroupPacket(sessionToken, username, nombreGrupo);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Procesar la respuesta
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
+
+                // Procesar la respuesta del servidor
                 ProcessDeleteGroupResponse(response);
             }
             catch (Exception ex)
@@ -1222,6 +1756,8 @@ namespace AgendaEscritorio.service
                 throw new Exception($"Error en la solicitud de eliminación del grupo: {ex.Message}");
             }
         }
+
+
 
         // Procesar la respuesta del servidor
         private void ProcessDeleteGroupResponse(string response)
@@ -1259,8 +1795,11 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructViewOwnedGroupsPacket(sessionToken, username);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
                 // Lista para almacenar los grupos propios
@@ -1269,9 +1808,19 @@ namespace AgendaEscritorio.service
 
                 while (!endOfGroups)
                 {
-                    // Leer la respuesta del servidor
-                    string response = await reader.ReadLineAsync();
+                    // Leer la respuesta cifrada del servidor
+                    string encryptedResponseBase64 = await reader.ReadLineAsync();
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Procesar la respuesta
                     if (response.StartsWith("244")) // Acción 44: Inicio de envío
                     {
                         continue;
@@ -1313,19 +1862,13 @@ namespace AgendaEscritorio.service
 
 
 
-
-        // Método para procesar las respuestas de "Ver Grupos Propios"
         private string ProcessViewOwnedGroupsResponse(string response)
         {
             try
             {
-
                 // Extraer datos según el formato del protocolo
                 char protocol = response[0];
-
-
                 int action = int.Parse(response.Substring(1, 2));
-
 
                 // Verificar protocolo y acción
                 if (protocol != '2' || action != 10)
@@ -1334,14 +1877,11 @@ namespace AgendaEscritorio.service
                     throw new Exception($"Protocolo o acción inesperada: {protocol}, {action}");
                 }
 
-                // Extraer el offset del token (2 caracteres)
                 int index = 3; // Comenzar después del protocolo y la acción
                 int tokenOffset = int.Parse(response.Substring(index, 2));
-
-
                 index += 2;
-                string token = response.Substring(index, tokenOffset);
 
+                string token = response.Substring(index, tokenOffset);
                 index += tokenOffset;
 
                 // Verificar el token de sesión
@@ -1351,14 +1891,12 @@ namespace AgendaEscritorio.service
                     throw new Exception("Token incorrecto en la respuesta.");
                 }
 
-                // Leer el offset del nombre del grupo (1 carácter)
+                // Leer el offset del nombre del grupo
                 int groupNameOffset = int.Parse(response.Substring(index, 1)); // Solo un carácter para el offset
-
-                index += 1; // Incrementar el índice por el tamaño del offset
+                index += 1;
 
                 // Extraer el nombre del grupo
                 string groupName = response.Substring(index, groupNameOffset);
-
 
                 return groupName;
             }
@@ -1377,8 +1915,11 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructViewMembershipGroupsPacket(sessionToken, username);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
                 // Lista para almacenar los grupos de membresía
@@ -1387,9 +1928,19 @@ namespace AgendaEscritorio.service
 
                 while (!endOfGroups)
                 {
-                    // Leer la respuesta del servidor
-                    string response = await reader.ReadLineAsync();
+                    // Leer la respuesta cifrada del servidor
+                    string encryptedResponseBase64 = await reader.ReadLineAsync();
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Procesar la respuesta
                     if (response.StartsWith("244")) // Acción 44: Inicio de envío
                     {
                         continue;
@@ -1440,8 +1991,11 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud
                 string requestPacket = ProtocolHelper.ConstructViewAllGroupsPacket(sessionToken, username);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
                 // Lista para almacenar los grupos
@@ -1450,9 +2004,19 @@ namespace AgendaEscritorio.service
 
                 while (!endOfGroups)
                 {
-                    // Leer la respuesta del servidor
-                    string response = await reader.ReadLineAsync();
+                    // Leer la respuesta cifrada del servidor
+                    string encryptedResponseBase64 = await reader.ReadLineAsync();
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Procesar la respuesta
                     if (response.StartsWith("244")) // Acción 44: Inicio de envío
                     {
                         continue;
@@ -1491,7 +2055,6 @@ namespace AgendaEscritorio.service
                 throw new Exception($"Error en la solicitud de todos los grupos: {ex.Message}");
             }
         }
-
 
 
 
@@ -1541,13 +2104,24 @@ namespace AgendaEscritorio.service
                 // Construir el paquete de solicitud (Acción 01: Mostrar mes)
                 string requestPacket = ProtocolHelper.ConstructShowMonthPacket(sessionToken, username);
 
-                // Enviar la solicitud
-                await writer.WriteLineAsync(requestPacket);
+                // Cifrar el paquete con AES
+                byte[] encryptedRequest = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(requestPacket));
+
+                // Convertir el paquete cifrado a Base64 para enviarlo como texto
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedRequest));
                 await writer.FlushAsync();
 
-                // Leer la respuesta (esperamos recibir 401, 402 o 403)
-                string response = await reader.ReadLineAsync();
-                Console.WriteLine($"Server Response: {response}");
+                // Leer la respuesta cifrada del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+
+                // Decodificar la respuesta Base64 y desencriptarla con AES
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+
+                // Convertir la respuesta desencriptada de vuelta a un string
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+                Console.WriteLine($"Decrypted Server Response: {response}");
 
                 // Procesar la respuesta
                 await ProcessShowMonthResponse(response);
@@ -1557,7 +2131,6 @@ namespace AgendaEscritorio.service
                 throw new Exception($"Error en la solicitud para mostrar el mes: {ex.Message}");
             }
         }
-
 
         private async Task ProcessShowMonthResponse(string response)
         {

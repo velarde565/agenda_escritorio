@@ -348,29 +348,33 @@ namespace AgendaEscritorio.view
             string nuevaFechaNacimiento = txtCrearUsuarioFechaNacimiento.Text.Trim();
             string otrosDatos = txtCrearUsuarioOtrosDatos.Text.Trim();
             string rolPermisos = txtCrearUsuarioRolPermisos.Text.Trim();
+            string apodo = txtCrearUsuarioApodo.Text.Trim(); // Obtener el apodo
 
             // Validación de campos obligatorios
             if (string.IsNullOrEmpty(nuevoNombreUsuario) || string.IsNullOrEmpty(nuevaContrasena) ||
                 string.IsNullOrEmpty(nuevoNombreCompleto) || string.IsNullOrEmpty(nuevaFechaNacimiento) ||
-                string.IsNullOrEmpty(rolPermisos))
+                string.IsNullOrEmpty(rolPermisos) || string.IsNullOrEmpty(apodo)) // Validar también el apodo
             {
                 MessageBox.Show("Por favor, complete todos los campos obligatorios.");
                 return;
             }
 
             // Llamar al cliente para solicitar la creación del nuevo usuario
-            await client.RequestCreateUserAsync(client.SessionToken, client.Username, nuevoNombreUsuario, nuevaContrasena, nuevoNombreCompleto, nuevaFechaNacimiento, otrosDatos, rolPermisos);
+            await client.RequestCreateUserAsync(client.SessionToken, client.Username, nuevoNombreUsuario, nuevaContrasena,
+                nuevoNombreCompleto, nuevaFechaNacimiento, otrosDatos, rolPermisos, apodo);
 
-            // Limpiar y ocultar el campo de entrada después de la creación
+            // Limpiar y ocultar los campos de entrada después de la creación
             txtCrearUsuarioNombreUsuario.Clear();
             txtCrearUsuarioContrasena.Clear();
             txtCrearUsuarioNombreCompleto.Clear();
             txtCrearUsuarioFechaNacimiento.Clear();
             txtCrearUsuarioOtrosDatos.Clear();
             txtCrearUsuarioRolPermisos.Clear();
+            txtCrearUsuarioApodo.Clear(); // Limpiar el campo de apodo
             inputFieldsCrearUsuario.Visibility = Visibility.Collapsed;
             mainMenu.Visibility = Visibility.Visible;
         }
+
 
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para eliminar un usuario.

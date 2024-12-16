@@ -195,21 +195,31 @@ namespace AgendaEscritorio.service
         /// <param name="birthDate">La fecha de nacimiento del nuevo usuario.</param>
         /// <param name="otrosDatos">Otros datos adicionales del nuevo usuario.</param>
         /// <param name="rolPermisos">El rol y permisos del nuevo usuario.</param>
+        /// <param name="apodo">El apodo del nuevo usuario.</param>
         /// <returns>El paquete en formato string listo para ser enviado.</returns>
-        public static string ConstructCreateUserPacket(string sessionToken, string connectedUsername, string newUsername, string password, string fullName, string birthDate, string otrosDatos, string rolPermisos)
+        public static string ConstructCreateUserPacket(string sessionToken, string connectedUsername, string newUsername, string password, string fullName, string birthDate, string otrosDatos, string rolPermisos, string apodo)
         {
             // Calcular los offsets para cada campo de acuerdo a su longitud.
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
+            string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
             string newUsernameOffset = newUsername.Length.ToString("D2");
             string passwordOffset = password.Length.ToString("D2");
             string fullNameOffset = fullName.Length.ToString("D2");
             string birthDateOffset = birthDate.Length.ToString("D2");
             string otrosDatosOffset = otrosDatos.Length.ToString("D4");
             string rolPermisosOffset = rolPermisos.Length.ToString("D2");
-            string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
+            string apodoOffset = apodo.Length.ToString("D2");
 
             // Construcción del paquete de datos.
-            string packet = $"2{"06"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{newUsernameOffset}{newUsername}{passwordOffset}{password}{fullNameOffset}{fullName}{birthDateOffset}{birthDate}{otrosDatosOffset}{otrosDatos}{rolPermisosOffset}{rolPermisos}\n";
+            string packet = $"2{"06"}{sessionTokenOffset}{sessionToken}" +
+                            $"{connectedUsernameOffset}{connectedUsername}" +
+                            $"{newUsernameOffset}{newUsername}" +
+                            $"{passwordOffset}{password}" +
+                            $"{fullNameOffset}{fullName}" +
+                            $"{birthDateOffset}{birthDate}" +
+                            $"{otrosDatosOffset}{otrosDatos}" +
+                            $"{rolPermisosOffset}{rolPermisos}" +
+                            $"{apodoOffset}{apodo}\n";
 
             // Construcción del mensaje descompuesto por cada campo.
             string message = $"Protocolo: 2\n" +
@@ -229,13 +239,16 @@ namespace AgendaEscritorio.service
                              $"Otros Datos Offset: {otrosDatosOffset}\n" +
                              $"Otros Datos: {otrosDatos}\n" +
                              $"Rol Permisos Offset: {rolPermisosOffset}\n" +
-                             $"Rol Permisos: {rolPermisos}";
+                             $"Rol Permisos: {rolPermisos}\n" +
+                             $"Apodo Offset: {apodoOffset}\n" +
+                             $"Apodo: {apodo}";
 
             // Mostrar el mensaje en MessageBox para visualización.
             MessageBox.Show(message, "Detalle del Paquete");
 
             return packet;
         }
+
 
         /// <summary>
         /// Construye un paquete para añadir permisos a un rol para un usuario específico.
@@ -395,9 +408,16 @@ namespace AgendaEscritorio.service
             string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
             string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
 
-            // Construir y devolver el paquete
-            return $"2{"16"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+            // Construir el paquete
+            string packet = $"2{"16"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+
+            // Mostrar el paquete generado en un MessageBox
+            MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Retornar el paquete
+            return packet;
         }
+
 
 
         // Método para construir el paquete de solicitud de grupos propios
@@ -407,9 +427,16 @@ namespace AgendaEscritorio.service
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
             string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
 
-            // Construir y devolver el paquete
-            return $"2{"18"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
+            // Construir el paquete
+            string packet = $"2{"18"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
+
+            // Mostrar el paquete generado en un MessageBox
+            MessageBox.Show($"Paquete generado:\n{packet}", "View Owned Groups Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Retornar el paquete
+            return packet;
         }
+
 
 
         // Método para construir el paquete de solicitud de grupos donde el usuario es miembro

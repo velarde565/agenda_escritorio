@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "I7pTRF4nBTdtsfhMyISkXZrPnqnhgkL6aqyjIJzsqoYSmcxKqebzX2rGSV7NKTV6/j+/NjYyyN4Tm80j9i4n9Q==",
+  "dgSpecHash": "m0metNYGre4wVLkY+F7JvRASE2C6GaXrc4mFzzDFjIZviAJoFTiWFIoo8GHmMAEt21EvXi+vqKH1apmXh2+yeQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Velarde\\source\\repos\\DAM-M13-2014-Grupo-3\\agenda-adruja-escritorio\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
+  "projectFilePath": "C:\\Users\\Velarde\\source\\repos\\AgendaEscritorio\\AgendaEscritorio\\AgendaEscritorio.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Velarde\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\Velarde\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\6.0.9\\microsoft.netcore.app.runtime.win-x86.6.0.9.nupkg.sha512",

@@ -23,6 +23,7 @@ namespace AgendaEscritorio.view
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             client = new Client(); // Instancia un objeto Client para conectarse al servidor
             ConnectToServerAsync(); // Llama al método asincrónico para conectar al servidor
+
         }
 
         /// <summary>
@@ -31,6 +32,8 @@ namespace AgendaEscritorio.view
         private async void ConnectToServerAsync()
         {
             await client.ConnectAsync(); // Conexión asincrónica al servidor utilizando el objeto client
+
+            await client.SendClientPublicKeyAsync();
         }
 
         /// <summary>

@@ -228,7 +228,7 @@ namespace AgendaEscritorio.view {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/AgendaEscritorio;component/view/calendarview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/AgendaEscritorio;V1.0.0.0;component/view/calendarview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\view\CalendarView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

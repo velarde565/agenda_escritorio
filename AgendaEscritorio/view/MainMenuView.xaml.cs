@@ -59,22 +59,44 @@ namespace AgendaEscritorio.view
         /// </summary>
         private async void BtnAgenda_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                // Llamar al método RequestShowMonthAsync de manera asíncrona
-                await client.RequestShowMonthAsync(client.SessionToken, client.Username);
 
-                // Abrir la ventana del calendario después de la llamada asíncrona
-                CalendarView calendarView = new CalendarView(client); // Pasa la instancia de Client
-                calendarView.Show(); // Muestra la ventana del calendario
-                this.Close(); // Cierra la ventana actual
-            }
-            catch (Exception ex)
+            // Abrir la ventana del calendario después de la llamada asíncrona
+            CalendarView calendarView = new CalendarView(client); // Pasa la instancia de Client
+            calendarView.Show(); // Muestra la ventana del calendario
+
+        }
+
+        // Evento para mostrar/ocultar el panel de Petición Manual
+        private void BtnPeticionManual_Click(object sender, RoutedEventArgs e)
+        {
+            if (panelPeticionManual.Visibility == Visibility.Visible)
             {
-                // Maneja cualquier excepción que pueda ocurrir
-                MessageBox.Show($"Error al mostrar el mes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                panelPeticionManual.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                panelPeticionManual.Visibility = Visibility.Visible;
             }
         }
+
+        // Evento para enviar la petición manual
+        private async void BtnEnviarPeticion_Click(object sender, RoutedEventArgs e)
+        {
+            string peticion = txtPeticionManual.Text;
+
+            if (string.IsNullOrWhiteSpace(peticion))
+            {
+                MessageBox.Show("Por favor, introduce una petición válida.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Llamar al método SendCustomPacketAsync en tu clase Client
+            await client.SendCustomPacketAsync(peticion);
+
+
+        }
+
+
 
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de cerrar sesión.

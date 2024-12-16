@@ -4,15 +4,15 @@
 winexe
 C#
 .cs
-C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\win-x86\
+C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\obj\Release\net6.0-windows\win-x86\
 AgendaEscritorio
 none
 false
 TRACE;RELEASE;NET;NET6_0;NETCOREAPP
-C:\Users\Velarde\source\repos\DAM-M13-2014-Grupo-3\agenda-adruja-escritorio\AgendaEscritorio\AgendaEscritorio\App.xaml
+C:\Users\Velarde\source\repos\AgendaEscritorio\AgendaEscritorio\App.xaml
 632055880
 
-15-450239088
+16-1733342282
 195259658810
 MainWindow.xaml;view\AjustesView.xaml;view\CalendarView.xaml;view\loginView.xaml;view\MainMenuView.xaml;view\UserManagementView.xaml;
 
