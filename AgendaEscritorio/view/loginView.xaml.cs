@@ -98,6 +98,13 @@ namespace AgendaEscritorio.view
             }
         }
 
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            client.SendHelpRequestAsync();
+        }
+
+
         /// <summary>
         /// Maneja el evento de login cuando el usuario hace clic en el botón "Iniciar sesión".
         /// Valida las credenciales ingresadas y envía la solicitud al servidor para autenticar al usuario.

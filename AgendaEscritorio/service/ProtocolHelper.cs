@@ -10,6 +10,7 @@ namespace AgendaEscritorio.service
 {
     public static class ProtocolHelper
     {
+        private static bool modoGestionActivo = false;
         /// <summary>
         /// Genera un paquete para la solicitud de login.
         /// </summary>
@@ -59,6 +60,41 @@ namespace AgendaEscritorio.service
             // Construcción del paquete siguiendo el protocolo
             return $"1{"02"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}\n";
         }
+
+        public static string ConstructShutdownPacket(string sessionToken, string username, string password)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string passwordLengthStr = password.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo
+            return $"1{"05"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}{passwordLengthStr}{password}\n";
+        }
+
+
+        public static string ConstructInfoSobrePacket(string sessionToken, string username, string infoSobre)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2"); // Longitud del token (con 2 dígitos)
+            string usernameLengthStr = username.Length.ToString("D2"); // Longitud del nombre de usuario (con 2 dígitos)
+            string infoSobreLengthStr = infoSobre.Length.ToString("D2"); // Longitud de la info sobre (con 2 dígitos)
+
+            // Construcción del paquete siguiendo el protocolo
+            return $"1{"03"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}{infoSobreLengthStr}{infoSobre}\n";
+        }
+
+
+        public static string ConstructShowUsersPacket(string sessionToken, string username)
+        {
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo
+            return $"2{"08"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}\n";
+
+        }
+
 
         /// <summary>
         /// Genera un paquete para cambiar el nombre completo de un usuario.
@@ -277,6 +313,19 @@ namespace AgendaEscritorio.service
             return $"2{"09"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleNameOffset}{roleName}{permissionsOffset}{permissions}\n";
         }
 
+
+        public static string ConstructDeleteRolePacket(string sessionToken, string connectedUsername, string roleToDelete)
+        {
+            // Calcular los offsets para cada campo.
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");
+            string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
+            string roleToDeleteOffset = roleToDelete.Length.ToString("D2");
+
+            // Construir el paquete
+            return $"2{"11"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleToDeleteOffset}{roleToDelete}\n";
+        }
+
+
         /// <summary>
         /// Construye un paquete para obtener los permisos de un usuario específico.
         /// </summary>
@@ -320,9 +369,15 @@ namespace AgendaEscritorio.service
                 throw new ArgumentException("Los permisos deben estar bien formateados con 7 valores (0 o 1).");
             }
 
-            // Construir y devolver el paquete final
-            return $"2{"10"}{tokenOffset}{sessionToken}{usernameOffset}{username}{rolOffset}{rol}{permisosString}";
+            // Construir el paquete final
+            string packet = $"2{"10"}{tokenOffset}{sessionToken}{usernameOffset}{username}{rolOffset}{rol}{permisosString}";
+
+            // Mostrar el paquete generado en un MessageBox
+            MessageBox.Show($"Paquete generado:\n{packet}", "Paquete Editar Permisos", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            return packet;
         }
+
 
 
 
@@ -333,20 +388,27 @@ namespace AgendaEscritorio.service
         /// <param name="username">Nombre de usuario del usuario conectado.</param>
         /// <param name="activarModoGestion">Indica si el Modo Gestión debe ser activado (true) o desactivado (false).</param>
         /// <returns>Cadena que representa el paquete de datos para activar o desactivar el Modo Gestión.</returns>
-        public static string ConstructModoGestionPacket(string sessionToken, string username, bool activarModoGestion)
+        public static string ConstructModoGestionPacket(string sessionToken, string username)
         {
             // Calcular los offsets para el token y el nombre de usuario
             string tokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token (con dos dígitos)
             string usernameOffset = username.Length.ToString("D2");  // Longitud del nombre de usuario (con dos dígitos)
 
-            // Determinar la acción (13 para activar, 14 para desactivar)
-            int accion = activarModoGestion ? 13 : 14;
+            // Alternar el estado del Modo Gestión
+            modoGestionActivo = !modoGestionActivo;
 
-            // Construir y devolver el paquete final para la activación/desactivación del Modo Gestión
-            return $"2{accion}{tokenOffset}{sessionToken}{usernameOffset}{username}";
+            // Determinar la acción basada en el nuevo estado
+            int accion = modoGestionActivo ? 13 : 14;
+
+            // Construir el paquete final para la activación/desactivación del Modo Gestión
+            string packet = $"2{accion}{tokenOffset}{sessionToken}{usernameOffset}{username}";
+
+            // Mostrar el paquete generado en un MessageBox
+            string estado = modoGestionActivo ? "activado" : "desactivado";
+            MessageBox.Show($"Paquete generado:\n{packet}\nEstado del Modo Gestión: {estado}", "Paquete Modo Gestión", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            return packet;
         }
-
-
 
         /// <summary>
         /// Construye un paquete para crear un nuevo evento en el sistema, incluyendo la fecha, contenido, tags y detalles sobre si es grupal.
@@ -380,11 +442,18 @@ namespace AgendaEscritorio.service
                                : "";
 
             // Añadir los 2 bytes adicionales requeridos por la especificación
-            string unusedBytes = "00"; 
+            string unusedBytes = "00";
 
-            // Construir y devolver el paquete final para crear el evento
-            return $"4{"06"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{fechaOffset}{fecha}{contenidoOffset}{contenido}{tagsOffset}{tags}{unusedBytes}{grupalFlag}{groupNameOffset}{groupName}\n";
+            // Construir el paquete final para crear el evento
+            string packet = $"4{"06"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{fechaOffset}{fecha}{contenidoOffset}{contenido}{tagsOffset}{tags}{unusedBytes}{grupalFlag}{groupNameOffset}{groupName}\n";
+
+            // Mostrar el paquete generado en un MessageBox
+            MessageBox.Show($"Paquete generado:\n{packet}", "Create Day Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Retornar el paquete
+            return packet;
         }
+
 
 
 
@@ -417,6 +486,77 @@ namespace AgendaEscritorio.service
             // Retornar el paquete
             return packet;
         }
+
+
+        public static string ConstructDeleteGroupAgendaPacket(string sessionToken, string username, string nombreGrupo)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
+
+            // Construir el paquete con la acción correspondiente para eliminar la agenda grupal (acción 17)
+            string packet = $"2{"17"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+
+            // Mostrar el paquete generado (puedes quitarlo si no lo necesitas)
+            MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Retornar el paquete
+            return packet;
+        }
+
+
+        public static string ConstructInviteUserPacket(string sessionToken, string username, string nombreGrupo, string sobrenombreUsuario)
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");
+            string usernameOffset = username.Length.ToString("D2");
+            string groupNameOffset = nombreGrupo.Length.ToString("D2");
+            string nicknameOffset = sobrenombreUsuario.Length.ToString("D2");
+
+            // Construir el paquete con la acción correspondiente para invitar a un usuario (acción 21)
+            string packet = $"2{"21"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}{nicknameOffset}{sobrenombreUsuario}\n";
+
+            // Mostrar el paquete en un MessageBox
+            MessageBox.Show($"Paquete generado:\n{packet}", "Vista previa del paquete", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            return packet;
+        }
+
+
+        public static string ConstructAgendaPacket(string sessionToken, string username, bool isGrupal, string groupName = "")
+        {
+            // Calcular los offsets
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
+
+            // Crear los componentes del paquete básico
+            string packet = $"401{sessionTokenOffset}{sessionToken}{usernameOffset}{username}";
+
+            // Añadir conjunto de 2 bytes (en este caso, dos bytes vacíos representados por '00')
+            string conjunto2Bytes = "00";  // Representación de los 2 bytes sin usar
+            packet += $"{conjunto2Bytes}";
+
+            // Añadir el byte que indica si es grupal o no (1 para grupal, 0 para no grupal)
+            string byteGrupal = isGrupal ? "1" : "0";
+            packet += $"{byteGrupal}";
+
+            // Si es grupal, añadir el nombre del grupo
+            if (isGrupal)
+            {
+                string groupNameOffset = groupName.Length.ToString("D2");  // Longitud del nombre del grupo
+                packet += $"{groupNameOffset}{groupName}";
+            }
+
+            // Retornar el paquete
+            MessageBox.Show($"Paquete generado:\n{packet}", "Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+            return packet;
+        }
+
+
+
+
+
 
 
 
@@ -479,6 +619,98 @@ namespace AgendaEscritorio.service
 
 
         }
+
+
+        /// <summary>
+        /// Genera un paquete para avanzar un mes en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <returns>El paquete para avanzar un mes en formato string.</returns>
+        public static string ConstructAdvanceMonthPacket(string sessionToken, string username)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo
+            string response = $"4{"02"}{tokenLengthStr}{sessionToken}" +
+                              $"{usernameLengthStr}{username}";
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+
+        /// <summary>
+        /// Genera un paquete para retroceder un mes en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <returns>El paquete para retroceder un mes en formato string.</returns>
+        public static string ConstructGoBackMonthPacket(string sessionToken, string username)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo
+            string response = $"4{"03"}{tokenLengthStr}{sessionToken}" +
+                              $"{usernameLengthStr}{username}";
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+
+        /// <summary>
+        /// Genera un paquete para avanzar un año en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <returns>El paquete para avanzar un año en formato string.</returns>
+        public static string ConstructAdvanceYearPacket(string sessionToken, string username)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo para avanzar un año
+            string response = $"4{"04"}{tokenLengthStr}{sessionToken}" +
+                              $"{usernameLengthStr}{username}";
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Genera un paquete para retroceder un año en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <returns>El paquete para retroceder un año en formato string.</returns>
+        public static string ConstructGoBackYearPacket(string sessionToken, string username)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo para retroceder un año
+            string response = $"4{"05"}{tokenLengthStr}{sessionToken}" +
+                              $"{usernameLengthStr}{username}";
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
 
 
 

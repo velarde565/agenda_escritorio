@@ -38,6 +38,24 @@ namespace AgendaEscritorio.view
             });
         }
 
+
+
+
+        private async void BtnMostrarUsuarios_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Llamar al método para solicitar la lista de usuarios
+                await client.RequestShowUsersAsync(client.SessionToken, client.Username);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al mostrar usuarios: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+
         /// <summary>
         /// Evento que se llama al hacer clic en el botón de editar usuario.
         /// Oculta el menú principal y muestra el menú de edición de usuario.
@@ -639,7 +657,7 @@ namespace AgendaEscritorio.view
             string username = client.Username;  // Nombre de usuario conectado
 
             // Llamar al método para activar el modo gestión
-            int respuesta = await client.SendModoGestionAsync(sessionToken, username, true);  // True para activar el modo gestión
+            int respuesta = await client.SendModoGestionAsync(sessionToken, username);  // True para activar el modo gestión
 
             // Comprobar la respuesta del servidor
             if (respuesta == 213)
@@ -656,7 +674,53 @@ namespace AgendaEscritorio.view
             }
         }
 
+        /// <summary>
+        /// Evento que se llama al hacer clic en el botón para mostrar el formulario de eliminación de rol.
+        /// Muestra el panel para eliminar el rol y limpia el campo de texto.
+        /// </summary>
+        private void BtnEliminarRol_Click(object sender, RoutedEventArgs e)
+        {
+            // Mostrar el panel de eliminación de rol
+            inputFieldsEliminarRol.Visibility = Visibility.Visible;
 
+            // Limpiar el campo de texto de eliminación de rol
+            txtEliminaRol.Clear();
+        }
+
+
+        /// <summary>
+        /// Evento que se llama al hacer clic en el botón para confirmar la eliminación de un rol.
+        /// Valida el campo de entrada, solicita la eliminación del rol al servidor, y limpia los campos después.
+        /// </summary>
+        private async void ConfirmarEliminarRol_Click(object sender, RoutedEventArgs e)
+        {
+            // Obtener el nombre del rol a eliminar desde el campo de texto
+            string rolAEliminar = txtEliminaRol.Text.Trim();
+
+            // Validación: Asegurarse de que el nombre del rol no esté vacío
+            if (string.IsNullOrEmpty(rolAEliminar))
+            {
+                MessageBox.Show("Por favor, ingrese un nombre de rol para eliminar.");
+                return;
+            }
+
+            // Llamar al cliente para solicitar la eliminación del rol
+            bool exito = await client.RequestDeleteRoleAsync(client.SessionToken, client.Username, rolAEliminar);
+
+            // Si la eliminación fue exitosa
+            if (exito)
+            {
+                MessageBox.Show($"El rol '{rolAEliminar}' ha sido eliminado exitosamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Limpiar el campo de texto y ocultar el panel
+                txtEliminaRol.Clear();
+                inputFieldsEliminarRol.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MessageBox.Show($"Hubo un error al intentar eliminar el rol '{rolAEliminar}'.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
 
         /// <summary>
@@ -701,6 +765,7 @@ namespace AgendaEscritorio.view
         {
             this.Close();
         }
+
 
     }
 }

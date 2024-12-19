@@ -168,5 +168,40 @@ namespace AgendaEscritorio.view
         {
             // Lógica adicional para cargar la ventana, si es necesario
         }
+
+
+        private async void PowerButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Mostrar un cuadro de texto para la contraseña
+            string password = Microsoft.VisualBasic.Interaction.InputBox("Introduce la contraseña para apagar el servidor", "Confirmar Apagado", "");
+
+            // Verificar si el usuario ingresó una contraseña
+            if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Debes ingresar una contraseña.");
+                return;
+            }
+
+            // Llamar al método para apagar el servidor
+            await client.SendShutdownRequestAsync(client.Username, password, client.SessionToken);
+        }
+
+        private async void BtnIntroducirInfoSobre_Click(object sender, RoutedEventArgs e)
+        {
+            // Mostrar un cuadro de texto para que el usuario ingrese la nueva información sobre el servidor
+            string newInfo = Microsoft.VisualBasic.Interaction.InputBox("Introduce la nueva información sobre el servidor", "Nueva Información sobre el Servidor", "");
+
+            // Verificar si el usuario ingresó la nueva información
+            if (string.IsNullOrEmpty(newInfo))
+            {
+                MessageBox.Show("Debes ingresar la nueva información.");
+                return;
+            }
+
+            // Llamar al método para enviar la nueva información al servidor
+            await client.SendServerInfoUpdateRequestAsync(client.Username, newInfo, client.SessionToken);
+        }
+
+
     }
 }

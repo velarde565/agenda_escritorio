@@ -30,19 +30,20 @@
                                 <Button x:Name="MaximizeRestoreButton" Content="☐" Width="30" Background="Transparent" Foreground="White" Click="MaximizeRestoreButton_Click"/>
                                 <Button Content="X" Width="30" Background="Transparent" Foreground="White" Click="CloseButton_Click"/>
                             </StackPanel>
+                            
+                            
 
                             <!-- Menú principal con opciones de usuario -->
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0">
                                 <TextBlock Text="Gestión de Usuarios" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
                                 <StackPanel x:Name="mainMenu" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+                                    <Button x:Name="btnMostrarUsuarios" Content="Mostrar Usuarios" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnMostrarUsuarios_Click"/>
                                     <Button x:Name="btnCrearUsuario" Content="Crear Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearUsuario_Click"/>
                                     <Button x:Name="btnEditarUsuario" Content="Editar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEditarUsuario_Click"/>
                                     <Button x:Name="btnEliminarUsuario" Content="Eliminar Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEliminarUsuario_Click"/>
                                     <Button x:Name="btnCrearRol" Content="Crear Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearRol_Click"/>
+                                    <Button x:Name="btnEliminarRol" Content="Elminar Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEliminarRol_Click"/>
                                     <Button x:Name="btnMostrarPermisos" Content="Mostrar Permisos" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnMostrarPermisos_Click"/>
-                                    
-
-
                                 </StackPanel>
 
                                 <!-- Menú de opciones de edición -->
@@ -130,9 +131,7 @@
                                 <StackPanel x:Name="inputFieldsCrearRol" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
                                     <TextBlock Text="Nuevo rol:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtNuevoRol" Width="200" Margin="0,5,0,10"/>
-
                                     <TextBlock Text="Permisos:" Foreground="White" Margin="0,5,0,10"/>
-
                                     <CheckBox Content="Admin" x:Name="chkAdmin" Foreground="White" Margin="0,5"/>
                                     <CheckBox Content="Crear agenda" x:Name="chkCrearAgenda" Foreground="White" Margin="0,5"/>
                                     <CheckBox Content="Crear grupos" x:Name="chkCrearGrupos" Foreground="White" Margin="0,5"/>
@@ -140,17 +139,21 @@
                                     <CheckBox Content="Eliminar agenda propia" x:Name="chkEliminarAgendaPropia" Foreground="White" Margin="0,5"/>
                                     <CheckBox Content="Eliminar grupos" x:Name="chkEliminarGrupos" Foreground="White" Margin="0,5"/>
                                     <CheckBox Content="Eliminar agenda grupal" x:Name="chkEliminarAgendaGrupal" Foreground="White" Margin="0,5"/>
-
                                     <Button Content="Confirmar Creación de Rol" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionRol_Click"/>
+                                </StackPanel>
+
+                                <!-- Panel para eliminar rol -->
+                                <StackPanel x:Name="inputFieldsEliminarRol" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+                                    <TextBlock Text="Rol a eliminar:" Foreground="White" Margin="0,5,0,0"/>
+                                    <TextBox x:Name="txtEliminaRol" Width="200" Margin="0,5,0,10"/>
+                                    <Button Content="Confirmar Eliminar de Rol" Width="200" Margin="0,10,0,0" Click="ConfirmarEliminarRol_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para mostrar permisos de un rol -->
                                 <StackPanel x:Name="inputFieldsMostrarPermisos" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
                                     <TextBlock Text="Rol:" Foreground="White" Margin="0,5,0,0"/>
                                     <ComboBox x:Name="cmbRolesMostrarPermisos" SelectionChanged="cmbRolesMostrarPermisos_SelectionChanged" Width="200" Margin="0,5,0,10" IsEnabled="True"/>
-
                                     <TextBlock Text="Permisos:" Foreground="White" Margin="0,5,0,10"/>
-
                                     <CheckBox Content="Admin" x:Name="chkAdminMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
                                     <CheckBox Content="Crear agenda" x:Name="chkCrearAgendaMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
                                     <CheckBox Content="Crear grupos" x:Name="chkCrearGruposMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
@@ -158,16 +161,10 @@
                                     <CheckBox Content="Eliminar agenda propia" x:Name="chkEliminarAgendaPropiaMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
                                     <CheckBox Content="Eliminar grupos" x:Name="chkEliminarGruposMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
                                     <CheckBox Content="Eliminar agenda grupal" x:Name="chkEliminarAgendaGrupalMostrar" Foreground="White" Margin="0,5" IsEnabled="True"/>
-
                                     <Button Content="Consultar Permisos" Width="200" Margin="0,10,0,0" Click="ConsultarPermisosRol_Click"/>
                                     <Button Content="Confirmar Edición" Width="200" Margin="0,10,0,0" Click="ConfirmarEdicion_Click"/>
                                     <Button Content="Activar/Desactivar Modo Gestión" Click="BtnModoGestion_Click" />
-
                                 </StackPanel>
-
-
-
-
                             </StackPanel>
                         </Grid>
                     </Border>

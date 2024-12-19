@@ -82,26 +82,114 @@ namespace AgendaEscritorio.view
         }
 
         /// <summary>
-        /// Cambia al mes anterior y actualiza el calendario.
+        /// Cambia al mes anterior, actualiza el calendario y solicita al servidor retroceder un mes.
         /// </summary>
         /// <param name="sender">El objeto que disparó el evento (el botón de mes anterior).</param>
         /// <param name="e">Los argumentos del evento.</param>
-        private void PreviousMonth_Click(object sender, RoutedEventArgs e)
+        private async void PreviousMonth_Click(object sender, RoutedEventArgs e)
         {
+            // Primero, retrocedemos el mes localmente en la vista del calendario
             currentDate = currentDate.AddMonths(-1); // Retrocede un mes
             PopulateCalendar(); // Actualiza el calendario con el mes anterior
+
+            try
+            {
+
+                // Llamar al método para retroceder el mes en el servidor
+                await client.RequestGoBackMonthAsync(client.SessionToken, client.Username);
+
+                // Feedback opcional para el usuario
+                MessageBox.Show("Solicitud para retroceder un mes enviada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error si algo falla
+                MessageBox.Show($"Error: {ex.Message}");
+            }
         }
 
+
         /// <summary>
-        /// Cambia al siguiente mes y actualiza el calendario.
+        /// Cambia al siguiente mes, actualiza el calendario y solicita al servidor avanzar un mes.
         /// </summary>
         /// <param name="sender">El objeto que disparó el evento (el botón de siguiente mes).</param>
         /// <param name="e">Los argumentos del evento.</param>
-        private void NextMonth_Click(object sender, RoutedEventArgs e)
+        private async void NextMonth_Click(object sender, RoutedEventArgs e)
         {
+            // Actualizar la vista local del calendario
             currentDate = currentDate.AddMonths(1); // Avanza un mes
             PopulateCalendar(); // Actualiza el calendario con el mes siguiente
+
+            try
+            {
+
+                // Llamar al método para enviar la solicitud al servidor
+                await client.RequestAdvanceMonthAsync(client.SessionToken, client.Username);
+
+                // Feedback opcional para el usuario
+                MessageBox.Show("Solicitud para avanzar un mes enviada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error si algo falla
+                MessageBox.Show($"Error: {ex.Message}");
+            }
         }
+
+
+        /// <summary>
+        /// Cambia al año anterior, actualiza el calendario y solicita al servidor retroceder un año.
+        /// </summary>
+        /// <param name="sender">El objeto que disparó el evento (el botón de año anterior).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        private async void PreviousYear_Click(object sender, RoutedEventArgs e)
+        {
+            // Retroceder el año localmente
+            currentDate = currentDate.AddYears(-1); // Retrocede un año
+            PopulateCalendar(); // Actualiza el calendario con el año anterior
+
+            try
+            {
+                // Llamar al método para retroceder un año en el servidor
+                await client.RequestGoBackYearAsync(client.SessionToken, client.Username);
+
+                // Feedback opcional para el usuario
+                MessageBox.Show("Solicitud para retroceder un año enviada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error si algo falla
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Cambia al siguiente año, actualiza el calendario y solicita al servidor avanzar un año.
+        /// </summary>
+        /// <param name="sender">El objeto que disparó el evento (el botón de siguiente año).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        private async void NextYear_Click(object sender, RoutedEventArgs e)
+        {
+            // Avanzar el año localmente
+            currentDate = currentDate.AddYears(1); // Avanza un año
+            PopulateCalendar(); // Actualiza el calendario con el año siguiente
+
+            try
+            {
+                // Llamar al método para avanzar el año en el servidor
+                await client.RequestAdvanceYearAsync(client.SessionToken, client.Username);
+
+                // Feedback opcional para el usuario
+                MessageBox.Show("Solicitud para avanzar un año enviada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error si algo falla
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+        }
+
+
 
         /// <summary>
         /// Cierra la ventana de la aplicación.
@@ -464,6 +552,118 @@ namespace AgendaEscritorio.view
         private void EliminarEvento_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Eliminar evento - Implementar lógica aquí");
+        }
+
+        // Mostrar el panel para eliminar la agenda grupal
+        private void EliminarAgendaGrupal_Click(object sender, RoutedEventArgs e)
+        {
+            MostrarUnicoPanel(eliminarAgendaGrupalPanel);
+
+            // Configurar visibilidad de controles específicos
+            textNombreGrupoLabelEliminarAgenda.Visibility = Visibility.Visible;
+            txtNombreGrupoEliminarAgenda.Visibility = Visibility.Visible;
+            btnEnviarEliminarAgendaGrupal.Visibility = Visibility.Visible;
+        }
+
+
+        // Enviar la solicitud para eliminar la agenda grupal
+        private async void EnviarEliminarAgendaGrupal_Click(object sender, RoutedEventArgs e)
+        {
+            // Recoge el nombre del grupo desde la interfaz de usuario
+            string nombreGrupo = txtNombreGrupoEliminarAgenda.Text.Trim();
+
+            // Validación básica
+            if (string.IsNullOrEmpty(nombreGrupo))
+            {
+                MessageBox.Show("Por favor, introduce un nombre para el grupo.");
+                return;
+            }
+
+            try
+            {
+                // Llama al cliente para enviar la solicitud de eliminación de la agenda grupal
+                await client.RequestDeleteGroupAgendaAsync(client.SessionToken, client.Username, nombreGrupo);
+
+                // Muestra un mensaje de éxito
+                MessageBox.Show("Agenda grupal eliminada exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                // Muestra un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al eliminar la agenda grupal: {ex.Message}");
+            }
+        }
+
+        private void InvitarUsuario_Click(object sender, RoutedEventArgs e)
+        {
+            MostrarUnicoPanel(invitarUsuarioPanel);
+
+            // Configurar visibilidad de controles específicos
+            textNombreGrupoLabelInvitar.Visibility = Visibility.Visible;
+            txtNombreGrupoInvitar.Visibility = Visibility.Visible;
+            textSobrenombreLabelInvitar.Visibility = Visibility.Visible;
+            txtSobrenombreInvitar.Visibility = Visibility.Visible;
+            btnEnviarInvitarUsuario.Visibility = Visibility.Visible;
+        }
+
+        private async void EnviarInvitarUsuario_Click(object sender, RoutedEventArgs e)
+        {
+            // Recoge los datos desde la interfaz de usuario
+            string nombreGrupo = txtNombreGrupoInvitar.Text.Trim();
+            string sobrenombreUsuario = txtSobrenombreInvitar.Text.Trim();
+
+            // Validación básica
+            if (string.IsNullOrEmpty(nombreGrupo) || string.IsNullOrEmpty(sobrenombreUsuario))
+            {
+                MessageBox.Show("Por favor, rellena todos los campos.");
+                return;
+            }
+
+            try
+            {
+                // Llama al cliente para enviar la solicitud de invitación
+                await client.RequestInviteUserToGroupAsync(client.SessionToken, client.Username, nombreGrupo, sobrenombreUsuario);
+
+                // Mostrar un mensaje de éxito
+                MessageBox.Show("Usuario invitado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error si ocurre una excepción
+                MessageBox.Show($"Error al invitar al usuario: {ex.Message}");
+            }
+        }
+
+
+        private async void MostrarMes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Obtener el estado del CheckBox (si es grupal o no)
+                bool isGrupal = chkEsGrupal.IsChecked == true;
+
+                // Obtener el nombre del grupo, solo si es grupal
+                string groupName = isGrupal ? txtNombreGrupoOpcional.Text : string.Empty;
+
+
+                // Llamar al método para hacer la solicitud
+                await client.RequestShowAgendaAsync(client.SessionToken, client.Username, isGrupal, groupName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al mostrar la agenda: {ex.Message}");
+            }
+        }
+
+        private void ChkEsGrupal_Click(object sender, RoutedEventArgs e)
+        {
+            // Habilitar o deshabilitar el TextBox según el estado del CheckBox
+            txtNombreGrupoOpcional.IsEnabled = chkEsGrupal.IsChecked == true;
+        }
+
+        private void txtNombreGrupoOpcional_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Aquí puedes agregar cualquier lógica que necesites
         }
 
 

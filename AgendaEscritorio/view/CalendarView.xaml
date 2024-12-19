@@ -32,6 +32,7 @@
                         <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Eliminar Agenda Grupal" Margin="10" Click="EliminarAgendaGrupal_Click" Background="#007BA7" Foreground="White"/>
                     </StackPanel>
                 </TabItem>
 
@@ -44,6 +45,10 @@
                         <Button Content="Ver Grupos (propietario)" Margin="10" Click="VerGruposPropietario_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Ver Grupos(miembro)" Margin="10" Click="VerGruposMembresia_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Ver Todos los Grupos" Margin="10" Click="VerTodosGrupos_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Invitar a Usuario" Margin="10" Click="InvitarUsuario_Click" Background="#007BA7" Foreground="White"/>
+
+
+
                     </StackPanel>
                 </TabItem>
             </TabControl>
@@ -76,6 +81,24 @@
                 <TextBox x:Name="txtNombreGrupoEliminar" Margin="10" Width="200" Height="30"/>
                 <Button x:Name="btnEnviarEliminarGrupo" Content="Eliminar Grupo" Width="200" Height="30" Margin="10" Click="EnviarEliminarGrupo_Click"/>
             </StackPanel>
+
+            <StackPanel x:Name="eliminarAgendaGrupalPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <!-- Contenido del eliminarAgendaGrupalPanel -->
+                <TextBlock x:Name="textNombreGrupoLabelEliminarAgenda" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNombreGrupoEliminarAgenda" Margin="10" Width="200" Height="30"/>
+                <Button x:Name="btnEnviarEliminarAgendaGrupal" Content="Eliminar Agenda Grupal" Width="200" Height="30" Margin="10" Click="EnviarEliminarAgendaGrupal_Click"/>
+            </StackPanel>
+
+            <StackPanel x:Name="invitarUsuarioPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <TextBlock x:Name="textNombreGrupoLabelInvitar" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNombreGrupoInvitar" Margin="10" Width="200" Height="30"/>
+                <TextBlock x:Name="textSobrenombreLabelInvitar" Text="Sobrenombre del Usuario" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtSobrenombreInvitar" Margin="10" Width="200" Height="30"/>
+                <Button x:Name="btnEnviarInvitarUsuario" Content="Enviar Invitación" Width="200" Height="30" Margin="10" Click="EnviarInvitarUsuario_Click"/>
+            </StackPanel>
+
+
+
         </Grid>
 
 
@@ -101,16 +124,37 @@
                                     <Button x:Name="MaximizeRestoreButton" Content="☐" Width="30" Click="MaximizeRestoreButton_Click" Background="Transparent" Foreground="White"/>
                                     <Button Content="X" Width="30" Click="CloseButton_Click" Background="Transparent" Foreground="White"/>
                                 </StackPanel>
+
+                                <Button Content="Mostrar Agenda" Width="100" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10" Background="#007BA7" Foreground="White" BorderBrush="#005F6B" Click="MostrarMes_Click"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+                                    <CheckBox x:Name="chkEsGrupal" Content="¿Es grupal?" Foreground="White" VerticalAlignment="Center" Click="ChkEsGrupal_Click" />
+                                    <TextBox x:Name="txtNombreGrupoOpcional" Width="200" Height="30" Margin="10,0,0,0" IsEnabled="False" TextChanged="txtNombreGrupoOpcional_TextChanged" />
+                                </StackPanel>
+
+
                                 <Button Content="Volver" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BackButton_Click" Background="#007BA7" Foreground="White" BorderBrush="#005F6B" />
+
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                        <!-- Botón para cambiar de año hacia atrás -->
+                                        <Button Content="&#8592;" Click="PreviousYear_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
+
+                                        <!-- Botón para cambiar de mes hacia atrás -->
                                         <Button Content="&lt;" Click="PreviousMonth_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
+
+                                        <!-- Mostrar el mes y el año -->
                                         <TextBlock x:Name="MonthYearText" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0"/>
+
+                                        <!-- Botón para cambiar de mes hacia adelante -->
                                         <Button Content="&gt;" Click="NextMonth_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
+
+                                        <!-- Botón para cambiar de año hacia adelante -->
+                                        <Button Content="&#8594;" Click="NextYear_Click" Width="50" Background="#007BA7" Foreground="White" BorderBrush="#005F6B"/>
                                     </StackPanel>
                                     <UniformGrid x:Name="DaysGrid" Rows="7" Columns="7" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-                                    <!-- Cambiado a 7 filas -->
                                 </StackPanel>
+
                             </StackPanel>
                         </Border>
                     </Grid>

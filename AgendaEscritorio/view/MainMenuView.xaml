@@ -26,19 +26,29 @@
                 <Grid>
                     <Border Background="#CC00AABB" CornerRadius="10" Opacity="0.9">
                         <Grid>
+                            <!-- Barra de botones superiores -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0">
                                 <Button Content="-" Width="30" Click="MinimizeButton_Click" Background="Transparent" Foreground="White"/>
                                 <Button x:Name="MaximizeRestoreButton" Content="☐" Width="30" Click="MaximizeRestoreButton_Click" Background="Transparent" Foreground="White"/>
                                 <Button Content="X" Width="30" Click="CloseButton_Click" Background="Transparent" Foreground="White"/>
                             </StackPanel>
+
+                            <!-- Menú Principal -->
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0">
                                 <TextBlock Text="Menú Principal" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
                                     <Button x:Name="btnAgenda" Content="Agenda" Height="50" Click="BtnAgenda_Click" Background="#007BA7" Foreground="White" Margin="0,10,0,0"/>
                                     <Button x:Name="btnGestionPerfiles" Content="Gestión Perfiles" Height="50" Click="BtnGestionPerfiles_Click" Background="#007BA7" Foreground="White" Margin="0,10,0,0"/>
                                     <Button x:Name="btnAjustes" Content="Ajustes" Height="50" Click="BtnAjustes_Click" Background="#007BA7" Foreground="White" Visibility="Collapsed" Margin="0,10,0,0"/>
-                                    <!-- Botón para mostrar el panel de Petición Manual -->
                                     <Button x:Name="btnPeticionManual" Content="Petición Manual" Height="50" Click="BtnPeticionManual_Click" Background="#007BA7" Foreground="White" Margin="0,10,0,0"/>
+                                    <!-- Botón para Introducir Info sobre Servidor -->
+                                    <Button x:Name="btnIntroducirInfoSobre"
+                                            Content="Introducir Info 'ABOUT' Servidor"
+                                            Height="50"
+                                            Click="BtnIntroducirInfoSobre_Click"
+                                            Background="#007BA7"
+                                            Foreground="White"
+                                            Margin="0,10,0,0"/>
                                 </StackPanel>
 
                                 <!-- Panel oculto que se mostrará al hacer clic en Petición Manual -->
@@ -48,8 +58,46 @@
                                     <Button x:Name="btnEnviarPeticion" Content="Enviar Petición" Height="40" Click="BtnEnviarPeticion_Click" Background="#007BA7" Foreground="White"/>
                                 </StackPanel>
 
+                                <!-- Panel para Introducir Info 'Sobre' Servidor -->
+                                <StackPanel x:Name="panelInfoSobre" Orientation="Vertical" Width="300" Visibility="Collapsed" Background="#FF242424" Margin="10">
+                                    <TextBlock Text="Introduce la nueva información sobre el servidor:" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
+                                    <TextBox x:Name="txtInfoSobre" Height="30" Background="#FFF" Foreground="Black" Margin="0,0,0,10"/>
+                                    <Button x:Name="btnEnviarInfoSobre" Content="Enviar Información" Height="40" Click="BtnIntroducirInfoSobre_Click" Background="#007BA7" Foreground="White"/>
+                                </StackPanel>
+
                                 <Button Content="Cerrar Sesión" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Width="100" Click="BtnCerrarSesion_Click"/>
                             </StackPanel>
+
+                            <!-- Botón Circular para Apagar Servidor -->
+                            <Button x:Name="PowerButton"
+                                    Width="60"
+                                    Height="60"
+                                    Margin="10"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Right"
+                                    Click="PowerButton_Click"
+                                    ToolTip="Apagar Servidor"
+                                    Background="#FF007BA7"
+                                    BorderBrush="White"
+                                    BorderThickness="2"
+                                    Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid>
+                                            <!-- Círculo de fondo -->
+                                            <Ellipse Fill="{TemplateBinding Background}"
+                                                     Stroke="{TemplateBinding BorderBrush}"
+                                                     StrokeThickness="{TemplateBinding BorderThickness}"/>
+                                            <!-- Icono de encendido/apagado -->
+                                            <TextBlock Text="⏻" 
+                                                       FontSize="28" 
+                                                       Foreground="White" 
+                                                       HorizontalAlignment="Center" 
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
                         </Grid>
                     </Border>
                 </Grid>
