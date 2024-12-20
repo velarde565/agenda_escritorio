@@ -66,35 +66,58 @@ namespace AgendaEscritorio.view
 
         }
 
-        // Evento para mostrar/ocultar el panel de Petición Manual
+        /// <summary>
+        /// Maneja el evento de clic en el botón para mostrar u ocultar el panel de petición manual.
+        /// </summary>
+        /// <param name="sender">El objeto que genera el evento (el botón de petición manual).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        /// <remarks>
+        /// Este método cambia la visibilidad del panel de petición manual. Si el panel está visible, se ocultará; si está oculto, se mostrará.
+        /// </remarks>
         private void BtnPeticionManual_Click(object sender, RoutedEventArgs e)
         {
+            // Verifica la visibilidad actual del panel
             if (panelPeticionManual.Visibility == Visibility.Visible)
             {
+                // Si el panel está visible, se oculta
                 panelPeticionManual.Visibility = Visibility.Collapsed;
             }
             else
             {
+                // Si el panel está oculto, se muestra
                 panelPeticionManual.Visibility = Visibility.Visible;
             }
         }
 
-        // Evento para enviar la petición manual
+
+
+
+        /// <summary>
+        /// Maneja el evento de clic en el botón para enviar una petición manual.
+        /// </summary>
+        /// <param name="sender">El objeto que genera el evento (el botón de enviar petición).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        /// <remarks>
+        /// Este método recoge el texto de la petición manual desde el campo de texto, valida si es válido y, si lo es,
+        /// envía la petición utilizando el método `SendCustomPacketAsync` de la clase `Client`.
+        /// </remarks>
         private async void BtnEnviarPeticion_Click(object sender, RoutedEventArgs e)
         {
+            // Obtiene el texto de la petición manual ingresado por el usuario
             string peticion = txtPeticionManual.Text;
 
+            // Valida que el campo no esté vacío o solo contenga espacios
             if (string.IsNullOrWhiteSpace(peticion))
             {
+                // Si la petición está vacía o contiene solo espacios, muestra un mensaje de error
                 MessageBox.Show("Por favor, introduce una petición válida.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            // Llamar al método SendCustomPacketAsync en tu clase Client
+            // Si la petición es válida, se llama al método de la clase Client para enviar la solicitud
             await client.SendCustomPacketAsync(peticion);
-
-
         }
+
 
 
 
@@ -170,35 +193,59 @@ namespace AgendaEscritorio.view
         }
 
 
+        /// <summary>
+        /// Maneja el evento de clic en el botón de apagado, solicitando la contraseña y enviando una solicitud de apagado al servidor.
+        /// </summary>
+        /// <param name="sender">El objeto que genera el evento (el botón de apagado).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        /// <remarks>
+        /// Este método muestra un cuadro de texto para que el usuario ingrese la contraseña de apagado. Si la contraseña
+        /// es válida (no vacía), se envía una solicitud al servidor para apagarlo. Si no se ingresa la contraseña, muestra un error.
+        /// </remarks>
         private async void PowerButton_Click(object sender, RoutedEventArgs e)
         {
-            // Mostrar un cuadro de texto para la contraseña
+            // Muestra un cuadro de entrada para que el usuario ingrese la contraseña
             string password = Microsoft.VisualBasic.Interaction.InputBox("Introduce la contraseña para apagar el servidor", "Confirmar Apagado", "");
 
-            // Verificar si el usuario ingresó una contraseña
+            // Verifica si el usuario no ha ingresado ninguna contraseña
             if (string.IsNullOrEmpty(password))
             {
+                // Si no se ingresó la contraseña, muestra un mensaje de error
                 MessageBox.Show("Debes ingresar una contraseña.");
                 return;
             }
 
-            // Llamar al método para apagar el servidor
+            // Si la contraseña es válida, llama al método para enviar la solicitud de apagado al servidor
             await client.SendShutdownRequestAsync(client.Username, password, client.SessionToken);
         }
 
+
+
+
+
+        /// <summary>
+        /// Maneja el evento de clic en el botón para introducir nueva información sobre el servidor.
+        /// </summary>
+        /// <param name="sender">El objeto que genera el evento (el botón).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        /// <remarks>
+        /// Este método solicita al usuario que ingrese nueva información sobre el servidor a través de un cuadro de texto.
+        /// Si el usuario no ingresa nada, muestra un mensaje de error. Si la información es válida, se envía al servidor.
+        /// </remarks>
         private async void BtnIntroducirInfoSobre_Click(object sender, RoutedEventArgs e)
         {
-            // Mostrar un cuadro de texto para que el usuario ingrese la nueva información sobre el servidor
+            // Muestra un cuadro de entrada para que el usuario ingrese la nueva información sobre el servidor
             string newInfo = Microsoft.VisualBasic.Interaction.InputBox("Introduce la nueva información sobre el servidor", "Nueva Información sobre el Servidor", "");
 
-            // Verificar si el usuario ingresó la nueva información
+            // Verifica si el usuario no ingresó ninguna información
             if (string.IsNullOrEmpty(newInfo))
             {
+                // Si no se ingresó la información, muestra un mensaje de error
                 MessageBox.Show("Debes ingresar la nueva información.");
                 return;
             }
 
-            // Llamar al método para enviar la nueva información al servidor
+            // Si la nueva información es válida, llama al método para enviar la actualización al servidor
             await client.SendServerInfoUpdateRequestAsync(client.Username, newInfo, client.SessionToken);
         }
 

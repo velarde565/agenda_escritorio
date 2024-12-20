@@ -61,9 +61,20 @@ namespace AgendaEscritorio.service
             return $"1{"02"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}\n";
         }
 
+        /// <summary>
+        /// Construye un paquete de desconexión según el protocolo especificado, incluyendo el token de sesión, el nombre de usuario y la contraseña.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario del cliente.</param>
+        /// <param name="password">La contraseña del usuario.</param>
+        /// <returns>Una cadena que representa el paquete de desconexión listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete se construye con una estructura específica, donde cada parámetro tiene una longitud especificada en dos dígitos 
+        /// y el paquete sigue un formato predefinido para asegurar la correcta comunicación con el servidor.
+        /// </remarks>
         public static string ConstructShutdownPacket(string sessionToken, string username, string password)
         {
-            // Longitudes de los parámetros
+            // Longitudes de los parámetros (en formato de dos dígitos)
             string tokenLengthStr = sessionToken.Length.ToString("D2");
             string usernameLengthStr = username.Length.ToString("D2");
             string passwordLengthStr = password.Length.ToString("D2");
@@ -73,9 +84,22 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete que contiene información sobre el usuario, siguiendo un formato de protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario del cliente.</param>
+        /// <param name="infoSobre">La información adicional sobre el usuario o el contexto.</param>
+        /// <returns>Una cadena que representa el paquete con la información sobre el usuario y su sesión, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete se construye concatenando los valores de los parámetros, precedidos por sus longitudes en dos dígitos. 
+        /// Este formato es parte de un protocolo predefinido para asegurar que el servidor pueda interpretar correctamente 
+        /// los datos recibidos. La longitud de cada parámetro es codificada antes del propio dato.
+        /// </remarks>
         public static string ConstructInfoSobrePacket(string sessionToken, string username, string infoSobre)
         {
-            // Longitudes de los parámetros
+            // Longitudes de los parámetros (en formato de dos dígitos)
             string tokenLengthStr = sessionToken.Length.ToString("D2"); // Longitud del token (con 2 dígitos)
             string usernameLengthStr = username.Length.ToString("D2"); // Longitud del nombre de usuario (con 2 dígitos)
             string infoSobreLengthStr = infoSobre.Length.ToString("D2"); // Longitud de la info sobre (con 2 dígitos)
@@ -85,14 +109,26 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete para mostrar la lista de usuarios, siguiendo un formato de protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario del cliente que realiza la solicitud.</param>
+        /// <returns>Una cadena que representa el paquete con la información necesaria para mostrar los usuarios, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete se construye concatenando los valores de los parámetros, precedidos por sus longitudes en dos dígitos.
+        /// El paquete incluye un identificador de acción y el token de sesión con el nombre de usuario del cliente.
+        /// Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos.
+        /// </remarks>
         public static string ConstructShowUsersPacket(string sessionToken, string username)
         {
-            string tokenLengthStr = sessionToken.Length.ToString("D2");
-            string usernameLengthStr = username.Length.ToString("D2");
+            // Longitudes de los parámetros (en formato de dos dígitos)
+            string tokenLengthStr = sessionToken.Length.ToString("D2"); // Longitud del token (con 2 dígitos)
+            string usernameLengthStr = username.Length.ToString("D2"); // Longitud del nombre de usuario (con 2 dígitos)
 
             // Construcción del paquete siguiendo el protocolo
             return $"2{"08"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}\n";
-
         }
 
 
@@ -314,16 +350,29 @@ namespace AgendaEscritorio.service
         }
 
 
+        /// <summary>
+        /// Construye un paquete para eliminar un rol de un usuario, siguiendo el formato del protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+        /// <param name="connectedUsername">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+        /// <param name="roleToDelete">El nombre del rol que se va a eliminar.</param>
+        /// <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación del rol, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el rol que se va a eliminar,
+        /// con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+        /// Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos.
+        /// </remarks>
         public static string ConstructDeleteRolePacket(string sessionToken, string connectedUsername, string roleToDelete)
         {
-            // Calcular los offsets para cada campo.
+            // Calcular los offsets para cada campo (longitud de cada parámetro en dos dígitos)
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
             string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
             string roleToDeleteOffset = roleToDelete.Length.ToString("D2");
 
-            // Construir el paquete
+            // Construir el paquete siguiendo el protocolo
             return $"2{"11"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleToDeleteOffset}{roleToDelete}\n";
         }
+
 
 
         /// <summary>
@@ -458,11 +507,23 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Construye un paquete para crear un nuevo grupo, siguiendo el formato del protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+        /// <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+        /// <param name="nombreGrupo">El nombre del nuevo grupo que se va a crear.</param>
+        /// <returns>Una cadena que representa el paquete con los parámetros necesarios para la creación del grupo, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo a crear,
+        /// con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+        /// Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la creación del grupo.
+        /// </remarks>
         public static string ConstructCreateGroupPacket(string sessionToken, string username, string nombreGrupo)
         {
-            // Calcular los offsets
+            // Calcular los offsets para cada parámetro (longitud de cada campo en dos dígitos)
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario conectado
             string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
 
             // Construir y devolver el paquete
@@ -470,63 +531,125 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete para eliminar un grupo, siguiendo el formato del protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+        /// <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+        /// <param name="nombreGrupo">El nombre del grupo que se desea eliminar.</param>
+        /// <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación del grupo, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo a eliminar,
+        /// con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+        /// Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la eliminación del grupo.
+        /// Además, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+        /// </remarks>
         public static string ConstructDeleteGroupPacket(string sessionToken, string username, string nombreGrupo)
         {
-            // Calcular los offsets
+            // Calcular los offsets para cada parámetro (longitud de cada campo en dos dígitos)
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario conectado
             string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
 
-            // Construir el paquete
+            // Construir el paquete siguiendo el formato del protocolo
             string packet = $"2{"16"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
 
-            // Mostrar el paquete generado en un MessageBox
+            // Mostrar el paquete generado en un MessageBox (para depuración)
             MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Retornar el paquete
+            // Retornar el paquete generado
             return packet;
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete para eliminar la agenda asociada a un grupo, siguiendo el formato del protocolo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+        /// <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+        /// <param name="nombreGrupo">El nombre del grupo cuya agenda se desea eliminar.</param>
+        /// <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación de la agenda del grupo, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo cuya agenda
+        /// se desea eliminar, con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+        /// Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la eliminación de la agenda del grupo.
+        /// Además, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+        /// </remarks>
         public static string ConstructDeleteGroupAgendaPacket(string sessionToken, string username, string nombreGrupo)
         {
-            // Calcular los offsets
+            // Calcular los offsets para cada parámetro (longitud de cada campo en dos dígitos)
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario conectado
             string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
 
             // Construir el paquete con la acción correspondiente para eliminar la agenda grupal (acción 17)
             string packet = $"2{"17"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
 
-            // Mostrar el paquete generado (puedes quitarlo si no lo necesitas)
+            // Mostrar el paquete generado en un MessageBox (para depuración)
             MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Retornar el paquete
+            // Retornar el paquete generado
             return packet;
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete para invitar a un usuario a un grupo específico, siguiendo el formato del protocolo definido.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que está realizando la invitación.</param>
+        /// <param name="username">El nombre de usuario del cliente que está enviando la invitación.</param>
+        /// <param name="nombreGrupo">El nombre del grupo al cual se desea invitar al usuario.</param>
+        /// <param name="sobrenombreUsuario">El sobrenombre del usuario que se va a invitar.</param>
+        /// <returns>Una cadena que representa el paquete con los parámetros necesarios para la invitación, listo para ser enviado al servidor.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros: el token de sesión, el nombre de usuario del que envía la invitación,
+        /// el nombre del grupo al que se le invita y el sobrenombre del usuario invitado. Estos parámetros son precedidos por su longitud 
+        /// representada en dos dígitos para asegurar que el servidor pueda leer y procesar correctamente los datos.
+        /// También, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+        /// </remarks>
         public static string ConstructInviteUserPacket(string sessionToken, string username, string nombreGrupo, string sobrenombreUsuario)
         {
-            // Calcular los offsets
-            string sessionTokenOffset = sessionToken.Length.ToString("D2");
-            string usernameOffset = username.Length.ToString("D2");
-            string groupNameOffset = nombreGrupo.Length.ToString("D2");
-            string nicknameOffset = sobrenombreUsuario.Length.ToString("D2");
+            // Calcular los offsets (longitudes) de cada parámetro
+            string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
+            string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
+            string nicknameOffset = sobrenombreUsuario.Length.ToString("D2"); // Longitud del sobrenombre del usuario
 
             // Construir el paquete con la acción correspondiente para invitar a un usuario (acción 21)
             string packet = $"2{"21"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}{nicknameOffset}{sobrenombreUsuario}\n";
 
-            // Mostrar el paquete en un MessageBox
+            // Mostrar el paquete generado para depuración
             MessageBox.Show($"Paquete generado:\n{packet}", "Vista previa del paquete", MessageBoxButton.OK, MessageBoxImage.Information);
 
+            // Retornar el paquete generado
             return packet;
         }
 
 
+
+        /// <summary>
+        /// Construye un paquete para crear o mostrar una agenda, incluyendo información sobre si es una agenda grupal o personal.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que solicita la creación o visualización de la agenda.</param>
+        /// <param name="username">El nombre de usuario del cliente que está interactuando con la agenda.</param>
+        /// <param name="isGrupal">Indica si la agenda es grupal o no. True si es grupal, False si es personal.</param>
+        /// <param name="groupName">El nombre del grupo asociado a la agenda, opcional, solo se usa si la agenda es grupal.</param>
+        /// <returns>Una cadena que representa el paquete listo para ser enviado al servidor para la creación o consulta de la agenda.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros:
+        /// - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+        /// - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+        /// - Un conjunto de 2 bytes vacíos, representado por "00".
+        /// - Un byte que indica si la agenda es grupal (1) o personal (0).
+        /// - Si la agenda es grupal, se incluye el nombre del grupo con su longitud también representada por 2 dígitos.
+        /// Este paquete está diseñado para seguir el protocolo de comunicación específico entre el cliente y el servidor.
+        /// </remarks>
         public static string ConstructAgendaPacket(string sessionToken, string username, bool isGrupal, string groupName = "")
         {
-            // Calcular los offsets
+            // Calcular los offsets (longitudes) de los parámetros
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
             string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
 
@@ -548,7 +671,7 @@ namespace AgendaEscritorio.service
                 packet += $"{groupNameOffset}{groupName}";
             }
 
-            // Retornar el paquete
+            // Retornar el paquete generado
             MessageBox.Show($"Paquete generado:\n{packet}", "Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
             return packet;
         }
@@ -560,54 +683,104 @@ namespace AgendaEscritorio.service
 
 
 
-        // Método para construir el paquete de solicitud de grupos propios
+        /// <summary>
+        /// Construye un paquete para solicitar los grupos que el usuario posee (grupos de los cuales es administrador o creador).
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario que solicita los grupos que posee.</param>
+        /// <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de grupos propios.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros:
+        /// - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+        /// - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+        /// La acción para esta solicitud está identificada por el código "18" en el protocolo.
+        /// Este paquete sigue el formato específico requerido para solicitar los grupos que un usuario posee.
+        /// </remarks>
         public static string ConstructViewOwnedGroupsPacket(string sessionToken, string username)
         {
-            // Calcular los offsets
+            // Calcular los offsets (longitudes) de los parámetros
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
 
             // Construir el paquete
             string packet = $"2{"18"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
 
-            // Mostrar el paquete generado en un MessageBox
+            // Mostrar el paquete generado en un MessageBox para su revisión
             MessageBox.Show($"Paquete generado:\n{packet}", "View Owned Groups Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Retornar el paquete
+            // Retornar el paquete generado
             return packet;
         }
 
 
 
-        // Método para construir el paquete de solicitud de grupos donde el usuario es miembro
+        /// <summary>
+        /// Construye un paquete para solicitar los grupos en los que el usuario es miembro.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario que solicita los grupos donde es miembro.</param>
+        /// <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de grupos de membresía.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros:
+        /// - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+        /// - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+        /// La acción para esta solicitud está identificada por el código "19" en el protocolo.
+        /// Este paquete sigue el formato específico requerido para solicitar los grupos donde el usuario es miembro.
+        /// </remarks>
         public static string ConstructViewMembershipGroupsPacket(string sessionToken, string username)
         {
-            // Calcular los offsets
+            // Calcular los offsets (longitudes) de los parámetros
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
 
-            // Construir y devolver el paquete
+            // Construir el paquete y devolverlo
             return $"2{"19"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
         }
 
 
 
-        // Método para construir el paquete de solicitud de ver todos los grupos
+        /// <summary>
+        /// Construye un paquete para solicitar ver todos los grupos disponibles.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario que solicita la información sobre todos los grupos.</param>
+        /// <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de todos los grupos.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros:
+        /// - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+        /// - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+        /// La acción para esta solicitud está identificada por el código "20" en el protocolo.
+        /// Este paquete sigue el formato específico requerido para solicitar la lista completa de grupos.
+        /// </remarks>
         public static string ConstructViewAllGroupsPacket(string sessionToken, string username)
         {
-            // Calcular los offsets
+            // Calcular los offsets (longitudes) de los parámetros
             string sessionTokenOffset = sessionToken.Length.ToString("D2");  // Longitud del token de sesión
-            string usernameOffset = username.Length.ToString("D2");          // Longitud del usuario conectado
+            string usernameOffset = username.Length.ToString("D2");          // Longitud del nombre de usuario
 
-            // Construir y devolver el paquete
+            // Construir el paquete y devolverlo
             return $"2{"20"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
         }
 
 
 
+        /// <summary>
+        /// Construye un paquete para solicitar la vista del mes en el sistema.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario que solicita la vista del mes.</param>
+        /// <returns>Una cadena que representa el paquete listo para ser enviado al servidor para solicitar la vista del mes.</returns>
+        /// <remarks>
+        /// El paquete incluye los siguientes parámetros:
+        /// - Token de sesión con su longitud precedida por 2 dígitos.
+        /// - Nombre de usuario con su longitud precedida por 2 dígitos.
+        /// - Un conjunto de 2 bytes vacíos ("00") para completar el paquete.
+        /// - Información adicional estática como "109IOCtest11" al final del paquete.
+        /// Este paquete sigue el formato específico requerido para mostrar la vista de un mes.
+        /// </remarks>
         public static string ConstructShowMonthPacket(string sessionToken, string username)
         {
-            // Calcular los offsets basados en las longitudes de los datos
+            // Calcular los offsets (longitudes) de los parámetros
             string sessionTokenOffset = sessionToken.Length.ToString("D2");
             string usernameOffset = username.Length.ToString("D2");
 
@@ -616,9 +789,8 @@ namespace AgendaEscritorio.service
 
             // Crear el paquete con la estructura adecuada
             return $"4{"01"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{filler}109IOCtest11\n";
-
-
         }
+
 
 
         /// <summary>
@@ -711,6 +883,178 @@ namespace AgendaEscritorio.service
             return response;
         }
 
+
+        /// <summary>
+        /// Genera un paquete para insertar un tag en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <param name="fecha">Fecha en formato DD/MM/YYYY.</param>
+        /// <param name="nuevoTag">Nuevo tag a insertar.</param>
+        /// <returns>El paquete para insertar el tag en formato string.</returns>
+        public static string ConstructInsertTagPacket(string sessionToken, string username, string fecha, string nuevoTag)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string fechaLengthStr = fecha.Length.ToString("D2");
+            string nuevoTagLengthStr = nuevoTag.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo para insertar el tag
+            string response = $"4{"08"}" + // Acción 08: Insertar tag
+                              $"{tokenLengthStr}{sessionToken}" + // Longitud y token de sesión
+                              $"{usernameLengthStr}{username}" + // Longitud y nombre de usuario
+                              $"{fechaLengthStr}{fecha}" + // Longitud y fecha
+                              $"{nuevoTagLengthStr}{nuevoTag}"; // Longitud y nuevo tag
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+
+
+        /// <summary>
+        /// Genera un paquete para eliminar un tag en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <param name="fecha">Fecha en formato DD/MM/YYYY.</param>
+        /// <param name="tagAEliminar">Tag a eliminar.</param>
+        /// <returns>El paquete para eliminar el tag en formato string.</returns>
+        public static string ConstructEliminarTagPacket(string sessionToken, string username, string fecha, string tagAEliminar)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string fechaLengthStr = fecha.Length.ToString("D2");
+            string tagAEliminarLengthStr = tagAEliminar.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo para eliminar el tag
+            string response = $"4{"09"}" + // Acción 09: Eliminar tag
+                              $"{tokenLengthStr}{sessionToken}" + // Longitud y token de sesión
+                              $"{usernameLengthStr}{username}" + // Longitud y nombre de usuario
+                              $"{fechaLengthStr}{fecha}" + // Longitud y fecha
+                              $"{tagAEliminarLengthStr}{tagAEliminar}"; // Longitud y tag a eliminar
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+
+        /// <summary>
+        /// Genera un paquete para buscar días por tag.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario.</param>
+        /// <param name="username">Nombre de usuario.</param>
+        /// <param name="grupal">Indica si la búsqueda es grupal.</param>
+        /// <param name="tag">Tag a buscar.</param>
+        /// <param name="groupName">Nombre del grupo (si aplica).</param>
+        /// <returns>El paquete de búsqueda de tag en formato string.</returns>
+        public static string ConstructSearchTagPacket(string sessionToken, string username, bool grupal, string tag, string groupName = null)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string tagLengthStr = tag.Length.ToString("D2");
+            string groupNameLengthStr = grupal ? groupName.Length.ToString("D2") : "00";
+
+            // Byte grupal: 0 si no es grupal, 1 si es grupal
+            string grupalByte = grupal ? "1" : "0";
+
+            // Construcción del paquete
+            string packet = $"4{"10"}" + // Acción 10: Mostrar resultados por búsqueda de tag
+                            $"{tokenLengthStr}{sessionToken}" + // Offset y token
+                            $"{usernameLengthStr}{username}" + // Offset y usuario
+                            "00" + // 2 bytes de relleno
+                            $"{grupalByte}" + // Byte grupal
+                            $"{tagLengthStr}{tag}"; // Offset y tag
+
+            // Si es grupal, añadir el nombre del grupo
+            if (grupal)
+            {
+                packet += $"{groupNameLengthStr}{groupName}";
+            }
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(packet);
+
+            return packet;
+        }
+
+
+
+        /// <summary>
+        /// Genera un paquete para editar el contenido de un evento en la agenda.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <param name="fecha">Fecha del evento a editar (formato DD/MM/YYYY).</param>
+        /// <param name="nuevoContenido">Nuevo contenido para el evento.</param>
+        /// <param name="esGrupal">Indica si es un evento grupal.</param>
+        /// <returns>El paquete para editar el evento en formato string.</returns>
+        public static string ConstructModificarEventoPacket(string sessionToken, string username, string fecha, string nuevoContenido, bool esGrupal)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string fechaLengthStr = fecha.Length.ToString("D2");
+            string nuevoContenidoLengthStr = nuevoContenido.Length.ToString("D4"); // 4 bytes para el nuevo contenido
+
+            // Longitud de los valores de relleno (2 bytes)
+            string rellenoLengthStr = "00"; // 2 bytes de relleno (00)
+
+            // Longitud para indicar si es grupal (1 byte)
+            byte grupalByte = (byte)(esGrupal ? 1 : 0);
+
+            // Construcción del paquete siguiendo el protocolo para editar el contenido
+            string response = $"4{"07"}" + // Acción 07: Editar contenido
+                              $"{tokenLengthStr}{sessionToken}" + // Longitud y token de sesión
+                              $"{usernameLengthStr}{username}" + // Longitud y nombre de usuario
+                              $"{fechaLengthStr}{fecha}" + // Longitud y fecha
+                              $"{nuevoContenidoLengthStr}{nuevoContenido}" + // Longitud y nuevo contenido
+                              $"{rellenoLengthStr}00" + // Relleno (2 bytes)
+                              $"{grupalByte}"; // Indicador de si es grupal (1 byte)
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
+
+
+
+        /// <summary>
+        /// Genera un paquete para bloquear un día para edición en una agenda grupal.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario conectado.</param>
+        /// <param name="username">Nombre de usuario conectado.</param>
+        /// <param name="fecha">Fecha del día a bloquear (formato DD/MM/YYYY).</param>
+        /// <param name="nombreGrupo">Nombre del grupo.</param>
+        /// <returns>El paquete para bloquear el día en formato string.</returns>
+        public static string ConstructBloquearDiaEdicionPacket(string sessionToken, string username, string fecha, string nombreGrupo)
+        {
+            // Longitudes de los parámetros
+            string tokenLengthStr = sessionToken.Length.ToString("D2");
+            string usernameLengthStr = username.Length.ToString("D2");
+            string fechaLengthStr = fecha.Length.ToString("D2");
+            string nombreGrupoLengthStr = nombreGrupo.Length.ToString("D2");
+
+            // Construcción del paquete siguiendo el protocolo para bloquear el día para edición
+            string response = $"4{"11"}" + // Acción 11: Bloquear edición de día
+                              $"{tokenLengthStr}{sessionToken}" + // Longitud y token de sesión
+                              $"{usernameLengthStr}{username}" + // Longitud y nombre de usuario
+                              $"{fechaLengthStr}{fecha}" + // Longitud y fecha
+                              $"{nombreGrupoLengthStr}{nombreGrupo}"; // Longitud y nombre del grupo
+
+            // Mensaje de verificación temporal (opcional)
+            MessageBox.Show(response);
+
+            return response;
+        }
 
 
 

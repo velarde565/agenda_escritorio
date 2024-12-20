@@ -87,6 +87,12 @@
             <param name="response">The response message from the server.</param>
             <returns>Returns true if login is successful, false otherwise.</returns>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.SendHelpRequestAsync">
+            <summary>
+            Asynchronously sends a help request to the server.
+            </summary>
+            <returns>Returns true if the request was successful, false otherwise.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.RequestUserDataAsync(System.String,System.String,System.String)">
             <summary>
             Asynchronously requests the user data from the server using the session token and username.
@@ -169,7 +175,7 @@
             <param name="permisos">El arreglo de permisos (booleanos) que se asignarán al rol del usuario.</param>
             <returns>Un código de respuesta del servidor (éxito o error).</returns>
         </member>
-        <member name="M:AgendaEscritorio.service.Client.SendModoGestionAsync(System.String,System.String,System.Boolean)">
+        <member name="M:AgendaEscritorio.service.Client.SendModoGestionAsync(System.String,System.String)">
             <summary>
             Envía una solicitud al servidor para activar o desactivar el modo gestión. Los datos se envían y reciben cifrados con AES.
             </summary>
@@ -258,6 +264,40 @@
             Procesa la respuesta del servidor después de intentar crear un usuario.
             </summary>
             <param name="response">La respuesta recibida del servidor que contiene el estado de la solicitud de creación de usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestAdvanceMonthAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor avanzar un mes en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessAdvanceMonthResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor tras solicitar avanzar un mes en la agenda.
+            </summary>
+            <param name="response">Respuesta desencriptada del servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestGoBackMonthAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor retroceder un mes en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestAdvanceYearAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor avanzar un año en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestGoBackYearAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor retroceder un año en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestCreateDayAsync(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.String)">
             <summary>
@@ -401,7 +441,7 @@
             <returns>Cadena que representa el paquete de datos para editar los permisos de un usuario.</returns>
             <exception cref="T:System.ArgumentException">Lanzado si los permisos no tienen exactamente 7 valores (0 o 1).</exception>
         </member>
-        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructModoGestionPacket(System.String,System.String,System.Boolean)">
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructModoGestionPacket(System.String,System.String)">
             <summary>
             Construye un paquete para activar o desactivar el Modo Gestión.
             </summary>
@@ -421,6 +461,38 @@
             <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
             <param name="nombreGrupo">Nombre del grupo asociado al evento, si es un evento grupal.</param>
             <returns>Cadena que representa el paquete de datos para crear un evento.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAdvanceMonthPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para avanzar un mes en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <returns>El paquete para avanzar un mes en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructGoBackMonthPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para retroceder un mes en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <returns>El paquete para retroceder un mes en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAdvanceYearPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para avanzar un año en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <returns>El paquete para avanzar un año en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructGoBackYearPacket(System.String,System.String)">
+            <summary>
+            Genera un paquete para retroceder un año en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <returns>El paquete para retroceder un año en formato string.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.LecturaPartesPaquete(System.String)">
             <summary>
@@ -461,16 +533,30 @@
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.PreviousMonth_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
-            Cambia al mes anterior y actualiza el calendario.
+            Cambia al mes anterior, actualiza el calendario y solicita al servidor retroceder un mes.
             </summary>
             <param name="sender">El objeto que disparó el evento (el botón de mes anterior).</param>
             <param name="e">Los argumentos del evento.</param>
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.NextMonth_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
-            Cambia al siguiente mes y actualiza el calendario.
+            Cambia al siguiente mes, actualiza el calendario y solicita al servidor avanzar un mes.
             </summary>
             <param name="sender">El objeto que disparó el evento (el botón de siguiente mes).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.PreviousYear_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cambia al año anterior, actualiza el calendario y solicita al servidor retroceder un año.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de año anterior).</param>
+            <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.NextYear_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cambia al siguiente año, actualiza el calendario y solicita al servidor avanzar un año.
+            </summary>
+            <param name="sender">El objeto que disparó el evento (el botón de siguiente año).</param>
             <param name="e">Los argumentos del evento.</param>
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.CloseButton_Click(System.Object,System.Windows.RoutedEventArgs)">
@@ -886,6 +972,18 @@
             </summary>
             <param name="sender">El objeto que desencadena el evento, en este caso el botón para activar el modo gestión.</param>
             <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnEliminarRol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para mostrar el formulario de eliminación de rol.
+            Muestra el panel para eliminar el rol y limpia el campo de texto.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.ConfirmarEliminarRol_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Evento que se llama al hacer clic en el botón para confirmar la eliminación de un rol.
+            Valida el campo de entrada, solicita la eliminación del rol al servidor, y limpia los campos después.
+            </summary>
         </member>
         <member name="M:AgendaEscritorio.view.UserManagementView.BtnVolver_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>

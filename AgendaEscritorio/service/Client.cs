@@ -65,6 +65,10 @@ namespace AgendaEscritorio.service
         public string GetSessionToken() => sessionToken;
 
 
+        /// <summary>
+        /// Constructor de la clase <see cref="Client"/>.
+        /// Inicializa el servicio de criptografía para ser utilizado en las operaciones relacionadas con la seguridad.
+        /// </summary>
         public Client()
         {
             cryptoService = new CryptographyService(); // Inicializa el servicio de criptografía
@@ -72,6 +76,11 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Envía la clave pública del cliente al servidor de forma asincrónica.
+        /// Establece la comunicación con el servidor para enviar la clave pública y procesar la respuesta recibida.
+        /// </summary>
+        /// <returns>Una tarea asincrónica que representa el envío de la clave pública y el procesamiento de la respuesta del servidor.</returns>
         public async Task SendClientPublicKeyAsync()
         {
             try
@@ -133,6 +142,14 @@ namespace AgendaEscritorio.service
 
 
 
+
+        /// <summary>
+        /// Procesa la clave AES encriptada recibida en la respuesta.
+        /// Extrae la longitud de la clave, la desencripta usando la clave privada del cliente,
+        /// y luego la almacena en el servicio de criptografía.
+        /// </summary>
+        /// <param name="response">La respuesta que contiene la clave AES encriptada en formato Base64.</param>
+        /// <returns>Una tarea asincrónica que representa el proceso de desencriptación y almacenamiento de la clave AES.</returns>
         private async Task ProcessEncryptedAESKeyAsync(string response)
         {
             try
@@ -634,6 +651,15 @@ namespace AgendaEscritorio.service
         }
 
 
+        /// <summary>
+        /// Envía una solicitud de apagado al servidor de forma asincrónica.
+        /// Construye un paquete de apagado utilizando el nombre de usuario, la contraseña y el token de sesión,
+        /// luego encripta el paquete y lo envía al servidor. Después procesa la respuesta encriptada recibida del servidor.
+        /// </summary>
+        /// <param name="username">El nombre de usuario que solicita el apagado del servidor.</param>
+        /// <param name="password">La contraseña asociada al nombre de usuario para la autenticación.</param>
+        /// <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+        /// <returns>Una tarea asincrónica que representa el envío de la solicitud de apagado y el procesamiento de la respuesta del servidor.</returns>
         public async Task SendShutdownRequestAsync(string username, string password, string sessionToken)
         {
             try
@@ -675,6 +701,7 @@ namespace AgendaEscritorio.service
                 MessageBox.Show($"Error durante la solicitud de apagado: {ex.Message}");
             }
         }
+
 
 
 
@@ -894,6 +921,16 @@ namespace AgendaEscritorio.service
             }
         }
 
+        /// <summary>
+        /// Solicita la eliminación de un rol para un usuario de forma asincrónica.
+        /// Construye un paquete de solicitud para eliminar el rol, lo encripta con AES y lo envía al servidor.
+        /// Luego, procesa la respuesta del servidor para determinar el éxito o fracaso de la operación.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+        /// <param name="username">El nombre de usuario al que se le va a eliminar el rol.</param>
+        /// <param name="rolAEliminar">El nombre del rol que se va a eliminar.</param>
+        /// <returns>Una tarea asincrónica que representa la solicitud de eliminación del rol y el procesamiento de la respuesta del servidor.
+        /// Devuelve <c>true</c> si el rol fue eliminado correctamente, o <c>false</c> en caso contrario.</returns>
         public async Task<bool> RequestDeleteRoleAsync(string sessionToken, string username, string rolAEliminar)
         {
             try
@@ -947,6 +984,12 @@ namespace AgendaEscritorio.service
         }
 
 
+        /// <summary>
+        /// Procesa la respuesta recibida del servidor después de solicitar la eliminación de un rol.
+        /// Valida el protocolo, la acción, y el token recibido, asegurándose de que corresponda con la sesión actual.
+        /// </summary>
+        /// <param name="response">La respuesta en texto del servidor, que incluye el protocolo, la acción y el token.</param>
+        /// <returns>Devuelve <c>true</c> si la eliminación del rol fue exitosa, o <c>false</c> en caso de error o discrepancia en los datos.</returns>
         private bool ProcessDeleteRoleResponse(string response)
         {
             try
@@ -1661,6 +1704,15 @@ namespace AgendaEscritorio.service
             }
         }
 
+        /// <summary>
+        /// Solicita la lista de usuarios al servidor de manera asincrónica.
+        /// Envía una solicitud cifrada al servidor, recibe y procesa las respuestas,
+        /// y finalmente retorna la lista de usuarios encontrados.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+        /// <param name="username">El nombre de usuario del que se solicita la lista de usuarios.</param>
+        /// <returns>Una tarea asincrónica que representa la solicitud y procesamiento de los usuarios.
+        /// Devuelve una lista de cadenas que contiene la información de los usuarios, o una lista vacía si no se encuentran usuarios.</returns>
         public async Task<List<string>> RequestShowUsersAsync(string sessionToken, string username)
         {
             try
@@ -1744,6 +1796,13 @@ namespace AgendaEscritorio.service
             }
         }
 
+
+        /// <summary>
+        /// Procesa la respuesta del servidor para mostrar la información de un usuario en formato legible.
+        /// Extrae los datos de un paquete de tipo 239 (información de usuario) y los formatea para su visualización.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor que contiene los datos del usuario en un formato codificado.</param>
+        /// <returns>Una cadena formateada con la información del usuario, incluyendo el nombre de usuario, el nombre completo y el rol.</returns>
         private string ProcessShowUsersResponse(string response)
         {
             try
@@ -1882,6 +1941,14 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Solicita al servidor la agenda de un usuario o de un grupo, dependiendo de si la agenda es grupal o individual.
+        /// La solicitud es enviada al servidor encriptada, y la respuesta es procesada posteriormente.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión que autentica la solicitud del cliente.</param>
+        /// <param name="username">El nombre de usuario que solicita la agenda.</param>
+        /// <param name="isGrupal">Indica si la agenda solicitada es para un grupo o para un usuario individual.</param>
+        /// <param name="groupName">El nombre del grupo, si la agenda solicitada es para un grupo. Este parámetro es opcional.</param>
         public async Task RequestShowAgendaAsync(string sessionToken, string username, bool isGrupal, string groupName = "")
         {
             try
@@ -1917,6 +1984,13 @@ namespace AgendaEscritorio.service
             }
         }
 
+
+        /// <summary>
+        /// Procesa la respuesta del servidor relacionada con la solicitud de mostrar la agenda.
+        /// Dependiendo del código recibido en la respuesta, se identifica el estado de la muestra de la agenda,
+        /// incluyendo el inicio, los días del mes y el fin de la muestra de la agenda.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor, que indica el estado de la solicitud de la agenda.</param>
         private void ProcessShowAgendaResponse(string response)
         {
             if (response.StartsWith("401"))
@@ -1939,6 +2013,7 @@ namespace AgendaEscritorio.service
                 throw new Exception("Respuesta desconocida del servidor.");
             }
         }
+
 
         /// <summary>
         /// Solicita al servidor avanzar un mes en la agenda.
@@ -2056,6 +2131,11 @@ namespace AgendaEscritorio.service
         }
 
 
+        /// <summary>
+        /// Procesa la respuesta del servidor relacionada con la solicitud de retroceder al mes anterior en la agenda.
+        /// Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el inicio de la muestra de la agenda.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para retroceder de mes.</param>
         private void ProcessGoBackMonthResponse(string response)
         {
             if (response.StartsWith("1604"))
@@ -2131,6 +2211,11 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Procesa la respuesta del servidor relacionada con la solicitud de avanzar al siguiente año en la agenda.
+        /// Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el avance exitoso del año.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para avanzar de año.</param>
         private void ProcessAdvanceYearResponse(string response)
         {
             if (response.StartsWith("402"))
@@ -2158,6 +2243,7 @@ namespace AgendaEscritorio.service
                 throw new Exception("Respuesta desconocida del servidor.");
             }
         }
+
 
 
 
@@ -2206,6 +2292,11 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Procesa la respuesta del servidor relacionada con la solicitud de retroceder un año en la agenda.
+        /// Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el retroceso exitoso del año.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para retroceder de año.</param>
         private void ProcessGoBackYearResponse(string response)
         {
             if (response.StartsWith("1604"))
@@ -2346,6 +2437,13 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Solicita la creación de un nuevo grupo en el servidor, enviando el paquete con los datos necesarios para la creación.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario del solicitante.</param>
+        /// <param name="nombreGrupo">El nombre del grupo que se desea crear.</param>
+        /// <returns>Una tarea asincrónica que representa la operación de la solicitud de creación de grupo.</returns>
         public async Task RequestCreateGroupAsync(string sessionToken, string username, string nombreGrupo)
         {
             try
@@ -2381,7 +2479,13 @@ namespace AgendaEscritorio.service
             }
         }
 
-        // Procesar la respuesta del servidor
+
+
+        /// <summary>
+        /// Procesa la respuesta del servidor para la solicitud de creación de grupo.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor que contiene el estado de la creación del grupo.</param>
+        /// <exception cref="Exception">Lanza excepciones con mensajes específicos en caso de errores o respuestas inesperadas del servidor.</exception>
         private void ProcessCreateGroupResponse(string response)
         {
             if (response.StartsWith("226"))
@@ -2413,6 +2517,14 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Solicita la eliminación de un grupo al servidor.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario que solicita la eliminación del grupo.</param>
+        /// <param name="nombreGrupo">El nombre del grupo que se desea eliminar.</param>
+        /// <returns>Una tarea asincrónica que representa la solicitud de eliminación de grupo.</returns>
+        /// <exception cref="Exception">Lanza excepciones si ocurre un error durante la solicitud o el procesamiento de la respuesta.</exception>
         public async Task RequestDeleteGroupAsync(string sessionToken, string username, string nombreGrupo)
         {
             try
@@ -2450,7 +2562,12 @@ namespace AgendaEscritorio.service
 
 
 
-        // Procesar la respuesta del servidor
+        /// <summary>
+        /// Procesa la respuesta del servidor al intentar eliminar un grupo.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor en formato de cadena.</param>
+        /// <exception cref="Exception">Lanza excepciones específicas dependiendo de la respuesta del servidor.
+        /// El error puede indicar problemas de permisos, inexistencia del grupo o respuestas desconocidas del servidor.</exception>
         private void ProcessDeleteGroupResponse(string response)
         {
             if (response.StartsWith("218"))
@@ -2480,6 +2597,14 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Realiza una solicitud asincrónica al servidor para eliminar la agenda de un grupo específico.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario para la autenticación.</param>
+        /// <param name="username">El nombre de usuario que solicita la eliminación de la agenda grupal.</param>
+        /// <param name="nombreGrupo">El nombre del grupo cuya agenda se desea eliminar.</param>
+        /// <returns>Una tarea asincrónica que representa la operación de solicitud de eliminación de la agenda grupal.</returns>
+        /// <exception cref="Exception">Lanza excepciones en caso de errores durante la solicitud, como errores de cifrado o respuestas inesperadas del servidor.</exception>
         public async Task RequestDeleteGroupAgendaAsync(string sessionToken, string username, string nombreGrupo)
         {
             try
@@ -2516,6 +2641,12 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Procesa la respuesta del servidor para la solicitud de eliminación de la agenda de un grupo.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor que se va a procesar.</param>
+        /// <exception cref="Exception">Lanza excepciones en caso de respuestas no esperadas o errores específicos del servidor, como falta de permisos o grupo inexistente.</exception>
         private void ProcessDeleteGroupAgendaResponse(string response)
         {
             if (response.StartsWith("218"))
@@ -2544,6 +2675,15 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Envía una solicitud para invitar a un usuario a un grupo.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario del solicitante que envía la invitación.</param>
+        /// <param name="nombreGrupo">El nombre del grupo al que se desea invitar al usuario.</param>
+        /// <param name="sobrenombreUsuario">El sobrenombre del usuario que se va a invitar al grupo.</param>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error en la solicitud o si la respuesta del servidor es inesperada.</exception>
         public async Task RequestInviteUserToGroupAsync(string sessionToken, string username, string nombreGrupo, string sobrenombreUsuario)
         {
             try
@@ -2579,6 +2719,14 @@ namespace AgendaEscritorio.service
             }
         }
 
+
+
+
+        /// <summary>
+        /// Procesa la respuesta del servidor después de intentar invitar a un usuario a un grupo.
+        /// </summary>
+        /// <param name="response">La respuesta recibida del servidor, que contiene el resultado de la solicitud de invitación.</param>
+        /// <exception cref="Exception">Lanza una excepción si la respuesta del servidor indica un error o si la respuesta es inesperada.</exception>
         private void ProcessInviteUserResponse(string response)
         {
             if (response.StartsWith("228"))
@@ -2618,6 +2766,14 @@ namespace AgendaEscritorio.service
 
 
 
+
+        /// <summary>
+        /// Solicita al servidor la lista de grupos que el usuario posee.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+        /// <param name="username">El nombre de usuario del propietario de los grupos.</param>
+        /// <returns>Una lista de nombres de los grupos que el usuario posee.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante la solicitud o el procesamiento de la respuesta del servidor.</exception>
         public async Task<List<string>> RequestViewOwnedGroupsAsync(string sessionToken, string username)
         {
             try
@@ -2692,6 +2848,12 @@ namespace AgendaEscritorio.service
 
 
 
+        /// <summary>
+        /// Procesa la respuesta del servidor para extraer el nombre de un grupo al que el usuario posee acceso.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor que contiene los detalles del grupo.</param>
+        /// <returns>El nombre del grupo extraído de la respuesta del servidor.</returns>
+        /// <exception cref="Exception">Lanza una excepción si el formato de la respuesta no es el esperado o si hay errores en la validación de los datos.</exception>
         private string ProcessViewOwnedGroupsResponse(string response)
         {
             try
@@ -2738,6 +2900,14 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Solicita al servidor los grupos de los cuales el usuario es miembro y devuelve una lista con los nombres de esos grupos.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que autentica la solicitud.</param>
+        /// <param name="username">El nombre de usuario del solicitante.</param>
+        /// <returns>Una lista de nombres de grupos a los que el usuario pertenece.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante el proceso de solicitud o si la respuesta del servidor es inesperada.</exception>
         public async Task<List<string>> RequestViewMembershipGroupsAsync(string sessionToken, string username)
         {
             try
@@ -2813,7 +2983,14 @@ namespace AgendaEscritorio.service
 
 
 
-        // Método para solicitar todos los grupos
+
+        /// <summary>
+        /// Solicita al servidor la lista de todos los grupos y devuelve una lista con los nombres de esos grupos.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario que autentica la solicitud.</param>
+        /// <param name="username">El nombre de usuario del solicitante.</param>
+        /// <returns>Una lista de nombres de todos los grupos disponibles.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante el proceso de solicitud o si la respuesta del servidor es inesperada.</exception>
         public async Task<List<string>> RequestViewAllGroupsAsync(string sessionToken, string username)
         {
             try
@@ -2889,7 +3066,13 @@ namespace AgendaEscritorio.service
 
 
 
-        // Método para procesar las respuestas de "Ver Grupos"
+
+        /// <summary>
+        /// Procesa la respuesta del servidor para extraer el nombre de un grupo según el formato del protocolo.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor en formato de protocolo.</param>
+        /// <returns>El nombre del grupo extraído de la respuesta.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error en el formato de la respuesta o si el token de sesión no coincide.</exception>
         private string ProcessViewGroupResponse(string response)
         {
             try
@@ -2926,6 +3109,15 @@ namespace AgendaEscritorio.service
         }
 
 
+
+        /// <summary>
+        /// Envía una solicitud al servidor para actualizar la información "Sobre" del usuario.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario asociado a la solicitud.</param>
+        /// <param name="infoSobre">La nueva información "Sobre" que se desea actualizar.</param>
+        /// <returns>Una tarea asincrónica que maneja el proceso de solicitud y respuesta del servidor.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante el proceso de cifrado, transmisión o respuesta del servidor.</exception>
         public async Task SendServerInfoUpdateRequestAsync(string sessionToken, string username, string infoSobre)
         {
             try
@@ -2980,6 +3172,14 @@ namespace AgendaEscritorio.service
 
 
 
+
+        /// <summary>
+        /// Envía una solicitud al servidor para mostrar los datos del mes actual para el usuario especificado.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario asociado a la solicitud.</param>
+        /// <returns>Una tarea asincrónica que realiza el proceso de solicitud y procesamiento de la respuesta del servidor.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante la construcción, cifrado, transmisión, o procesamiento de la respuesta del servidor.</exception>
         public async Task RequestShowMonthAsync(string sessionToken, string username)
         {
             try
@@ -3015,10 +3215,531 @@ namespace AgendaEscritorio.service
             }
         }
 
+
         private async Task ProcessShowMonthResponse(string response)
         {
 
         }
+
+
+
+
+        /// <summary>
+        /// Envía una solicitud al servidor para insertar un nuevo tag en una fecha específica del usuario.
+        /// </summary>
+        /// <param name="sessionToken">El token de sesión del usuario.</param>
+        /// <param name="username">El nombre de usuario asociado a la solicitud.</param>
+        /// <param name="fecha">La fecha en la que se desea insertar el tag, en el formato esperado por el servidor.</param>
+        /// <param name="nuevoTag">El contenido del tag que se desea insertar.</param>
+        /// <returns>Una tarea asincrónica que realiza el proceso de inserción del tag.</returns>
+        /// <exception cref="Exception">Lanza una excepción si ocurre un error durante el cifrado, envío, recepción o procesamiento de la respuesta del servidor.</exception>
+        public async Task InsertarTagAsync(string sessionToken, string username, string fecha, string nuevoTag)
+        {
+            // Lógica para enviar la solicitud al servidor
+            // Construcción del paquete para insertar el tag según el protocolo
+
+            string packet = ProtocolHelper.ConstructInsertTagPacket(sessionToken, username, fecha, nuevoTag);
+
+            // Cifrado y envío del paquete al servidor (similar a los otros métodos de solicitud)
+            byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(packet));
+            await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
+            await writer.FlushAsync();
+
+            // Leer y procesar la respuesta del servidor
+            string encryptedResponseBase64 = await reader.ReadLineAsync();
+            byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+            byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+            string response = Encoding.UTF8.GetString(decryptedResponse);
+
+            // Procesar la respuesta
+            ProcessInsertTagResponse(response);
+        }
+
+
+
+
+
+        /// <summary>
+        /// Procesa la respuesta del servidor tras intentar insertar un tag en la agenda.
+        /// </summary>
+        /// <param name="response">La respuesta del servidor en formato de string.</param>
+        /// <remarks>
+        /// Este método maneja diferentes códigos de respuesta del servidor, mostrando mensajes apropiados al usuario 
+        /// según el resultado de la operación. Incluye casos de éxito, errores específicos y errores desconocidos.
+        /// </remarks>
+        private void ProcessInsertTagResponse(string response)
+        {
+            switch (response)
+            {
+                case "425":
+                    // Confirmación de tag insertado con éxito
+                    MessageBox.Show("Tag insertado correctamente.");
+                    break;
+
+                case "230":
+                    // Notificación para miembros del grupo
+                    MessageBox.Show("El tag ha sido insertado. Notificación enviada a los miembros del grupo.");
+                    break;
+
+                case "1104":
+                    MessageBox.Show("Error: Fecha con formato incorrecto.");
+                    break;
+
+                case "9":
+                    MessageBox.Show("Error: No se pudo obtener el objeto de fecha.");
+                    break;
+
+                case "1605":
+                    MessageBox.Show("Error: Día no preinicializado.");
+                    break;
+
+                case "1606":
+                    MessageBox.Show("Error: Día no creado.");
+                    break;
+
+                case "1601":
+                    MessageBox.Show("Error: Objeto de agenda corrupto.");
+                    break;
+
+                case "1402":
+                    MessageBox.Show("Error: No perteneces al grupo.");
+                    break;
+
+                case "1404":
+                    MessageBox.Show("Error: El grupo no existe.");
+                    break;
+
+                case "1403":
+                    MessageBox.Show("Error: No tienes el bloqueo de edición.");
+                    break;
+
+                case "1505":
+                    MessageBox.Show("Error: El tag ya existe.");
+                    break;
+
+                case "1502":
+                    MessageBox.Show("Error: Ya hay 10 tags creados previamente.");
+                    break;
+
+                default:
+                    MessageBox.Show($"Error desconocido: {response}");
+                    break;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Solicita la eliminación de un tag en el servidor para una fecha específica.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario actual.</param>
+        /// <param name="username">Nombre de usuario del cliente.</param>
+        /// <param name="fecha">Fecha asociada al tag que se desea eliminar.</param>
+        /// <param name="tagAEliminar">Nombre del tag que se eliminará.</param>
+        /// <returns>Una tarea asincrónica que representa la operación de eliminación del tag.</returns>
+        /// <remarks>
+        /// Este método construye el paquete de eliminación de tag según el protocolo definido, lo cifra con AES, lo envía al servidor,
+        /// y posteriormente procesa la respuesta del servidor para determinar el resultado de la operación.
+        /// </remarks>
+        public async Task EliminarTagAsync(string sessionToken, string username, string fecha, string tagAEliminar)
+        {
+            // Construcción del paquete para eliminar el tag
+            string packet = ProtocolHelper.ConstructEliminarTagPacket(sessionToken, username, fecha, tagAEliminar);
+
+            // Cifrado y envío del paquete al servidor
+            byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(packet));
+            await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
+            await writer.FlushAsync();
+
+            // Leer y procesar la respuesta del servidor
+            string encryptedResponseBase64 = await reader.ReadLineAsync();
+            byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+            byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+            string response = Encoding.UTF8.GetString(decryptedResponse);
+
+            // Procesar la respuesta
+            ProcessEliminarTagResponse(response);
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// Procesa la respuesta del servidor tras intentar eliminar un tag.
+        /// </summary>
+        /// <param name="response">Respuesta del servidor tras la solicitud de eliminación del tag.</param>
+        /// <remarks>
+        /// El método interpreta los códigos de respuesta del servidor y muestra un mensaje correspondiente al usuario.
+        /// Maneja confirmaciones exitosas, notificaciones de grupo y diversos errores relacionados con la operación.
+        /// </remarks>
+        private void ProcessEliminarTagResponse(string response)
+        {
+            if (response.StartsWith("426"))
+            {
+                // Confirmación de tag eliminado con éxito
+                MessageBox.Show("Tag eliminado correctamente.");
+            }
+            else if (response.StartsWith("230"))
+            {
+                // Notificación para miembros del grupo
+                MessageBox.Show("El tag ha sido eliminado. Notificación enviada a los miembros del grupo.");
+            }
+            else
+            {
+                // Manejar errores
+                switch (response)
+                {
+                    case "1104":
+                        MessageBox.Show("Error: Fecha con formato incorrecto.");
+                        break;
+                    case "9":
+                        MessageBox.Show("Error: No se pudo obtener el objeto de fecha.");
+                        break;
+                    case "1605":
+                        MessageBox.Show("Error: Día no preinicializado.");
+                        break;
+                    case "1606":
+                        MessageBox.Show("Error: Día no creado.");
+                        break;
+                    case "1601":
+                        MessageBox.Show("Error: Objeto de agenda corrupto.");
+                        break;
+                    case "1402":
+                        MessageBox.Show("Error: No perteneces al grupo.");
+                        break;
+                    case "1404":
+                        MessageBox.Show("Error: El grupo no existe.");
+                        break;
+                    case "1403":
+                        MessageBox.Show("Error: No tienes el bloqueo de edición.");
+                        break;
+                    case "1504":
+                        MessageBox.Show("Error: El tag no existe.");
+                        break;
+                    default:
+                        MessageBox.Show("Error desconocido.");
+                        break;
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// Realiza una búsqueda de un tag en el servidor.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario.</param>
+        /// <param name="username">Nombre de usuario que realiza la búsqueda.</param>
+        /// <param name="grupal">Indica si la búsqueda es en un contexto grupal.</param>
+        /// <param name="tag">Nombre del tag a buscar.</param>
+        /// <param name="groupName">Nombre del grupo (opcional, requerido si es una búsqueda grupal).</param>
+        /// <remarks>
+        /// Este método cifra el paquete de búsqueda, lo envía al servidor y procesa la respuesta recibida.
+        /// En caso de error, muestra un mensaje apropiado.
+        /// </remarks>
+        public async Task SearchTagAsync(string sessionToken, string username, bool grupal, string tag, string groupName = null)
+        {
+            try
+            {
+                // Construir el paquete
+                string packet = ProtocolHelper.ConstructSearchTagPacket(sessionToken, username, grupal, tag, groupName);
+
+                // Cifrar y enviar el paquete al servidor
+                byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(packet));
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
+                await writer.FlushAsync();
+
+                // Leer y procesar la respuesta del servidor
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+
+                // Procesar la respuesta
+                ProcessSearchTagResponse(response);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Procesa la respuesta del servidor para la búsqueda de tags.
+        /// </summary>
+        /// <param name="response">Respuesta completa recibida del servidor.</param>
+        private void ProcessSearchTagResponse(string response)
+        {
+            // Lista para almacenar los días coincidentes
+            List<string> matchingDays = new List<string>();
+
+            // Dividir la respuesta en líneas
+            string[] lines = response.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            // Variable de control
+            bool readingResults = false;
+
+            foreach (string line in lines)
+            {
+                // Identificar el tipo de respuesta
+                if (line.StartsWith("1601"))
+                {
+                    MessageBox.Show("Error: El mostreo está corrupto.");
+                    return;
+                }
+                else if (line.StartsWith("105"))
+                {
+                    MessageBox.Show("Error: El usuario no existe.");
+                    return;
+                }
+                else if (line.StartsWith("1402"))
+                {
+                    MessageBox.Show("Error: No perteneces al grupo.");
+                    return;
+                }
+                else if (line.StartsWith("407"))
+                {
+                    MessageBox.Show("No hay resultados: No se encontraron coincidencias.");
+                    return;
+                }
+                else if (line.StartsWith("405"))
+                {
+                    // Inicio de resultados
+                    readingResults = true;
+                    continue;
+                }
+                else if (line.StartsWith("404"))
+                {
+                    // Fin de resultados
+                    readingResults = false;
+                    break;
+                }
+                else if (readingResults)
+                {
+                    // Día coincidente encontrado
+                    matchingDays.Add(line);
+                }
+                else
+                {
+                    // Manejar líneas inesperadas
+                    MessageBox.Show($"Respuesta desconocida: {line}");
+                    return;
+                }
+            }
+
+            // Mostrar los resultados al usuario
+            if (matchingDays.Count > 0)
+            {
+                string results = string.Join("\n", matchingDays);
+                MessageBox.Show($"Días coincidentes:\n{results}");
+            }
+            else
+            {
+                MessageBox.Show("No se encontraron días coincidentes.");
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Modifica un evento en el servidor.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión para la autenticación.</param>
+        /// <param name="username">Nombre de usuario para identificar al solicitante.</param>
+        /// <param name="fecha">Fecha del evento a modificar.</param>
+        /// <param name="nuevoContenido">Nuevo contenido o descripción del evento.</param>
+        /// <param name="esGrupal">Indica si el evento es grupal (true) o no (false).</param>
+        public async Task ModificarEventoAsync(string sessionToken, string username, string fecha, string nuevoContenido, bool esGrupal)
+        {
+            try
+            {
+                // Construcción del paquete para modificar el evento, con los parámetros proporcionados
+                string packet = ProtocolHelper.ConstructModificarEventoPacket(sessionToken, username, fecha, nuevoContenido, esGrupal);
+
+                // Cifrado del paquete antes de enviarlo al servidor
+                byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(packet));
+
+                // Enviar el paquete cifrado al servidor
+                await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
+                await writer.FlushAsync();
+
+                // Leer la respuesta del servidor, que estará cifrada
+                string encryptedResponseBase64 = await reader.ReadLineAsync();
+
+                // Desencriptar la respuesta
+                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                string response = Encoding.UTF8.GetString(decryptedResponse);
+
+                // Procesar la respuesta recibida del servidor
+                ProcessModificarEventoResponse(response);
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones
+                MessageBox.Show($"Error al modificar el evento: {ex.Message}");
+            }
+        }
+
+
+
+        /// <summary>
+        /// Procesa la respuesta recibida del servidor después de intentar modificar un evento.
+        /// </summary>
+        /// <param name="response">Respuesta del servidor tras la solicitud de modificación del evento.</param>
+        private void ProcessModificarEventoResponse(string response)
+        {
+            // Verificar si la respuesta indica que la modificación fue exitosa
+            if (response.StartsWith("426"))
+            {
+                // Confirmación de evento modificado con éxito
+                MessageBox.Show("Evento modificado correctamente.");
+            }
+            // Verificar si la respuesta indica que los miembros del grupo fueron notificados
+            else if (response.StartsWith("230"))
+            {
+                // Notificación para miembros del grupo
+                MessageBox.Show("El evento ha sido modificado. Notificación enviada a los miembros del grupo.");
+            }
+            else
+            {
+                // Manejar errores específicos basados en la respuesta recibida
+                switch (response)
+                {
+                    case "1104":
+                        MessageBox.Show("Error: Fecha con formato incorrecto.");
+                        break;
+                    case "9":
+                        MessageBox.Show("Error: No se pudo obtener el objeto de fecha.");
+                        break;
+                    case "1605":
+                        MessageBox.Show("Error: Día no preinicializado.");
+                        break;
+                    case "1606":
+                        MessageBox.Show("Error: Día no creado.");
+                        break;
+                    case "1601":
+                        MessageBox.Show("Error: Objeto de agenda corrupto.");
+                        break;
+                    case "1402":
+                        MessageBox.Show("Error: No perteneces al grupo.");
+                        break;
+                    case "1404":
+                        MessageBox.Show("Error: El grupo no existe.");
+                        break;
+                    case "1403":
+                        MessageBox.Show("Error: No tienes el bloqueo de edición.");
+                        break;
+                    default:
+                        // Caso para errores desconocidos
+                        MessageBox.Show("Error desconocido.");
+                        break;
+                }
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Realiza el bloqueo de edición de un día específico en el servidor.
+        /// </summary>
+        /// <param name="sessionToken">Token de sesión del usuario.</param>
+        /// <param name="username">Nombre de usuario que realiza la solicitud.</param>
+        /// <param name="fecha">Fecha del día que se desea bloquear.</param>
+        /// <param name="nombreGrupo">Nombre del grupo al que pertenece el usuario.</param>
+        public async Task BloquearDiaEdicionAsync(string sessionToken, string username, string fecha, string nombreGrupo)
+        {
+            // Construcción del paquete para bloquear el día en el servidor
+            string packet = ProtocolHelper.ConstructBloquearDiaEdicionPacket(sessionToken, username, fecha, nombreGrupo);
+
+            // Cifrado del paquete utilizando AES para garantizar la seguridad de la comunicación
+            byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(packet));
+
+            // Envío del paquete cifrado al servidor
+            await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
+            await writer.FlushAsync();
+
+            // Leer la respuesta cifrada del servidor
+            string encryptedResponseBase64 = await reader.ReadLineAsync();
+            byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+
+            // Desencriptar la respuesta con AES
+            byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+            string response = Encoding.UTF8.GetString(decryptedResponse);
+
+            // Procesar la respuesta del servidor
+            ProcessBloquearDiaEdicionResponse(response);
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// Procesa la respuesta recibida del servidor después de intentar bloquear la edición de un día.
+        /// </summary>
+        /// <param name="response">Respuesta completa recibida del servidor.</param>
+        private void ProcessBloquearDiaEdicionResponse(string response)
+        {
+            // Verificar si la respuesta es una confirmación exitosa de bloqueo de edición
+            if (response.StartsWith("426"))
+            {
+                // Mostrar mensaje de éxito
+                MessageBox.Show("El día ha sido bloqueado para edición.");
+            }
+            // Verificar si la respuesta indica que se envió una notificación a los miembros del grupo
+            else if (response.StartsWith("230"))
+            {
+                // Mostrar mensaje de éxito con notificación
+                MessageBox.Show("El día ha sido bloqueado para edición. Notificación enviada a los miembros del grupo.");
+            }
+            else
+            {
+                // Manejar diferentes errores basados en el código de respuesta
+                switch (response)
+                {
+                    case "1104":
+                        // Error: Fecha con formato incorrecto
+                        MessageBox.Show("Error: Fecha con formato incorrecto.");
+                        break;
+
+                    case "1606":
+                        // Error: El día no ha sido creado
+                        MessageBox.Show("Error: Día no creado.");
+                        break;
+
+                    case "1404":
+                        // Error: El grupo no existe
+                        MessageBox.Show("Error: El grupo no existe.");
+                        break;
+
+                    case "1403":
+                        // Error: El día ya está bloqueado para edición
+                        MessageBox.Show("Error: El día ya está bloqueado para edición.");
+                        break;
+
+                    case "1601":
+                        // Error: El objeto de agenda está corrupto
+                        MessageBox.Show("Error: Objeto de agenda corrupto.");
+                        break;
+
+                    default:
+                        // Mensaje de error desconocido
+                        MessageBox.Show("Error desconocido.");
+                        break;
+                }
+            }
+        }
+
 
 
 

@@ -494,6 +494,58 @@
             <param name="username">Nombre de usuario conectado.</param>
             <returns>El paquete para retroceder un año en formato string.</returns>
         </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructInsertTagPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para insertar un tag en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <param name="fecha">Fecha en formato DD/MM/YYYY.</param>
+            <param name="nuevoTag">Nuevo tag a insertar.</param>
+            <returns>El paquete para insertar el tag en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructEliminarTagPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para eliminar un tag en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <param name="fecha">Fecha en formato DD/MM/YYYY.</param>
+            <param name="tagAEliminar">Tag a eliminar.</param>
+            <returns>El paquete para eliminar el tag en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructSearchTagPacket(System.String,System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Genera un paquete para buscar días por tag.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario.</param>
+            <param name="username">Nombre de usuario.</param>
+            <param name="grupal">Indica si la búsqueda es grupal.</param>
+            <param name="tag">Tag a buscar.</param>
+            <param name="groupName">Nombre del grupo (si aplica).</param>
+            <returns>El paquete de búsqueda de tag en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructModificarEventoPacket(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Genera un paquete para editar el contenido de un evento en la agenda.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <param name="fecha">Fecha del evento a editar (formato DD/MM/YYYY).</param>
+            <param name="nuevoContenido">Nuevo contenido para el evento.</param>
+            <param name="esGrupal">Indica si es un evento grupal.</param>
+            <returns>El paquete para editar el evento en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructBloquearDiaEdicionPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Genera un paquete para bloquear un día para edición en una agenda grupal.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario conectado.</param>
+            <param name="username">Nombre de usuario conectado.</param>
+            <param name="fecha">Fecha del día a bloquear (formato DD/MM/YYYY).</param>
+            <param name="nombreGrupo">Nombre del grupo.</param>
+            <returns>El paquete para bloquear el día en formato string.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.LecturaPartesPaquete(System.String)">
             <summary>
             Extrae la acción y el mensaje de una respuesta de paquete.

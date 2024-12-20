@@ -33,6 +33,9 @@
                         <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Agenda Grupal" Margin="10" Click="EliminarAgendaGrupal_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Insertar Tag" Margin="10" Click="InsertarTag_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Eliminar Tag" Margin="10" Click="EliminarTag_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Buscar por Tag" Margin="10" Click="BuscarTag_Click" Background="#007BA7" Foreground="White"/>
                     </StackPanel>
                 </TabItem>
 
@@ -68,6 +71,20 @@
                 <Button x:Name="btnEnviar" Content="Enviar Evento" Width="200" Height="30" Margin="10" Click="EnviarEvento_Click"/>
             </StackPanel>
 
+
+            <!-- Panel para modificar el evento -->
+            <StackPanel x:Name="modificarEventoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <TextBlock Text="Fecha del evento:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtFechaEvento" Margin="10" Width="200" Height="30"/>
+
+                <TextBlock Text="Nuevo contenido del evento:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNuevoContenido" Margin="10" Width="200" Height="30"/>
+
+                <CheckBox x:Name="chkEsGrupalModificar" Content="¿Es grupal?" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+
+                <Button Content="Modificar Evento" Width="200" Height="30" Margin="10" Click="EnviarModificarEvento_Click"/>
+            </StackPanel>
+
             <StackPanel x:Name="crearGrupoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
                 <!-- Contenido del crearGrupoPanel -->
                 <TextBlock x:Name="textNombreGrupoLabelCrear" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
@@ -87,6 +104,41 @@
                 <TextBlock x:Name="textNombreGrupoLabelEliminarAgenda" Text="Nombre del Grupo" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
                 <TextBox x:Name="txtNombreGrupoEliminarAgenda" Margin="10" Width="200" Height="30"/>
                 <Button x:Name="btnEnviarEliminarAgendaGrupal" Content="Eliminar Agenda Grupal" Width="200" Height="30" Margin="10" Click="EnviarEliminarAgendaGrupal_Click"/>
+            </StackPanel>
+
+            <!-- Panel para insertar tag -->
+            <StackPanel x:Name="insertarTagPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <TextBlock Text="Fecha (DD/MM/YYYY):" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtFechaTag" Margin="10" Width="200" Height="30"/>
+                <TextBlock Text="Nuevo Tag:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtNuevoTag" Margin="10" Width="200" Height="30"/>
+                <Button Content="Insertar Tag" Width="200" Height="30" Margin="10" Click="EnviarInsertarTag_Click"/>
+            </StackPanel>
+
+            <!-- Panel para eliminar tag -->
+            <StackPanel x:Name="eliminarTagPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <TextBlock Text="Fecha (DD/MM/YYYY):" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtFechaEliminar" Margin="10" Width="200" Height="30"/>
+                <TextBlock Text="Tag a eliminar:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtTagEliminar" Margin="10" Width="200" Height="30"/>
+                <Button Content="Eliminar Tag" Width="200" Height="30" Margin="10" Click="EnviarEliminarTag_Click"/>
+            </StackPanel>
+            <!-- Panel para buscar por tag -->
+            <StackPanel x:Name="buscarTagPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
+                <TextBlock Text="Tag a buscar:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                <TextBox x:Name="txtTagBuscar" Margin="10" Width="200" Height="30"/>
+
+                <!-- Checkbox para marcar si es grupal -->
+                <CheckBox x:Name="chkEsGrupalBuscarTag" Content="¿Es grupal?" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+
+                <!-- Panel que contiene el campo para el nombre del grupo -->
+                <StackPanel x:Name="panelGrupoBuscarTag" Visibility="Collapsed" Margin="10">
+                    <TextBlock Text="Nombre del grupo:" Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="txtNombreGrupoBuscarTag" Margin="10" Width="200" Height="30"/>
+                </StackPanel>
+
+                <!-- Botón para enviar la búsqueda -->
+                <Button Content="Buscar Tag" Width="200" Height="30" Margin="10" Click="EnviarBuscarTag_Click"/>
             </StackPanel>
 
             <StackPanel x:Name="invitarUsuarioPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">

@@ -41,15 +41,25 @@ namespace AgendaEscritorio.view
 
 
 
+        /// <summary>
+        /// Maneja el evento de clic en el botón para mostrar la lista de usuarios.
+        /// </summary>
+        /// <param name="sender">El objeto que genera el evento (el botón).</param>
+        /// <param name="e">Los argumentos del evento.</param>
+        /// <remarks>
+        /// Este método solicita la lista de usuarios al servidor mediante una solicitud asíncrona.
+        /// Si ocurre un error durante la solicitud, se muestra un mensaje de error.
+        /// </remarks>
         private async void BtnMostrarUsuarios_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Llamar al método para solicitar la lista de usuarios
+                // Llama al método de cliente para solicitar la lista de usuarios
                 await client.RequestShowUsersAsync(client.SessionToken, client.Username);
             }
             catch (Exception ex)
             {
+                // Si ocurre un error, muestra un mensaje con el detalle de la excepción
                 MessageBox.Show($"Error al mostrar usuarios: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
