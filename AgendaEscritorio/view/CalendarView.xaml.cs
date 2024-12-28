@@ -1,5 +1,6 @@
 ﻿using AgendaEscritorio.service;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ namespace AgendaEscritorio.view
         private DateTime currentDate;
         private string userRole;
         private Client client;
+        private Dictionary<string, List<Dictionary<string, object>>> modifiedEvents;
 
         /// <summary>
         /// Inicializa la ventana del calendario.
@@ -22,8 +24,35 @@ namespace AgendaEscritorio.view
             this.WindowState = WindowState.Maximized; // Abrir la ventana a pantalla completa
             this.client = client;
             currentDate = DateTime.Now; // Inicializa con la fecha actual
+            modifiedEvents = new Dictionary<string, List<Dictionary<string, object>>>();
             PopulateCalendar(); // Llama al método para poblar el calendario con el mes actual
+            this.client.EventsUpdated += UpdateCalendarWithModifiedEvents;
         }
+
+
+
+        // Método para manejar la actualización de la vista con los eventos modificados
+        private void UpdateCalendarWithModifiedEvents(List<Dictionary<string, object>> modifiedEventList)
+        {
+            // Limpiar la información de eventos modificados por fecha
+            modifiedEvents.Clear();
+
+            // Agrupar los eventos por fecha
+            foreach (var eventItem in modifiedEventList)
+            {
+                string eventDate = (string)eventItem["Date"];
+                if (!modifiedEvents.ContainsKey(eventDate))
+                {
+                    modifiedEvents[eventDate] = new List<Dictionary<string, object>>();
+                }
+                modifiedEvents[eventDate].Add(eventItem);
+            }
+
+            // Actualizar la vista de los días con eventos modificados
+            PopulateCalendar();
+        }
+
+
 
         /// <summary>
         /// Rellena la vista del calendario con los días del mes actual.
@@ -72,14 +101,66 @@ namespace AgendaEscritorio.view
                     Content = day.ToString(), // Número del día
                     Background = new SolidColorBrush(Color.FromRgb(0x00, 0x7B, 0xA7)), // Color de fondo
                     Foreground = Brushes.White, // Texto en blanco
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(0x00, 0x5F, 0x6B)), // Borde igual que el de las flechas
-                    Margin = new Thickness(5), // Margen de 5
-                    Padding = new Thickness(10, 5, 10, 5), // Ajusta el padding
-                    BorderThickness = new Thickness(1) // Ancho del borde
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(0x00, 0x5F, 0x6B)), // Borde
+                    Margin = new Thickness(5), // Margen
+                    Padding = new Thickness(10, 5, 10, 5), // Padding
+                    BorderThickness = new Thickness(1) // Borde del botón
                 };
-                DaysGrid.Children.Add(dayButton); // Añade el botón para el día al calendario
+
+                // Generar la clave de fecha completa (formato dd/MM/yyyy)
+                string dateKey = new DateTime(currentDate.Year, currentDate.Month, day).ToString("dd/MM/yyyy");
+
+                // Verificar si hay eventos modificados en este día
+                if (modifiedEvents.ContainsKey(dateKey))
+                {
+                    dayButton.Background = Brushes.Red; // Cambiar color si hay eventos modificados
+
+                    // Almacenar eventos y la fecha completa en el Tag del botón
+                    dayButton.Tag = new { Events = modifiedEvents[dateKey], Date = dateKey };
+                }
+
+                // Asignar el evento de clic para mostrar los detalles
+                dayButton.Click += DayButton_Click;
+
+                DaysGrid.Children.Add(dayButton); // Agregar el botón al calendario
             }
         }
+
+
+        private void DayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null && clickedButton.Tag != null)
+            {
+                // Obtener los datos del Tag (eventos y fecha)
+                dynamic tagData = clickedButton.Tag;
+                List<Dictionary<string, object>> eventsForDay = tagData.Events;
+                string fullDate = tagData.Date;
+
+                // Mostrar los detalles de los eventos
+                string allContent = "";
+                foreach (var eventItem in eventsForDay)
+                {
+                    string content = (string)eventItem["Content"];
+                    string tags = string.Join(", ", (List<string>)eventItem["Tags"]);
+
+                    allContent += $"Contenido: {content}\nEtiquetas: {tags}\n\n";
+                }
+
+                // Actualizar los TextBlocks con la información completa
+                txtDetalles.Text = "Detalles del evento";
+                txtFechaDetalle.Text = $"Fecha: {fullDate}";
+                txtContenidoDetalle.Text = allContent;
+
+                // Mostrar el panel de detalles del evento
+                DetalleEventoPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+
+
+
+
 
         /// <summary>
         /// Cambia al mes anterior, actualiza el calendario y solicita al servidor retroceder un mes.

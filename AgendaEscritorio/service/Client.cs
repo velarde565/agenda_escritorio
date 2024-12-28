@@ -1963,20 +1963,32 @@ namespace AgendaEscritorio.service
                 await writer.WriteLineAsync(Convert.ToBase64String(encryptedAgenda));
                 await writer.FlushAsync();
 
-                // Leer la respuesta cifrada del servidor
-                string encryptedResponseBase64 = await reader.ReadLineAsync();
-                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+                // Lista para almacenar todas las respuestas recibidas del servidor
+                List<string> responses = new List<string>();
 
-                // Decodificar la respuesta Base64 y desencriptarla con AES
-                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
-                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                string encryptedResponseBase64;
 
-                // Convertir la respuesta desencriptada de vuelta a un string
-                string response = Encoding.UTF8.GetString(decryptedResponse);
-                Console.WriteLine($"Decrypted Server Response: {response}");
+                // Leer respuestas hasta recibir un paquete de tipo "403"
+                while ((encryptedResponseBase64 = await reader.ReadLineAsync()) != null)
+                {
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
 
-                // Procesar la respuesta del servidor
-                ProcessShowAgendaResponse(response);
+                    // Convertir la respuesta desencriptada a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Agregar la respuesta a la lista
+                    responses.Add(response);
+
+                    // Si el paquete recibido es de tipo "403", terminamos de leer
+                    if (response.StartsWith("403"))
+                        break;
+                }
+
+                // Procesar todas las respuestas del servidor
+                ProcessShowAgendaResponse(responses);
             }
             catch (Exception ex)
             {
@@ -1984,35 +1996,112 @@ namespace AgendaEscritorio.service
             }
         }
 
+        public delegate void EventsUpdatedHandler(List<Dictionary<string, object>> modifiedEvents);
+        public event EventsUpdatedHandler EventsUpdated;
+
 
         /// <summary>
-        /// Procesa la respuesta del servidor relacionada con la solicitud de mostrar la agenda.
-        /// Dependiendo del código recibido en la respuesta, se identifica el estado de la muestra de la agenda,
-        /// incluyendo el inicio, los días del mes y el fin de la muestra de la agenda.
+        /// Procesa las respuestas recibidas del servidor relacionadas con la solicitud de mostrar la agenda.
+        /// Solo guarda los datos de los paquetes en los que el campo IsNeverEdited es 0 (es decir, eventos que han sido modificados).
         /// </summary>
-        /// <param name="response">La respuesta recibida del servidor, que indica el estado de la solicitud de la agenda.</param>
-        private void ProcessShowAgendaResponse(string response)
+        /// <param name="responses">Lista de respuestas recibidas del servidor.</param>
+        private void ProcessShowAgendaResponse(List<string> responses)
         {
-            if (response.StartsWith("401"))
+            // Lista para almacenar la información procesada de cada paquete 402
+            List<Dictionary<string, object>> agendaEntries = new List<Dictionary<string, object>>();
+
+            try
             {
-                // Confirmación del inicio de la muestra de la agenda
-                Console.WriteLine("Comienzo de la muestra de la agenda.");
+                foreach (string response in responses)
+                {
+                    if (response.StartsWith("401"))
+                    {
+                        // Confirmación del inicio de la muestra de la agenda
+                    }
+                    else if (response.StartsWith("402"))
+                    {
+                        // Procesar el paquete 402 y extraer sus datos
+                        try
+                        {
+                            // Remover el prefijo "402" para trabajar con el resto de los datos
+                            string data = response.Substring(3);
+
+                            // Extraer los campos según la estructura:
+                            string protocol = "4"; // Protocolo
+                            string action = "02"; // Acción
+                            int dateOffset = int.Parse(data.Substring(0, 2)); // Offset de fecha
+                            string date = data.Substring(2, 10); // Fecha en formato dd/mm/yyyy
+                            string isNeverEdited = data.Substring(12, 1).Trim(); // Byte que determina si está creado (1: no creado, 0: creado)
+                            int contentOffset = int.Parse(data.Substring(13, 4)); // Offset del contenido
+                            string content = data.Substring(17, contentOffset); // Contenido según el offset
+                            int tagsLength = int.Parse(data.Substring(17 + contentOffset, 1)); // Longitud de tags
+
+                            // Extraer los tags, si existen
+                            List<string> tags = new List<string>();
+                            if (tagsLength > 0)
+                            {
+                                string tagsData = data.Substring(17 + contentOffset);
+                                int currentIndex = 0;
+                                for (int i = 0; i < tagsLength; i++)
+                                {
+                                    int tagLength = int.Parse(tagsData.Substring(currentIndex, 2));
+                                    currentIndex += 2;
+                                    string tag = tagsData.Substring(currentIndex, tagLength);
+                                    currentIndex += tagLength;
+                                    tags.Add(tag);
+                                }
+                            }
+
+                            // Verificar si IsNeverEdited es 0 (modificado)
+                            if (isNeverEdited == "0")
+                            {
+                                agendaEntries.Add(new Dictionary<string, object>
+                                {
+                                    { "Protocol", protocol },
+                                    { "Action", action },
+                                    { "DateOffset", dateOffset },
+                                    { "Date", date },
+                                    { "IsNeverEdited", false },
+                                    { "ContentOffset", contentOffset },
+                                    { "Content", content },
+                                    { "Tags", tags }
+                                });
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error al procesar el paquete 402: {response}. Detalles: {ex.Message}", "Error de procesamiento", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    else if (response.StartsWith("403"))
+                    {
+                        // Confirmación del fin de la muestra de la agenda
+                        MessageBox.Show("Fin de la muestra de la agenda.", "Depuración", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
+                    }
+                    else
+                    {
+                        throw new Exception($"Paquete inesperado: {response}");
+                    }
+                }
+
+                // Si hay eventos modificados, invocar el evento
+                if (agendaEntries.Count > 0)
+                {
+                    EventsUpdated?.Invoke(agendaEntries);
+                }
             }
-            else if (response.StartsWith("402"))
+            catch (Exception ex)
             {
-                // Procesar los días del mes recibidos
-                Console.WriteLine("Días del mes recibidos.");
-            }
-            else if (response.StartsWith("403"))
-            {
-                // Confirmación del fin de la muestra de la agenda
-                Console.WriteLine("Fin de la muestra de la agenda.");
-            }
-            else
-            {
-                throw new Exception("Respuesta desconocida del servidor.");
+                MessageBox.Show($"Error al procesar la respuesta de la agenda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+
+
+
+
 
 
         /// <summary>
@@ -2024,36 +2113,38 @@ namespace AgendaEscritorio.service
         {
             try
             {
-                // Construir el paquete para avanzar un mes
                 string advanceMonthPacket = ProtocolHelper.ConstructAdvanceMonthPacket(sessionToken, username);
-
-                // Cifrar el paquete con AES
                 byte[] encryptedPacket = cryptoService.EncryptDataWithAES(Encoding.UTF8.GetBytes(advanceMonthPacket));
 
-                // Convertir el paquete cifrado a Base64 para enviarlo como texto
                 await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
                 await writer.FlushAsync();
 
-                // Leer la respuesta cifrada del servidor
-                string encryptedResponseBase64 = await reader.ReadLineAsync();
-                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+                List<string> responses = new List<string>();
+                string encryptedResponseBase64;
 
-                // Decodificar la respuesta Base64 y desencriptarla con AES
-                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
-                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                while ((encryptedResponseBase64 = await reader.ReadLineAsync()) != null)
+                {
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
 
-                // Convertir la respuesta desencriptada de vuelta a un string
-                string response = Encoding.UTF8.GetString(decryptedResponse);
-                Console.WriteLine($"Decrypted Server Response: {response}");
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
 
-                // Procesar la respuesta del servidor
-                ProcessAdvanceMonthResponse(response);
+                    responses.Add(response);
+
+                    if (response.StartsWith("403"))
+                        break;
+                }
+
+                // Llamar al método existente para procesar las respuestas
+                ProcessShowAgendaResponse(responses);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error en la solicitud para avanzar un mes en la agenda: {ex.Message}");
+                throw new Exception($"Error en la solicitud para avanzar un mes: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Procesa la respuesta del servidor tras solicitar avanzar un mes en la agenda.
@@ -2108,25 +2199,38 @@ namespace AgendaEscritorio.service
                 await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
                 await writer.FlushAsync();
 
-                // Leer la respuesta cifrada del servidor
-                string encryptedResponseBase64 = await reader.ReadLineAsync();
-                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+                // Lista para almacenar las respuestas del servidor
+                List<string> responses = new List<string>();
 
-                // Decodificar la respuesta Base64 y desencriptarla con AES
-                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
-                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                // Leer respuestas cifradas del servidor
+                string encryptedResponseBase64;
+                while ((encryptedResponseBase64 = await reader.ReadLineAsync()) != null)
+                {
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Convertir la respuesta desencriptada de vuelta a un string
-                string response = Encoding.UTF8.GetString(decryptedResponse);
-                Console.WriteLine($"Decrypted Server Response: {response}");
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
 
-                // Procesar la respuesta del servidor
-                ProcessGoBackMonthResponse(response);
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Añadir la respuesta a la lista
+                    responses.Add(response);
+
+                    // Salir del bucle si se recibe el paquete de fin "403"
+                    if (response.StartsWith("403"))
+                        break;
+                }
+
+                // Llamar al método existente para procesar las respuestas
+                ProcessShowAgendaResponse(responses);
             }
             catch (Exception ex)
             {
                 // Mostrar un mensaje de error si algo falla
-                MessageBox.Show($"Error en la solicitud para retroceder un mes en la agenda: {ex.Message}");
+                MessageBox.Show($"Error en la solicitud para retroceder un mes en la agenda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2187,27 +2291,41 @@ namespace AgendaEscritorio.service
                 await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
                 await writer.FlushAsync();
 
-                // Leer la respuesta cifrada del servidor
-                string encryptedResponseBase64 = await reader.ReadLineAsync();
-                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+                // Lista para almacenar las respuestas del servidor
+                List<string> responses = new List<string>();
 
-                // Decodificar la respuesta Base64 y desencriptarla con AES
-                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
-                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                // Leer respuestas cifradas del servidor
+                string encryptedResponseBase64;
+                while ((encryptedResponseBase64 = await reader.ReadLineAsync()) != null)
+                {
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Convertir la respuesta desencriptada de vuelta a un string
-                string response = Encoding.UTF8.GetString(decryptedResponse);
-                Console.WriteLine($"Decrypted Server Response: {response}");
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
 
-                // Procesar la respuesta del servidor
-                ProcessAdvanceYearResponse(response);
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Añadir la respuesta a la lista
+                    responses.Add(response);
+
+                    // Salir del bucle si se recibe el paquete de fin "403"
+                    if (response.StartsWith("403"))
+                        break;
+                }
+
+                // Llamar al método existente para procesar las respuestas
+                ProcessShowAgendaResponse(responses);
             }
             catch (Exception ex)
             {
                 // Mostrar un mensaje de error si algo falla
-                MessageBox.Show($"Error en la solicitud para avanzar un año en la agenda: {ex.Message}");
+                MessageBox.Show($"Error en la solicitud para avanzar un año en la agenda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
 
 
@@ -2267,27 +2385,41 @@ namespace AgendaEscritorio.service
                 await writer.WriteLineAsync(Convert.ToBase64String(encryptedPacket));
                 await writer.FlushAsync();
 
-                // Leer la respuesta cifrada del servidor
-                string encryptedResponseBase64 = await reader.ReadLineAsync();
-                Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
+                // Lista para almacenar las respuestas del servidor
+                List<string> responses = new List<string>();
 
-                // Decodificar la respuesta Base64 y desencriptarla con AES
-                byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
-                byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
+                // Leer respuestas cifradas del servidor
+                string encryptedResponseBase64;
+                while ((encryptedResponseBase64 = await reader.ReadLineAsync()) != null)
+                {
+                    Console.WriteLine($"Encrypted Server Response: {encryptedResponseBase64}");
 
-                // Convertir la respuesta desencriptada de vuelta a un string
-                string response = Encoding.UTF8.GetString(decryptedResponse);
-                Console.WriteLine($"Decrypted Server Response: {response}");
+                    // Decodificar la respuesta Base64 y desencriptarla con AES
+                    byte[] encryptedResponse = Convert.FromBase64String(encryptedResponseBase64);
+                    byte[] decryptedResponse = cryptoService.DecryptDataWithAES(encryptedResponse);
 
-                // Procesar la respuesta del servidor
-                ProcessGoBackYearResponse(response);
+                    // Convertir la respuesta desencriptada de vuelta a un string
+                    string response = Encoding.UTF8.GetString(decryptedResponse);
+                    Console.WriteLine($"Decrypted Server Response: {response}");
+
+                    // Añadir la respuesta a la lista
+                    responses.Add(response);
+
+                    // Salir del bucle si se recibe el paquete de fin "403"
+                    if (response.StartsWith("403"))
+                        break;
+                }
+
+                // Llamar al método existente para procesar las respuestas
+                ProcessShowAgendaResponse(responses);
             }
             catch (Exception ex)
             {
                 // Mostrar un mensaje de error si algo falla
-                MessageBox.Show($"Error en la solicitud para retroceder un año en la agenda: {ex.Message}");
+                MessageBox.Show($"Error en la solicitud para retroceder un año en la agenda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
 
 
@@ -2884,8 +3016,8 @@ namespace AgendaEscritorio.service
                 }
 
                 // Leer el offset del nombre del grupo
-                int groupNameOffset = int.Parse(response.Substring(index, 1)); // Solo un carácter para el offset
-                index += 1;
+                int groupNameOffset = int.Parse(response.Substring(index, 2)); // Solo un carácter para el offset
+                index += 2;
 
                 // Extraer el nombre del grupo
                 string groupName = response.Substring(index, groupNameOffset);
@@ -3093,9 +3225,9 @@ namespace AgendaEscritorio.service
                 }
 
                 // Leer el offset del nombre del grupo
-                int groupNameOffset = int.Parse(response.Substring(index, 1));
+                int groupNameOffset = int.Parse(response.Substring(index, 2));
 
-                index += 1;
+                index += 2;
 
                 // Extraer el nombre del grupo
                 string groupName = response.Substring(index, groupNameOffset);

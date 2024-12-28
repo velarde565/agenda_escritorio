@@ -58,6 +58,28 @@
             </summary>
             <returns>El token de sesión.</returns>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.#ctor">
+            <summary>
+            Constructor de la clase <see cref="T:AgendaEscritorio.service.Client"/>.
+            Inicializa el servicio de criptografía para ser utilizado en las operaciones relacionadas con la seguridad.
+            </summary>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendClientPublicKeyAsync">
+            <summary>
+            Envía la clave pública del cliente al servidor de forma asincrónica.
+            Establece la comunicación con el servidor para enviar la clave pública y procesar la respuesta recibida.
+            </summary>
+            <returns>Una tarea asincrónica que representa el envío de la clave pública y el procesamiento de la respuesta del servidor.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessEncryptedAESKeyAsync(System.String)">
+            <summary>
+            Procesa la clave AES encriptada recibida en la respuesta.
+            Extrae la longitud de la clave, la desencripta usando la clave privada del cliente,
+            y luego la almacena en el servicio de criptografía.
+            </summary>
+            <param name="response">La respuesta que contiene la clave AES encriptada en formato Base64.</param>
+            <returns>Una tarea asincrónica que representa el proceso de desencriptación y almacenamiento de la clave AES.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.ConnectAsync">
             <summary>
             Establece una conexión asincrónica con el servidor.
@@ -119,6 +141,17 @@
             </summary>
             <param name="response">The response message from the server after logout request.</param>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.SendShutdownRequestAsync(System.String,System.String,System.String)">
+            <summary>
+            Envía una solicitud de apagado al servidor de forma asincrónica.
+            Construye un paquete de apagado utilizando el nombre de usuario, la contraseña y el token de sesión,
+            luego encripta el paquete y lo envía al servidor. Después procesa la respuesta encriptada recibida del servidor.
+            </summary>
+            <param name="username">El nombre de usuario que solicita el apagado del servidor.</param>
+            <param name="password">La contraseña asociada al nombre de usuario para la autenticación.</param>
+            <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+            <returns>Una tarea asincrónica que representa el envío de la solicitud de apagado y el procesamiento de la respuesta del servidor.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.RequestChangeFullNameAsync(System.String,System.String,System.String)">
             <summary>
             Asynchronously sends a request to change the user's full name on the server. The request and response are encrypted using AES.
@@ -149,6 +182,26 @@
             Procesa la respuesta del servidor tras la solicitud de adición de permiso.
             </summary>
             <param name="response">La respuesta desencriptada recibida del servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestDeleteRoleAsync(System.String,System.String,System.String)">
+            <summary>
+            Solicita la eliminación de un rol para un usuario de forma asincrónica.
+            Construye un paquete de solicitud para eliminar el rol, lo encripta con AES y lo envía al servidor.
+            Luego, procesa la respuesta del servidor para determinar el éxito o fracaso de la operación.
+            </summary>
+            <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+            <param name="username">El nombre de usuario al que se le va a eliminar el rol.</param>
+            <param name="rolAEliminar">El nombre del rol que se va a eliminar.</param>
+            <returns>Una tarea asincrónica que representa la solicitud de eliminación del rol y el procesamiento de la respuesta del servidor.
+            Devuelve <c>true</c> si el rol fue eliminado correctamente, o <c>false</c> en caso contrario.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessDeleteRoleResponse(System.String)">
+            <summary>
+            Procesa la respuesta recibida del servidor después de solicitar la eliminación de un rol.
+            Valida el protocolo, la acción, y el token recibido, asegurándose de que corresponda con la sesión actual.
+            </summary>
+            <param name="response">La respuesta en texto del servidor, que incluye el protocolo, la acción y el token.</param>
+            <returns>Devuelve <c>true</c> si la eliminación del rol fue exitosa, o <c>false</c> en caso de error o discrepancia en los datos.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestGetPermissionsAsync(System.String,System.String)">
             <summary>
@@ -246,6 +299,25 @@
             </summary>
             <param name="response">La respuesta recibida del servidor, que contiene el código de estado y posible mensaje de error o éxito.</param>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestShowUsersAsync(System.String,System.String)">
+            <summary>
+            Solicita la lista de usuarios al servidor de manera asincrónica.
+            Envía una solicitud cifrada al servidor, recibe y procesa las respuestas,
+            y finalmente retorna la lista de usuarios encontrados.
+            </summary>
+            <param name="sessionToken">El token de sesión válido para autenticar la solicitud.</param>
+            <param name="username">El nombre de usuario del que se solicita la lista de usuarios.</param>
+            <returns>Una tarea asincrónica que representa la solicitud y procesamiento de los usuarios.
+            Devuelve una lista de cadenas que contiene la información de los usuarios, o una lista vacía si no se encuentran usuarios.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessShowUsersResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para mostrar la información de un usuario en formato legible.
+            Extrae los datos de un paquete de tipo 239 (información de usuario) y los formatea para su visualización.
+            </summary>
+            <param name="response">La respuesta del servidor que contiene los datos del usuario en un formato codificado.</param>
+            <returns>Una cadena formateada con la información del usuario, incluyendo el nombre de usuario, el nombre completo y el rol.</returns>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.RequestCreateUserAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             Solicita la creación de un nuevo usuario al servidor.
@@ -264,6 +336,23 @@
             Procesa la respuesta del servidor después de intentar crear un usuario.
             </summary>
             <param name="response">La respuesta recibida del servidor que contiene el estado de la solicitud de creación de usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestShowAgendaAsync(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Solicita al servidor la agenda de un usuario o de un grupo, dependiendo de si la agenda es grupal o individual.
+            La solicitud es enviada al servidor encriptada, y la respuesta es procesada posteriormente.
+            </summary>
+            <param name="sessionToken">El token de sesión que autentica la solicitud del cliente.</param>
+            <param name="username">El nombre de usuario que solicita la agenda.</param>
+            <param name="isGrupal">Indica si la agenda solicitada es para un grupo o para un usuario individual.</param>
+            <param name="groupName">El nombre del grupo, si la agenda solicitada es para un grupo. Este parámetro es opcional.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessShowAgendaResponse(System.Collections.Generic.List{System.String})">
+            <summary>
+            Procesa las respuestas recibidas del servidor relacionadas con la solicitud de mostrar la agenda.
+            Solo guarda los datos de los paquetes en los que el campo IsNeverEdited es 0 (es decir, eventos que han sido modificados).
+            </summary>
+            <param name="responses">Lista de respuestas recibidas del servidor.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestAdvanceMonthAsync(System.String,System.String)">
             <summary>
@@ -285,6 +374,13 @@
             <param name="sessionToken">Token de sesión del usuario conectado.</param>
             <param name="username">Nombre de usuario conectado.</param>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessGoBackMonthResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor relacionada con la solicitud de retroceder al mes anterior en la agenda.
+            Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el inicio de la muestra de la agenda.
+            </summary>
+            <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para retroceder de mes.</param>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.RequestAdvanceYearAsync(System.String,System.String)">
             <summary>
             Solicita al servidor avanzar un año en la agenda.
@@ -292,12 +388,26 @@
             <param name="sessionToken">Token de sesión del usuario conectado.</param>
             <param name="username">Nombre de usuario conectado.</param>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessAdvanceYearResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor relacionada con la solicitud de avanzar al siguiente año en la agenda.
+            Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el avance exitoso del año.
+            </summary>
+            <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para avanzar de año.</param>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.RequestGoBackYearAsync(System.String,System.String)">
             <summary>
             Solicita al servidor retroceder un año en la agenda.
             </summary>
             <param name="sessionToken">Token de sesión del usuario conectado.</param>
             <param name="username">Nombre de usuario conectado.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessGoBackYearResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor relacionada con la solicitud de retroceder un año en la agenda.
+            Dependiendo del código recibido en la respuesta, se maneja el error correspondiente o se confirma el retroceso exitoso del año.
+            </summary>
+            <param name="response">La respuesta recibida del servidor que indica el resultado de la solicitud para retroceder de año.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestCreateDayAsync(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.String)">
             <summary>
@@ -316,10 +426,274 @@
             </summary>
             <param name="response">La respuesta del servidor que contiene el estado de la solicitud.</param>
         </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestCreateGroupAsync(System.String,System.String,System.String)">
+            <summary>
+            Solicita la creación de un nuevo grupo en el servidor, enviando el paquete con los datos necesarios para la creación.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario del solicitante.</param>
+            <param name="nombreGrupo">El nombre del grupo que se desea crear.</param>
+            <returns>Una tarea asincrónica que representa la operación de la solicitud de creación de grupo.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessCreateGroupResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para la solicitud de creación de grupo.
+            </summary>
+            <param name="response">La respuesta del servidor que contiene el estado de la creación del grupo.</param>
+            <exception cref="T:System.Exception">Lanza excepciones con mensajes específicos en caso de errores o respuestas inesperadas del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestDeleteGroupAsync(System.String,System.String,System.String)">
+            <summary>
+            Solicita la eliminación de un grupo al servidor.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario que solicita la eliminación del grupo.</param>
+            <param name="nombreGrupo">El nombre del grupo que se desea eliminar.</param>
+            <returns>Una tarea asincrónica que representa la solicitud de eliminación de grupo.</returns>
+            <exception cref="T:System.Exception">Lanza excepciones si ocurre un error durante la solicitud o el procesamiento de la respuesta.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessDeleteGroupResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor al intentar eliminar un grupo.
+            </summary>
+            <param name="response">La respuesta recibida del servidor en formato de cadena.</param>
+            <exception cref="T:System.Exception">Lanza excepciones específicas dependiendo de la respuesta del servidor.
+            El error puede indicar problemas de permisos, inexistencia del grupo o respuestas desconocidas del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestDeleteGroupAgendaAsync(System.String,System.String,System.String)">
+            <summary>
+            Realiza una solicitud asincrónica al servidor para eliminar la agenda de un grupo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario para la autenticación.</param>
+            <param name="username">El nombre de usuario que solicita la eliminación de la agenda grupal.</param>
+            <param name="nombreGrupo">El nombre del grupo cuya agenda se desea eliminar.</param>
+            <returns>Una tarea asincrónica que representa la operación de solicitud de eliminación de la agenda grupal.</returns>
+            <exception cref="T:System.Exception">Lanza excepciones en caso de errores durante la solicitud, como errores de cifrado o respuestas inesperadas del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessDeleteGroupAgendaResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para la solicitud de eliminación de la agenda de un grupo.
+            </summary>
+            <param name="response">La respuesta del servidor que se va a procesar.</param>
+            <exception cref="T:System.Exception">Lanza excepciones en caso de respuestas no esperadas o errores específicos del servidor, como falta de permisos o grupo inexistente.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestInviteUserToGroupAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Envía una solicitud para invitar a un usuario a un grupo.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario del solicitante que envía la invitación.</param>
+            <param name="nombreGrupo">El nombre del grupo al que se desea invitar al usuario.</param>
+            <param name="sobrenombreUsuario">El sobrenombre del usuario que se va a invitar al grupo.</param>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error en la solicitud o si la respuesta del servidor es inesperada.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessInviteUserResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor después de intentar invitar a un usuario a un grupo.
+            </summary>
+            <param name="response">La respuesta recibida del servidor, que contiene el resultado de la solicitud de invitación.</param>
+            <exception cref="T:System.Exception">Lanza una excepción si la respuesta del servidor indica un error o si la respuesta es inesperada.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestViewOwnedGroupsAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor la lista de grupos que el usuario posee.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario del propietario de los grupos.</param>
+            <returns>Una lista de nombres de los grupos que el usuario posee.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante la solicitud o el procesamiento de la respuesta del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessViewOwnedGroupsResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para extraer el nombre de un grupo al que el usuario posee acceso.
+            </summary>
+            <param name="response">La respuesta del servidor que contiene los detalles del grupo.</param>
+            <returns>El nombre del grupo extraído de la respuesta del servidor.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si el formato de la respuesta no es el esperado o si hay errores en la validación de los datos.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestViewMembershipGroupsAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor los grupos de los cuales el usuario es miembro y devuelve una lista con los nombres de esos grupos.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que autentica la solicitud.</param>
+            <param name="username">El nombre de usuario del solicitante.</param>
+            <returns>Una lista de nombres de grupos a los que el usuario pertenece.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante el proceso de solicitud o si la respuesta del servidor es inesperada.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestViewAllGroupsAsync(System.String,System.String)">
+            <summary>
+            Solicita al servidor la lista de todos los grupos y devuelve una lista con los nombres de esos grupos.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que autentica la solicitud.</param>
+            <param name="username">El nombre de usuario del solicitante.</param>
+            <returns>Una lista de nombres de todos los grupos disponibles.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante el proceso de solicitud o si la respuesta del servidor es inesperada.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessViewGroupResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para extraer el nombre de un grupo según el formato del protocolo.
+            </summary>
+            <param name="response">La respuesta del servidor en formato de protocolo.</param>
+            <returns>El nombre del grupo extraído de la respuesta.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error en el formato de la respuesta o si el token de sesión no coincide.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SendServerInfoUpdateRequestAsync(System.String,System.String,System.String)">
+            <summary>
+            Envía una solicitud al servidor para actualizar la información "Sobre" del usuario.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario asociado a la solicitud.</param>
+            <param name="infoSobre">La nueva información "Sobre" que se desea actualizar.</param>
+            <returns>Una tarea asincrónica que maneja el proceso de solicitud y respuesta del servidor.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante el proceso de cifrado, transmisión o respuesta del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.RequestShowMonthAsync(System.String,System.String)">
+            <summary>
+            Envía una solicitud al servidor para mostrar los datos del mes actual para el usuario especificado.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario asociado a la solicitud.</param>
+            <returns>Una tarea asincrónica que realiza el proceso de solicitud y procesamiento de la respuesta del servidor.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante la construcción, cifrado, transmisión, o procesamiento de la respuesta del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.InsertarTagAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Envía una solicitud al servidor para insertar un nuevo tag en una fecha específica del usuario.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario asociado a la solicitud.</param>
+            <param name="fecha">La fecha en la que se desea insertar el tag, en el formato esperado por el servidor.</param>
+            <param name="nuevoTag">El contenido del tag que se desea insertar.</param>
+            <returns>Una tarea asincrónica que realiza el proceso de inserción del tag.</returns>
+            <exception cref="T:System.Exception">Lanza una excepción si ocurre un error durante el cifrado, envío, recepción o procesamiento de la respuesta del servidor.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessInsertTagResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor tras intentar insertar un tag en la agenda.
+            </summary>
+            <param name="response">La respuesta del servidor en formato de string.</param>
+            <remarks>
+            Este método maneja diferentes códigos de respuesta del servidor, mostrando mensajes apropiados al usuario 
+            según el resultado de la operación. Incluye casos de éxito, errores específicos y errores desconocidos.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.EliminarTagAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Solicita la eliminación de un tag en el servidor para una fecha específica.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario actual.</param>
+            <param name="username">Nombre de usuario del cliente.</param>
+            <param name="fecha">Fecha asociada al tag que se desea eliminar.</param>
+            <param name="tagAEliminar">Nombre del tag que se eliminará.</param>
+            <returns>Una tarea asincrónica que representa la operación de eliminación del tag.</returns>
+            <remarks>
+            Este método construye el paquete de eliminación de tag según el protocolo definido, lo cifra con AES, lo envía al servidor,
+            y posteriormente procesa la respuesta del servidor para determinar el resultado de la operación.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessEliminarTagResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor tras intentar eliminar un tag.
+            </summary>
+            <param name="response">Respuesta del servidor tras la solicitud de eliminación del tag.</param>
+            <remarks>
+            El método interpreta los códigos de respuesta del servidor y muestra un mensaje correspondiente al usuario.
+            Maneja confirmaciones exitosas, notificaciones de grupo y diversos errores relacionados con la operación.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.SearchTagAsync(System.String,System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Realiza una búsqueda de un tag en el servidor.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario.</param>
+            <param name="username">Nombre de usuario que realiza la búsqueda.</param>
+            <param name="grupal">Indica si la búsqueda es en un contexto grupal.</param>
+            <param name="tag">Nombre del tag a buscar.</param>
+            <param name="groupName">Nombre del grupo (opcional, requerido si es una búsqueda grupal).</param>
+            <remarks>
+            Este método cifra el paquete de búsqueda, lo envía al servidor y procesa la respuesta recibida.
+            En caso de error, muestra un mensaje apropiado.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessSearchTagResponse(System.String)">
+            <summary>
+            Procesa la respuesta del servidor para la búsqueda de tags.
+            </summary>
+            <param name="response">Respuesta completa recibida del servidor.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ModificarEventoAsync(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Modifica un evento en el servidor.
+            </summary>
+            <param name="sessionToken">Token de sesión para la autenticación.</param>
+            <param name="username">Nombre de usuario para identificar al solicitante.</param>
+            <param name="fecha">Fecha del evento a modificar.</param>
+            <param name="nuevoContenido">Nuevo contenido o descripción del evento.</param>
+            <param name="esGrupal">Indica si el evento es grupal (true) o no (false).</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessModificarEventoResponse(System.String)">
+            <summary>
+            Procesa la respuesta recibida del servidor después de intentar modificar un evento.
+            </summary>
+            <param name="response">Respuesta del servidor tras la solicitud de modificación del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.BloquearDiaEdicionAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Realiza el bloqueo de edición de un día específico en el servidor.
+            </summary>
+            <param name="sessionToken">Token de sesión del usuario.</param>
+            <param name="username">Nombre de usuario que realiza la solicitud.</param>
+            <param name="fecha">Fecha del día que se desea bloquear.</param>
+            <param name="nombreGrupo">Nombre del grupo al que pertenece el usuario.</param>
+        </member>
+        <member name="M:AgendaEscritorio.service.Client.ProcessBloquearDiaEdicionResponse(System.String)">
+            <summary>
+            Procesa la respuesta recibida del servidor después de intentar bloquear la edición de un día.
+            </summary>
+            <param name="response">Respuesta completa recibida del servidor.</param>
+        </member>
         <member name="M:AgendaEscritorio.service.Client.Disconnect">
             <summary>
             Cierra la conexión con el servidor, liberando los recursos asociados.
             </summary>
+        </member>
+        <member name="M:AgendaEscritorio.service.DataExtractor.ExtractData(System.String,System.Int32@)">
+            <summary>
+            Extrae una porción de datos de la respuesta, comenzando en el índice proporcionado.
+            </summary>
+            <param name="response">La respuesta completa de la que se extraerán los datos.</param>
+            <param name="index">Índice desde el cual se comenzará a extraer la porción de datos. Este valor se actualizará después de la extracción.</param>
+            <returns>La porción de datos extraída de la respuesta.</returns>
+            <remarks>
+            El método asume que la respuesta sigue un formato en el cual los primeros dos caracteres representan el tamaño de la porción de datos a extraer. 
+            Luego de extraer los datos, el índice proporcionado se actualiza para apuntar al siguiente segmento de la respuesta.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Lanzado si el índice está fuera del rango de la cadena de respuesta.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.DataExtractor.ExtractOtherData(System.String,System.Int32@)">
+            <summary>
+            Extrae una porción de datos de la respuesta, comenzando en el índice proporcionado, con un tamaño especificado por los primeros cuatro caracteres.
+            </summary>
+            <param name="response">La respuesta completa de la que se extraerán los datos.</param>
+            <param name="index">Índice desde el cual se comenzará a extraer la porción de datos. Este valor se actualizará después de la extracción.</param>
+            <returns>La porción de datos extraída de la respuesta.</returns>
+            <remarks>
+            El método asume que la respuesta sigue un formato en el cual los primeros cuatro caracteres representan el tamaño de la porción de datos a extraer. 
+            Luego de extraer los datos, el índice proporcionado se actualiza para apuntar al siguiente segmento de la respuesta.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Lanzado si el índice está fuera del rango de la cadena de respuesta.</exception>
+        </member>
+        <member name="M:AgendaEscritorio.service.DataExtractor.ExtractToken(System.String)">
+            <summary>
+            Extrae un token de la cadena de mensaje, utilizando los dos primeros caracteres para determinar el tamaño del token.
+            </summary>
+            <param name="message">El mensaje completo del que se extraerá el token.</param>
+            <returns>El token extraído del mensaje.</returns>
+            <remarks>
+            El método supone que los primeros dos caracteres del mensaje indican el tamaño del token a extraer. 
+            A continuación, extrae el token según el tamaño especificado y lo retorna.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Lanzado si el mensaje no tiene suficiente longitud para extraer el token con el tamaño indicado.</exception>
         </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructLoginPacket(System.String,System.String)">
             <summary>
@@ -345,6 +719,46 @@
             <param name="sessionToken">Token de sesión del usuario conectado.</param>
             <param name="username">Nombre de usuario conectado.</param>
             <returns>El paquete de logout en formato string.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructShutdownPacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete de desconexión según el protocolo especificado, incluyendo el token de sesión, el nombre de usuario y la contraseña.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario del cliente.</param>
+            <param name="password">La contraseña del usuario.</param>
+            <returns>Una cadena que representa el paquete de desconexión listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete se construye con una estructura específica, donde cada parámetro tiene una longitud especificada en dos dígitos 
+            y el paquete sigue un formato predefinido para asegurar la correcta comunicación con el servidor.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructInfoSobrePacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete que contiene información sobre el usuario, siguiendo un formato de protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario.</param>
+            <param name="username">El nombre de usuario del cliente.</param>
+            <param name="infoSobre">La información adicional sobre el usuario o el contexto.</param>
+            <returns>Una cadena que representa el paquete con la información sobre el usuario y su sesión, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete se construye concatenando los valores de los parámetros, precedidos por sus longitudes en dos dígitos. 
+            Este formato es parte de un protocolo predefinido para asegurar que el servidor pueda interpretar correctamente 
+            los datos recibidos. La longitud de cada parámetro es codificada antes del propio dato.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructShowUsersPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para mostrar la lista de usuarios, siguiendo un formato de protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario del cliente que realiza la solicitud.</param>
+            <returns>Una cadena que representa el paquete con la información necesaria para mostrar los usuarios, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete se construye concatenando los valores de los parámetros, precedidos por sus longitudes en dos dígitos.
+            El paquete incluye un identificador de acción y el token de sesión con el nombre de usuario del cliente.
+            Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos.
+            </remarks>
         </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructChangeFullNamePacket(System.String,System.String,System.String,System.String)">
             <summary>
@@ -422,6 +836,20 @@
             <returns>El paquete en formato string listo para ser enviado.</returns>
             <exception cref="T:System.ArgumentException">Lanzada si los permisos no son exactamente 7 valores separados por comas.</exception>
         </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructDeleteRolePacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para eliminar un rol de un usuario, siguiendo el formato del protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+            <param name="connectedUsername">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+            <param name="roleToDelete">El nombre del rol que se va a eliminar.</param>
+            <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación del rol, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el rol que se va a eliminar,
+            con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+            Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos.
+            </remarks>
+        </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructGetPermissionsPacket(System.String,System.String)">
             <summary>
             Construye un paquete para obtener los permisos de un usuario específico.
@@ -461,6 +889,146 @@
             <param name="esGrupal">Indica si el evento es grupal (true) o individual (false).</param>
             <param name="nombreGrupo">Nombre del grupo asociado al evento, si es un evento grupal.</param>
             <returns>Cadena que representa el paquete de datos para crear un evento.</returns>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructCreateGroupPacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para crear un nuevo grupo, siguiendo el formato del protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+            <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+            <param name="nombreGrupo">El nombre del nuevo grupo que se va a crear.</param>
+            <returns>Una cadena que representa el paquete con los parámetros necesarios para la creación del grupo, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo a crear,
+            con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+            Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la creación del grupo.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructDeleteGroupPacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para eliminar un grupo, siguiendo el formato del protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+            <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+            <param name="nombreGrupo">El nombre del grupo que se desea eliminar.</param>
+            <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación del grupo, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo a eliminar,
+            con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+            Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la eliminación del grupo.
+            Además, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructDeleteGroupAgendaPacket(System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para eliminar la agenda asociada a un grupo, siguiendo el formato del protocolo específico.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que está realizando la solicitud.</param>
+            <param name="username">El nombre de usuario del cliente que está conectado y realizando la solicitud.</param>
+            <param name="nombreGrupo">El nombre del grupo cuya agenda se desea eliminar.</param>
+            <returns>Una cadena que representa el paquete con los parámetros necesarios para la eliminación de la agenda del grupo, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete incluye los parámetros: el token de sesión, el nombre de usuario conectado y el nombre del grupo cuya agenda
+            se desea eliminar, con sus respectivas longitudes representadas como cadenas de dos dígitos, seguido de los valores de los parámetros.
+            Este formato asegura que el servidor pueda interpretar correctamente los datos recibidos y proceder con la eliminación de la agenda del grupo.
+            Además, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructInviteUserPacket(System.String,System.String,System.String,System.String)">
+            <summary>
+            Construye un paquete para invitar a un usuario a un grupo específico, siguiendo el formato del protocolo definido.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que está realizando la invitación.</param>
+            <param name="username">El nombre de usuario del cliente que está enviando la invitación.</param>
+            <param name="nombreGrupo">El nombre del grupo al cual se desea invitar al usuario.</param>
+            <param name="sobrenombreUsuario">El sobrenombre del usuario que se va a invitar.</param>
+            <returns>Una cadena que representa el paquete con los parámetros necesarios para la invitación, listo para ser enviado al servidor.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros: el token de sesión, el nombre de usuario del que envía la invitación,
+            el nombre del grupo al que se le invita y el sobrenombre del usuario invitado. Estos parámetros son precedidos por su longitud 
+            representada en dos dígitos para asegurar que el servidor pueda leer y procesar correctamente los datos.
+            También, el paquete generado se muestra en un MessageBox para fines de depuración antes de enviarlo al servidor.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAgendaPacket(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Construye un paquete para crear o mostrar una agenda, incluyendo información sobre si es una agenda grupal o personal.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que solicita la creación o visualización de la agenda.</param>
+            <param name="username">El nombre de usuario del cliente que está interactuando con la agenda.</param>
+            <param name="isGrupal">Indica si la agenda es grupal o no. True si es grupal, False si es personal.</param>
+            <param name="groupName">El nombre del grupo asociado a la agenda, opcional, solo se usa si la agenda es grupal.</param>
+            <returns>Una cadena que representa el paquete listo para ser enviado al servidor para la creación o consulta de la agenda.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros:
+            - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+            - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+            - Un conjunto de 2 bytes vacíos, representado por "00".
+            - Un byte que indica si la agenda es grupal (1) o personal (0).
+            - Si la agenda es grupal, se incluye el nombre del grupo con su longitud también representada por 2 dígitos.
+            Este paquete está diseñado para seguir el protocolo de comunicación específico entre el cliente y el servidor.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructViewOwnedGroupsPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para solicitar los grupos que el usuario posee (grupos de los cuales es administrador o creador).
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario que solicita los grupos que posee.</param>
+            <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de grupos propios.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros:
+            - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+            - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+            La acción para esta solicitud está identificada por el código "18" en el protocolo.
+            Este paquete sigue el formato específico requerido para solicitar los grupos que un usuario posee.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructViewMembershipGroupsPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para solicitar los grupos en los que el usuario es miembro.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario que solicita los grupos donde es miembro.</param>
+            <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de grupos de membresía.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros:
+            - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+            - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+            La acción para esta solicitud está identificada por el código "19" en el protocolo.
+            Este paquete sigue el formato específico requerido para solicitar los grupos donde el usuario es miembro.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructViewAllGroupsPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para solicitar ver todos los grupos disponibles.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario que solicita la información sobre todos los grupos.</param>
+            <returns>Una cadena que representa el paquete listo para ser enviado al servidor con la solicitud de todos los grupos.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros:
+            - Token de sesión, con su longitud antes del valor (en formato de 2 dígitos).
+            - Nombre de usuario, con su longitud también precedida por 2 dígitos.
+            La acción para esta solicitud está identificada por el código "20" en el protocolo.
+            Este paquete sigue el formato específico requerido para solicitar la lista completa de grupos.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructShowMonthPacket(System.String,System.String)">
+            <summary>
+            Construye un paquete para solicitar la vista del mes en el sistema.
+            </summary>
+            <param name="sessionToken">El token de sesión del usuario que realiza la solicitud.</param>
+            <param name="username">El nombre de usuario que solicita la vista del mes.</param>
+            <returns>Una cadena que representa el paquete listo para ser enviado al servidor para solicitar la vista del mes.</returns>
+            <remarks>
+            El paquete incluye los siguientes parámetros:
+            - Token de sesión con su longitud precedida por 2 dígitos.
+            - Nombre de usuario con su longitud precedida por 2 dígitos.
+            - Un conjunto de 2 bytes vacíos ("00") para completar el paquete.
+            - Información adicional estática como "109IOCtest11" al final del paquete.
+            Este paquete sigue el formato específico requerido para mostrar la vista de un mes.
+            </remarks>
         </member>
         <member name="M:AgendaEscritorio.service.ProtocolHelper.ConstructAdvanceMonthPacket(System.String,System.String)">
             <summary>
@@ -661,6 +1229,117 @@
             <param name="sender">El objeto que disparó el evento (el botón "Enviar Evento").</param>
             <param name="e">Los argumentos del evento.</param>
         </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.CrearGrupo_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para crear un grupo.
+            Muestra el panel de creación de grupo y configura la visibilidad de los controles necesarios.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de crear grupo).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Muestra el panel de creación de grupo (`crearGrupoPanel`).
+            2. Configura la visibilidad de los controles relacionados con la creación de grupo, como:
+               - La etiqueta del nombre del grupo (`textNombreGrupoLabelCrear`).
+               - El campo de texto para ingresar el nombre del grupo (`txtNombreGrupoCrear`).
+               - El botón para enviar la solicitud de creación de grupo (`btnEnviarGrupo`).
+            El propósito es permitir al usuario ingresar los datos necesarios para crear un nuevo grupo.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarGrupo_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Enviar Grupo", que envía la solicitud para crear un nuevo grupo.
+            Recoge los datos de la interfaz de usuario, valida la entrada, y envía la solicitud al servidor.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de enviar grupo).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Recoge el nombre del grupo desde el campo de texto `txtNombreGrupoCrear`.
+            2. Realiza una validación básica para asegurarse de que el nombre del grupo no esté vacío.
+            3. Si la validación falla, muestra un mensaje indicando que se debe ingresar un nombre.
+            4. Si la validación es exitosa, se envía la solicitud de creación de grupo al servidor utilizando `RequestCreateGroupAsync`.
+            5. Si la solicitud es exitosa, muestra un mensaje de éxito y oculta los controles de creación de grupo.
+            6. Si ocurre una excepción durante el proceso, muestra un mensaje de error y también oculta los controles de creación de grupo.
+            7. (Opcional) Limpia el campo de texto después de un intento exitoso de creación.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EliminarGrupo_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Eliminar Grupo", mostrando el panel de eliminación de grupo.
+            Configura la visibilidad de los controles necesarios para permitir al usuario introducir el nombre del grupo que desea eliminar.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de eliminar grupo).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Muestra el panel de eliminación de grupo (`eliminarGrupoPanel`), permitiendo al usuario introducir los datos necesarios.
+            2. Configura la visibilidad de los controles relacionados con la eliminación del grupo, como la etiqueta de nombre de grupo (`textNombreGrupoLabelEliminar`),
+               el campo de texto para el nombre del grupo (`txtNombreGrupoEliminar`), y el botón para enviar la solicitud de eliminación (`btnEnviarEliminarGrupo`).
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarEliminarGrupo_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Enviar Eliminar Grupo", enviando una solicitud para eliminar el grupo especificado.
+            Valida los datos ingresados y maneja posibles excepciones durante la eliminación.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de enviar eliminación de grupo).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Recoge el nombre del grupo a eliminar desde el campo de texto (`txtNombreGrupoEliminar`).
+            2. Valida que el campo de texto no esté vacío y muestra un mensaje si es necesario.
+            3. Llama al método `RequestDeleteGroupAsync` para enviar la solicitud de eliminación del grupo.
+            4. Si la eliminación es exitosa, muestra un mensaje de éxito.
+            5. Si ocurre una excepción durante el proceso, muestra un mensaje de error.
+            6. Se asegura de que, después de la operación, el estado de la interfaz de usuario se actualice adecuadamente.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.VerGruposPropietario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Ver Grupos Propios". Envía una solicitud para obtener los grupos propios del usuario 
+            y muestra los resultados en la interfaz de usuario. Si no se encuentran grupos o si ocurre un error, muestra un mensaje adecuado.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Ver Grupos Propios").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Llama al método `RequestViewOwnedGroupsAsync` del cliente para obtener los grupos propios del usuario.
+            2. Verifica si se encontraron grupos y los muestra en un cuadro de mensaje.
+            3. Si no se encuentran grupos, muestra un mensaje indicando que no hay grupos propios.
+            4. Si ocurre una excepción (por ejemplo, problemas de red o servidor), muestra un mensaje de error.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.VerGruposMembresia_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Ver Grupos de Membresía". Envía una solicitud para obtener los grupos donde el usuario es miembro 
+            y muestra los resultados en la interfaz de usuario. Si no se encuentran grupos o si ocurre un error, muestra un mensaje adecuado.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Ver Grupos de Membresía").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Llama al método `RequestViewMembershipGroupsAsync` del cliente para obtener los grupos donde el usuario es miembro.
+            2. Verifica si se encontraron grupos y los muestra en un cuadro de mensaje.
+            3. Si no se encuentran grupos, muestra un mensaje indicando que el usuario no es miembro de ningún grupo.
+            4. Si ocurre una excepción (por ejemplo, problemas de red o servidor), muestra un mensaje de error.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.VerTodosGrupos_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Ver Todos los Grupos". Envía una solicitud para obtener todos los grupos disponibles 
+            y muestra los resultados en la interfaz de usuario. Si no se encuentran grupos o si ocurre un error, muestra un mensaje adecuado.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Ver Todos los Grupos").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Llama al método `RequestViewAllGroupsAsync` del cliente para obtener todos los grupos disponibles en el servidor.
+            2. Verifica si se encontraron grupos y los muestra en un cuadro de mensaje.
+            3. Si no se encuentran grupos, muestra un mensaje indicando que no hay grupos disponibles en el servidor.
+            4. Si ocurre una excepción (por ejemplo, problemas de red o servidor), muestra un mensaje de error.
+            </remarks>
+        </member>
         <member name="M:AgendaEscritorio.view.CalendarView.VerEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Muestra los detalles del evento cuando se hace clic en el botón "Ver Evento".
@@ -677,6 +1356,21 @@
             <param name="sender">El objeto que disparó el evento (el botón "Modificar Evento").</param>
             <param name="e">Los argumentos del evento.</param>
         </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarModificarEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Enviar Modificar Evento". Valida los campos de la interfaz de usuario, 
+            luego llama al método para modificar un evento en el servidor con los datos proporcionados por el usuario.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Enviar Modificar Evento").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Recoge los datos ingresados en la interfaz de usuario: la fecha del evento, el nuevo contenido y si es un evento grupal o no.
+            2. Valida si los campos esenciales (fecha y contenido) están completos, mostrando un mensaje de advertencia si alguno está vacío.
+            3. Llama al método `ModificarEventoAsync` del cliente para enviar los datos al servidor y modificar el evento.
+            4. Si ocurre un error durante la solicitud, muestra un mensaje con la descripción del error.
+            </remarks>
+        </member>
         <member name="M:AgendaEscritorio.view.CalendarView.EliminarEvento_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Elimina un evento cuando se hace clic en el botón "Eliminar Evento".
@@ -684,6 +1378,180 @@
             </summary>
             <param name="sender">El objeto que disparó el evento (el botón "Eliminar Evento").</param>
             <param name="e">Los argumentos del evento.</param>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EliminarAgendaGrupal_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Eliminar Agenda Grupal". Muestra el panel de eliminación de la agenda grupal 
+            y configura la visibilidad de los controles necesarios para completar la acción de eliminación.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Eliminar Agenda Grupal").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Llama al método `MostrarUnicoPanel` para mostrar el panel de eliminación de la agenda grupal.
+            2. Configura la visibilidad de los controles necesarios para que el usuario ingrese el nombre del grupo a eliminar.
+            3. Asegura que los controles, como los campos de texto y botones, sean visibles para el usuario.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarEliminarAgendaGrupal_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Eliminar Agenda Grupal". Recoge el nombre del grupo desde la interfaz de usuario,
+            valida el campo y luego envía una solicitud al cliente para eliminar la agenda grupal.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Enviar Eliminar Agenda Grupal").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Recoge el nombre del grupo desde el campo de texto `txtNombreGrupoEliminarAgenda`.
+            2. Valida si el campo no está vacío. Si está vacío, muestra un mensaje pidiendo al usuario que introduzca un nombre.
+            3. Si el campo está correctamente llenado, llama a la función `RequestDeleteGroupAgendaAsync` del cliente para enviar la solicitud de eliminación.
+            4. Si la eliminación es exitosa, muestra un mensaje de éxito.
+            5. Si ocurre algún error, muestra un mensaje de error detallado.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.InvitarUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Invitar Usuario". Muestra el panel de invitación de usuario y configura la visibilidad
+            de los controles necesarios para la interacción con el usuario.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Invitar Usuario").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Muestra el panel de invitación de usuario (`invitarUsuarioPanel`) usando el método `MostrarUnicoPanel`.
+            2. Configura la visibilidad de los controles necesarios para la interacción:
+               - Etiquetas y campos para el nombre del grupo (`textNombreGrupoLabelInvitar` y `txtNombreGrupoInvitar`).
+               - Etiqueta y campo para el sobrenombre del usuario a invitar (`textSobrenombreLabelInvitar` y `txtSobrenombreInvitar`).
+               - El botón de envío de la invitación (`btnEnviarInvitarUsuario`).
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarInvitarUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Enviar Invitación". Recoge los datos de la interfaz de usuario, valida los campos 
+            y envía una solicitud para invitar a un usuario a un grupo.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Enviar Invitación").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Recoge los datos ingresados por el usuario:
+               - El nombre del grupo (`nombreGrupo`) desde el campo de texto `txtNombreGrupoInvitar`.
+               - El sobrenombre del usuario a invitar (`sobrenombreUsuario`) desde el campo de texto `txtSobrenombreInvitar`.
+            2. Valida que ambos campos no estén vacíos. Si alguno de los campos está vacío, muestra un mensaje solicitando que se 
+               rellenen todos los campos y termina la ejecución.
+            3. Si los campos son válidos, llama al método `RequestInviteUserToGroupAsync` del cliente para enviar la solicitud de invitación.
+            4. Si la solicitud se envía con éxito, muestra un mensaje indicando que el usuario fue invitado exitosamente.
+            5. Si ocurre una excepción durante el proceso, muestra un mensaje de error.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.MostrarMes_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Mostrar Mes". Recoge los datos de la interfaz de usuario, 
+            determina si la solicitud es para una agenda grupal o no, y luego hace la solicitud correspondiente.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Mostrar Mes").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Obtiene el estado del CheckBox `chkEsGrupal` para determinar si la solicitud es para una agenda grupal o no.
+               - Si el CheckBox está marcado, se considera una solicitud grupal.
+            2. Si la solicitud es grupal, recoge el nombre del grupo desde el campo de texto `txtNombreGrupoOpcional`.
+               - Si no es grupal, el nombre del grupo se deja vacío.
+            3. Llama al método `RequestShowAgendaAsync` del cliente, pasando el token de sesión, el nombre de usuario, 
+               si la solicitud es grupal y el nombre del grupo (si es necesario).
+            4. Si ocurre un error durante el proceso, muestra un mensaje de error con los detalles.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.ChkEsGrupal_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el CheckBox "Es Grupal". Habilita o deshabilita el campo de texto 
+            "Nombre del Grupo" en función de si el CheckBox está marcado o no.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el CheckBox "Es Grupal").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método realiza las siguientes acciones:
+            1. Comprueba si el CheckBox `chkEsGrupal` está marcado o no. 
+               - Si el CheckBox está marcado (es decir, la solicitud es grupal), habilita el campo de texto `txtNombreGrupoOpcional` para que el usuario pueda ingresar el nombre del grupo.
+               - Si el CheckBox no está marcado (es decir, la solicitud no es grupal), deshabilita el campo de texto `txtNombreGrupoOpcional` para evitar que el usuario ingrese un nombre de grupo.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.InsertarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón "Insertar Tag". Muestra el panel para permitir al usuario insertar
+            un tag y asociarlo a una fecha.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón "Insertar Tag").</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método hace visible el panel `insertarTagPanel`, que contiene los controles necesarios para que
+            el usuario ingrese un tag y lo asocie a una fecha específica. El panel estará visible para el usuario
+            después de hacer clic en el botón correspondiente.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarInsertarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para insertar un tag. Valida los campos proporcionados por el usuario
+            y, si son válidos, envía los datos al servidor para asociar el tag con una fecha específica.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de insertar tag).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método se activa cuando el usuario hace clic en el botón "Enviar" para insertar un nuevo tag. 
+            Valida que los campos de fecha y el nuevo tag no estén vacíos. Si los datos son válidos, se llama 
+            al método `InsertarTagAsync` del cliente para asociar el tag con la fecha en el servidor. En caso de 
+            error, se muestra un mensaje con la descripción del problema.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EliminarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para mostrar el panel de eliminación de un tag.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de eliminar tag).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método se activa cuando el usuario hace clic en el botón "Eliminar Tag". 
+            Su propósito es hacer visible el panel donde el usuario podrá especificar la fecha 
+            y el tag a eliminar. De este modo, el usuario podrá interactuar con los controles 
+            necesarios para realizar la eliminación del tag.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarEliminarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para eliminar un tag asociado a una fecha específica.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de eliminar tag).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método se activa cuando el usuario hace clic en el botón "Enviar" para eliminar un tag.
+            Recoge los datos de la interfaz de usuario (fecha y tag), valida que ambos campos estén completos,
+            y luego llama al servicio para eliminar el tag en el servidor. Si ocurre un error, muestra un mensaje
+            de error en la interfaz de usuario.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.BuscarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para buscar un tag.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de buscar tag).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método se activa cuando el usuario hace clic en el botón "Buscar Tag".
+            Muestra el panel para realizar la búsqueda de un tag. Además, maneja la visibilidad del panel 
+            relacionado con los grupos, dependiendo de si el checkbox "Es grupal" está marcado o no.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.EnviarBuscarTag_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para realizar la búsqueda de un tag.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de buscar tag).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método se activa cuando el usuario hace clic en el botón "Buscar Tag".
+            Valida que los campos necesarios estén completos y luego realiza una solicitud de búsqueda de un tag.
+            Si la búsqueda es grupal, también valida que el nombre del grupo esté ingresado.
+            </remarks>
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.InitializeComponent">
             <summary>
@@ -795,6 +1663,27 @@
             Abre la ventana del calendario.
             </summary>
         </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnPeticionManual_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para mostrar u ocultar el panel de petición manual.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de petición manual).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método cambia la visibilidad del panel de petición manual. Si el panel está visible, se ocultará; si está oculto, se mostrará.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnEnviarPeticion_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para enviar una petición manual.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de enviar petición).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método recoge el texto de la petición manual desde el campo de texto, valida si es válido y, si lo es,
+            envía la petición utilizando el método `SendCustomPacketAsync` de la clase `Client`.
+            </remarks>
+        </member>
         <member name="M:AgendaEscritorio.view.MainMenuView.BtnCerrarSesion_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Evento que se llama al hacer clic en el botón de cerrar sesión.
@@ -833,6 +1722,28 @@
             Este método se puede utilizar para agregar lógica adicional al cargar la ventana.
             </summary>
         </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.PowerButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón de apagado, solicitando la contraseña y enviando una solicitud de apagado al servidor.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón de apagado).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método muestra un cuadro de texto para que el usuario ingrese la contraseña de apagado. Si la contraseña
+            es válida (no vacía), se envía una solicitud al servidor para apagarlo. Si no se ingresa la contraseña, muestra un error.
+            </remarks>
+        </member>
+        <member name="M:AgendaEscritorio.view.MainMenuView.BtnIntroducirInfoSobre_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para introducir nueva información sobre el servidor.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método solicita al usuario que ingrese nueva información sobre el servidor a través de un cuadro de texto.
+            Si el usuario no ingresa nada, muestra un mensaje de error. Si la información es válida, se envía al servidor.
+            </remarks>
+        </member>
         <member name="M:AgendaEscritorio.view.MainMenuView.InitializeComponent">
             <summary>
             InitializeComponent
@@ -858,6 +1769,17 @@
             Configura el menú de edición basado en los privilegios del usuario.
             Si el usuario es administrador, habilita la opción de cambiar la fecha de nacimiento.
             </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.UserManagementView.BtnMostrarUsuarios_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en el botón para mostrar la lista de usuarios.
+            </summary>
+            <param name="sender">El objeto que genera el evento (el botón).</param>
+            <param name="e">Los argumentos del evento.</param>
+            <remarks>
+            Este método solicita la lista de usuarios al servidor mediante una solicitud asíncrona.
+            Si ocurre un error durante la solicitud, se muestra un mensaje de error.
+            </remarks>
         </member>
         <member name="M:AgendaEscritorio.view.UserManagementView.BtnEditarUsuario_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
@@ -1069,6 +1991,120 @@
             <summary>
             InitializeComponent
             </summary>
+        </member>
+        <member name="M:CryptographyService.#ctor">
+            <summary>
+            Constructor que inicializa el servicio de criptografía usando RSA con una clave de 3072 bits.
+            </summary>
+            <remarks>
+            Este constructor crea una instancia de <see cref="T:System.Security.Cryptography.RSACryptoServiceProvider"/> con una longitud de clave de 3072 bits,
+            que proporciona un nivel de seguridad más alto que la longitud estándar de 2048 bits. La clave se utiliza para operaciones 
+            de cifrado y descifrado RSA.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.GetPublicKey">
+            <summary>
+            Exporta la clave pública del servicio de criptografía en formato Base64.
+            </summary>
+            <returns>
+            Una cadena que representa la clave pública en formato Base64, que puede ser enviada a un servidor.
+            </returns>
+            <remarks>
+            Este método exporta la clave pública en formato X.509 (que es el estándar para las claves públicas) y la convierte
+            en una cadena Base64. Además, muestra un cuadro de mensaje con la clave pública antes de devolverla.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.ImportServerPublicKey(System.String)">
+            <summary>
+            Importa la clave pública del servidor a partir de una cadena en formato Base64.
+            </summary>
+            <param name="publicKeyBase64">
+            La clave pública del servidor en formato Base64 que será importada.
+            </param>
+            <remarks>
+            Este método convierte la clave pública en Base64 a un arreglo de bytes y luego intenta importar la clave pública
+            en formato X.509 (PKCS#8) usando el algoritmo RSA. Si la importación es exitosa, se muestra un mensaje indicando
+            que la clave pública se ha importado correctamente. En caso de error, se manejan excepciones específicas y se
+            muestra un mensaje de error detallado.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.EncryptDataWithClientKey(System.Byte[])">
+            <summary>
+            Encripta los datos con la clave pública del cliente (RSA).
+            </summary>
+            <param name="data">Datos a encriptar en formato de bytes.</param>
+            <returns>Un arreglo de bytes que contiene los datos encriptados.</returns>
+            <remarks>
+            Este método utiliza la clave pública del cliente (RSA) para encriptar los datos proporcionados.
+            Se aplica el esquema de padding PKCS#1 para garantizar la compatibilidad con el estándar de encriptación RSA.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.DecryptDataWithPrivateKey(System.Byte[])">
+            <summary>
+            Desencripta los datos con la clave privada del cliente (RSA).
+            </summary>
+            <param name="encryptedData">Datos encriptados en formato de bytes.</param>
+            <returns>Un arreglo de bytes que contiene los datos desencriptados.</returns>
+            <remarks>
+            Este método utiliza la clave privada del cliente (RSA) para desencriptar los datos proporcionados.
+            Se aplica el esquema de padding PKCS#1 para garantizar la compatibilidad con el estándar de desencriptación RSA.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.GenerateNewKeyPair">
+            <summary>
+            Genera un nuevo par de claves RSA si es necesario.
+            </summary>
+            <remarks>
+            Este método inicializa un nuevo objeto RSACryptoServiceProvider con una longitud de clave de 3072 bits.
+            La generación de nuevas claves RSA es útil cuando se necesita un nuevo par de claves (pública y privada) para la encriptación y desencriptación.
+            </remarks>
+        </member>
+        <member name="M:CryptographyService.SetAESKey(System.Byte[])">
+            <summary>
+            Establece la clave AES para su uso en operaciones de encriptación y desencriptación.
+            </summary>
+            <param name="key">La clave AES que se va a establecer, representada como un arreglo de bytes.</param>
+            <remarks>
+            Este método valida que la clave no sea nula ni vacía, y luego almacena la clave AES en una variable interna.
+            La clave AES se utiliza para encriptar o desencriptar datos con el algoritmo AES.
+            Después de almacenar la clave, se muestra un mensaje con la clave en formato Base64.
+            </remarks>
+            <exception cref="T:System.ArgumentException">Lanzado si la clave AES es nula o vacía.</exception>
+        </member>
+        <member name="M:CryptographyService.GetAESKey">
+            <summary>
+            Obtiene la clave AES almacenada para su uso en operaciones de encriptación y desencriptación.
+            </summary>
+            <returns>La clave AES almacenada, representada como un arreglo de bytes.</returns>
+            <remarks>
+            Este método devuelve la clave AES que se ha almacenado previamente mediante el método <see cref="M:CryptographyService.SetAESKey(System.Byte[])"/>.
+            Si la clave no ha sido establecida previamente, se lanzará una excepción <see cref="T:System.InvalidOperationException"/>.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">Lanzado si la clave AES no ha sido establecida.</exception>
+        </member>
+        <member name="M:CryptographyService.EncryptDataWithAES(System.Byte[])">
+            <summary>
+            Encripta los datos proporcionados utilizando el algoritmo AES con una clave previamente establecida.
+            </summary>
+            <param name="data">Datos en formato de arreglo de bytes que serán cifrados.</param>
+            <returns>Datos cifrados en formato de arreglo de bytes.</returns>
+            <remarks>
+            Este método utiliza el modo ECB (Electronic Codebook) de AES, sin IV (Vector de Inicialización), lo que implica que el mismo bloque de texto cifrado siempre generará la misma salida para los mismos datos de entrada.
+            Se utiliza el padding PKCS7 para asegurar que los datos sean de un tamaño múltiplo del tamaño de bloque de AES (128 bits).
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">Lanzado si los datos proporcionados son nulos.</exception>
+        </member>
+        <member name="M:CryptographyService.DecryptDataWithAES(System.Byte[])">
+            <summary>
+            Desencripta los datos proporcionados utilizando el algoritmo AES con una clave previamente establecida.
+            </summary>
+            <param name="data">Datos cifrados en formato de arreglo de bytes que serán desencriptados.</param>
+            <returns>Datos desencriptados en formato de arreglo de bytes.</returns>
+            <remarks>
+            Este método utiliza el modo ECB (Electronic Codebook) de AES, sin IV (Vector de Inicialización), lo que implica que el mismo bloque de texto cifrado siempre generará la misma salida para los mismos datos de entrada.
+            Se utiliza el padding PKCS7 para asegurar que los datos cifrados se ajusten a un tamaño múltiplo del tamaño de bloque de AES (128 bits).
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">Lanzado si los datos proporcionados son nulos.</exception>
         </member>
     </members>
 </doc>

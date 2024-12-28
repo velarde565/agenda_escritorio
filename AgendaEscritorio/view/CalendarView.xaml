@@ -148,15 +148,13 @@
                 <TextBox x:Name="txtSobrenombreInvitar" Margin="10" Width="200" Height="30"/>
                 <Button x:Name="btnEnviarInvitarUsuario" Content="Enviar Invitación" Width="200" Height="30" Margin="10" Click="EnviarInvitarUsuario_Click"/>
             </StackPanel>
-
-
-
         </Grid>
 
 
         <!-- Calendario -->
         <Grid Grid.Column="1">
             <Border CornerRadius="12" Background="#FF1B1448" Margin="0">
+                
                 <Border BorderThickness="2" Opacity="0.95" CornerRadius="10">
                     <Border.BorderBrush>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -213,5 +211,20 @@
                 </Border>
             </Border>
         </Grid>
+        <!-- Panel para mostrar detalles del evento -->
+        <StackPanel x:Name="DetalleEventoPanel" Grid.Column="1" 
+            Margin="10,10,10,200" Visibility="Collapsed" 
+            HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <TextBlock x:Name="txtDetalles" Text="Detalles del evento" 
+               Foreground="White" Margin="10" FontSize="16" 
+               TextAlignment="Center"/>
+            <TextBlock x:Name="txtFechaDetalle" Foreground="White" 
+               Margin="10" FontSize="14" TextAlignment="Center"/>
+            <TextBlock x:Name="txtContenidoDetalle" Foreground="White" 
+               Margin="10" FontSize="14" TextAlignment="Center"/>
+        </StackPanel>
+
+
+
     </Grid>
 </Window>

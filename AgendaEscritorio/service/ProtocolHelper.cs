@@ -80,7 +80,12 @@ namespace AgendaEscritorio.service
             string passwordLengthStr = password.Length.ToString("D2");
 
             // Construcción del paquete siguiendo el protocolo
-            return $"1{"05"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}{passwordLengthStr}{password}\n";
+            string packet = $"1{"05"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}{passwordLengthStr}{password}\n";
+
+            // Mostrar el paquete en un MessageBox
+            MessageBox.Show("Paquete a enviar:\n" + packet);
+
+            return packet;
         }
 
 
@@ -370,7 +375,10 @@ namespace AgendaEscritorio.service
             string roleToDeleteOffset = roleToDelete.Length.ToString("D2");
 
             // Construir el paquete siguiendo el protocolo
-            return $"2{"11"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleToDeleteOffset}{roleToDelete}\n";
+            string packet = $"2{"11"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleToDeleteOffset}{roleToDelete}\n";
+            MessageBox.Show(packet);
+
+            return packet;
         }
 
 
@@ -388,7 +396,11 @@ namespace AgendaEscritorio.service
             string connectedUsernameOffset = connectedUsername.Length.ToString("D2");
 
             // Construir el paquete
-            return $"2{"12"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}\n";
+            String packet = $"2{"12"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}\n";
+            MessageBox.Show(packet);
+
+
+            return packet;
         }
 
 
@@ -527,7 +539,10 @@ namespace AgendaEscritorio.service
             string groupNameOffset = nombreGrupo.Length.ToString("D2");      // Longitud del nombre del grupo
 
             // Construir y devolver el paquete
-            return $"2{"15"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+            String packet = $"2{"15"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
+            MessageBox.Show(packet);
+
+            return packet;
         }
 
 
