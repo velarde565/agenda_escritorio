@@ -23,15 +23,60 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TabControl Background="#2B2B2B" Grid.Row="0" Margin="5" VerticalAlignment="Top">
+            <TabControl Background="#2B2B2B" Grid.Row="0" Margin="5" VerticalAlignment="Top" Foreground="White" BorderBrush="#007BA7">
+                <TabControl.Resources>
+                    <!-- Estilo para los TabItems -->
+                    <Style TargetType="TabItem">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Grid>
+                                        <!-- Contenedor de la pestaña -->
+                                        <Border 
+                                Name="TabBorder" 
+                                Background="#2B2B2B" 
+                                BorderBrush="#007BA7" 
+                                BorderThickness="1" 
+                                CornerRadius="3" 
+                                Margin="2">
+                                            <ContentPresenter 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center" 
+                                    ContentSource="Header" 
+                                    Margin="10,2" />
+                                        </Border>
+                                    </Grid>
+                                    <!-- Triggers para los estados -->
+                                    <ControlTemplate.Triggers>
+                                        <!-- Si la pestaña está seleccionada -->
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="TabBorder" Property="Background" Value="#007BA7" />
+                                            <Setter TargetName="TabBorder" Property="BorderBrush" Value="#005F6B" />
+                                            <Setter Property="Foreground" Value="White" />
+                                        </Trigger>
+                                        <!-- Si el ratón está sobre la pestaña -->
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="TabBorder" Property="Background" Value="#005F6B" />
+                                        </Trigger>
+                                        <!-- Si la pestaña está deshabilitada -->
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="TabBorder" Property="Background" Value="#555555" />
+                                            <Setter Property="Foreground" Value="#AAAAAA" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+
                 <!-- Pestaña de Eventos -->
                 <TabItem Header="Eventos">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                         <TextBlock Text="Gestión de Eventos" FontSize="18" Foreground="White" Margin="10"/>
                         <Button Content="Crear Evento" Margin="10" Click="CrearEvento_Click" Background="#007BA7" Foreground="White"/>
-                        <Button Content="Ver Evento" Margin="10" Click="VerEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Modificar Evento" Margin="10" Click="ModificarEvento_Click" Background="#007BA7" Foreground="White"/>
-                        <Button Content="Eliminar Evento" Margin="10" Click="EliminarEvento_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Agenda Grupal" Margin="10" Click="EliminarAgendaGrupal_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Insertar Tag" Margin="10" Click="InsertarTag_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Tag" Margin="10" Click="EliminarTag_Click" Background="#007BA7" Foreground="White"/>
@@ -46,15 +91,14 @@
                         <Button Content="Crear Grupo" Margin="10" Click="CrearGrupo_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Eliminar Grupo" Margin="10" Click="EliminarGrupo_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Ver Grupos (propietario)" Margin="10" Click="VerGruposPropietario_Click" Background="#007BA7" Foreground="White"/>
-                        <Button Content="Ver Grupos(miembro)" Margin="10" Click="VerGruposMembresia_Click" Background="#007BA7" Foreground="White"/>
+                        <Button Content="Ver Grupos (miembro)" Margin="10" Click="VerGruposMembresia_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Ver Todos los Grupos" Margin="10" Click="VerTodosGrupos_Click" Background="#007BA7" Foreground="White"/>
                         <Button Content="Invitar a Usuario" Margin="10" Click="InvitarUsuario_Click" Background="#007BA7" Foreground="White"/>
-
-
-
                     </StackPanel>
                 </TabItem>
             </TabControl>
+
+
 
             <!-- Panel dinámico para crear o eliminar eventos y grupos -->
             <StackPanel x:Name="crearEventoPanel" Grid.Row="2" Visibility="Collapsed" Margin="20">
@@ -183,7 +227,8 @@
                                 </StackPanel>
 
 
-                                <Button Content="Volver" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BackButton_Click" Background="#007BA7" Foreground="White" BorderBrush="#005F6B" />
+                                <Button Content="←" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BackButton_Click" Background="#007BA7" Foreground="White" BorderBrush="#005F6B" FontSize="20" />
+
 
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
@@ -212,17 +257,26 @@
             </Border>
         </Grid>
         <!-- Panel para mostrar detalles del evento -->
+        <!-- Panel para mostrar detalles del evento -->
         <StackPanel x:Name="DetalleEventoPanel" Grid.Column="1" 
-            Margin="10,10,10,200" Visibility="Collapsed" 
-            HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <TextBlock x:Name="txtDetalles" Text="Detalles del evento" 
+    Margin="10,10,10,200" Visibility="Collapsed" 
+    HorizontalAlignment="Center" VerticalAlignment="Bottom">
+
+            <!-- Recuadro para el contenido del detalle -->
+            <Border Background="Black" CornerRadius="10" Padding="15" Margin="0">
+                <StackPanel>
+                    <TextBlock x:Name="txtDetalles" Text="Detalles del evento" 
                Foreground="White" Margin="10" FontSize="16" 
                TextAlignment="Center"/>
-            <TextBlock x:Name="txtFechaDetalle" Foreground="White" 
+                    <TextBlock x:Name="txtFechaDetalle" Foreground="White" 
                Margin="10" FontSize="14" TextAlignment="Center"/>
-            <TextBlock x:Name="txtContenidoDetalle" Foreground="White" 
+                    <TextBlock x:Name="txtContenidoDetalle" Foreground="White" 
                Margin="10" FontSize="14" TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
         </StackPanel>
+
 
 
 

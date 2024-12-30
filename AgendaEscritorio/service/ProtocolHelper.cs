@@ -83,7 +83,7 @@ namespace AgendaEscritorio.service
             string packet = $"1{"05"}{tokenLengthStr}{sessionToken}{usernameLengthStr}{username}{passwordLengthStr}{password}\n";
 
             // Mostrar el paquete en un MessageBox
-            MessageBox.Show("Paquete a enviar:\n" + packet);
+            //MessageBox.Show("Paquete a enviar:\n" + packet);
 
             return packet;
         }
@@ -177,7 +177,7 @@ namespace AgendaEscritorio.service
             string response = $"2{"03"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{usernameToChangeOffset}{usernameToChange}{newBirthDateOffset}{newBirthDate}\n";
 
             // Mensaje de verificación temporal
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -208,7 +208,7 @@ namespace AgendaEscritorio.service
                               $"{connectedUsernameLengthStr}{connectedUsername}\n";
 
             // Mensaje de verificación temporal
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -236,7 +236,7 @@ namespace AgendaEscritorio.service
             string response = $"2{"04"}{tokenOffset}{sessionToken}{targetUsernameOffset}{usernameToChange}{usernameOffset}{connectedUsername}{otherDataOffset}{newOtherData}";
 
             // Mensaje de verificación temporal
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -376,7 +376,7 @@ namespace AgendaEscritorio.service
 
             // Construir el paquete siguiendo el protocolo
             string packet = $"2{"11"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}{roleToDeleteOffset}{roleToDelete}\n";
-            MessageBox.Show(packet);
+            //MessageBox.Show(packet);
 
             return packet;
         }
@@ -397,7 +397,7 @@ namespace AgendaEscritorio.service
 
             // Construir el paquete
             String packet = $"2{"12"}{sessionTokenOffset}{sessionToken}{connectedUsernameOffset}{connectedUsername}\n";
-            MessageBox.Show(packet);
+            //MessageBox.Show(packet);
 
 
             return packet;
@@ -434,7 +434,7 @@ namespace AgendaEscritorio.service
             string packet = $"2{"10"}{tokenOffset}{sessionToken}{usernameOffset}{username}{rolOffset}{rol}{permisosString}";
 
             // Mostrar el paquete generado en un MessageBox
-            MessageBox.Show($"Paquete generado:\n{packet}", "Paquete Editar Permisos", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "Paquete Editar Permisos", MessageBoxButton.OK, MessageBoxImage.Information);
 
             return packet;
         }
@@ -540,7 +540,7 @@ namespace AgendaEscritorio.service
 
             // Construir y devolver el paquete
             String packet = $"2{"15"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
-            MessageBox.Show(packet);
+            //MessageBox.Show(packet);
 
             return packet;
         }
@@ -571,7 +571,7 @@ namespace AgendaEscritorio.service
             string packet = $"2{"16"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
 
             // Mostrar el paquete generado en un MessageBox (para depuración)
-            MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Retornar el paquete generado
             return packet;
@@ -603,7 +603,7 @@ namespace AgendaEscritorio.service
             string packet = $"2{"17"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}\n";
 
             // Mostrar el paquete generado en un MessageBox (para depuración)
-            MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "Delete Group Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Retornar el paquete generado
             return packet;
@@ -637,7 +637,7 @@ namespace AgendaEscritorio.service
             string packet = $"2{"21"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}{groupNameOffset}{nombreGrupo}{nicknameOffset}{sobrenombreUsuario}\n";
 
             // Mostrar el paquete generado para depuración
-            MessageBox.Show($"Paquete generado:\n{packet}", "Vista previa del paquete", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "Vista previa del paquete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Retornar el paquete generado
             return packet;
@@ -687,7 +687,7 @@ namespace AgendaEscritorio.service
             }
 
             // Retornar el paquete generado
-            MessageBox.Show($"Paquete generado:\n{packet}", "Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "Agenda Packet", MessageBoxButton.OK, MessageBoxImage.Information);
             return packet;
         }
 
@@ -721,7 +721,7 @@ namespace AgendaEscritorio.service
             string packet = $"2{"18"}{sessionTokenOffset}{sessionToken}{usernameOffset}{username}\n";
 
             // Mostrar el paquete generado en un MessageBox para su revisión
-            MessageBox.Show($"Paquete generado:\n{packet}", "View Owned Groups Packet", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"Paquete generado:\n{packet}", "View Owned Groups Packet", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Retornar el paquete generado
             return packet;
@@ -825,7 +825,7 @@ namespace AgendaEscritorio.service
                               $"{usernameLengthStr}{username}";
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -848,7 +848,7 @@ namespace AgendaEscritorio.service
                               $"{usernameLengthStr}{username}";
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -871,7 +871,7 @@ namespace AgendaEscritorio.service
                               $"{usernameLengthStr}{username}";
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -893,7 +893,7 @@ namespace AgendaEscritorio.service
                               $"{usernameLengthStr}{username}";
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -923,7 +923,7 @@ namespace AgendaEscritorio.service
                               $"{nuevoTagLengthStr}{nuevoTag}"; // Longitud y nuevo tag
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -954,7 +954,7 @@ namespace AgendaEscritorio.service
                               $"{tagAEliminarLengthStr}{tagAEliminar}"; // Longitud y tag a eliminar
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -995,7 +995,7 @@ namespace AgendaEscritorio.service
             }
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(packet);
+            //MessageBox.Show(packet);
 
             return packet;
         }
@@ -1035,7 +1035,7 @@ namespace AgendaEscritorio.service
                               $"{grupalByte}"; // Indicador de si es grupal (1 byte)
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }
@@ -1066,7 +1066,7 @@ namespace AgendaEscritorio.service
                               $"{nombreGrupoLengthStr}{nombreGrupo}"; // Longitud y nombre del grupo
 
             // Mensaje de verificación temporal (opcional)
-            MessageBox.Show(response);
+            //MessageBox.Show(response);
 
             return response;
         }

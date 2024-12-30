@@ -40,10 +40,10 @@ public class CryptographyService
         string publicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
 
         // Muestra la clave pública en un MessageBox antes de enviarla
-        MessageBox.Show("Clave pública que se envía al servidor: " + publicKey,
-                        "Clave Pública del Cliente",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+        //MessageBox.Show("Clave pública que se envía al servidor: " + publicKey,
+                        //"Clave Pública del Cliente",
+                        //MessageBoxButton.OK,
+                        //MessageBoxImage.Information);
 
         return publicKey;
     }
@@ -163,10 +163,10 @@ public class CryptographyService
 
         aesKey = key;
 
-        MessageBox.Show($"Clave AES almacenada: {Convert.ToBase64String(aesKey)}",
-                        "Clave AES en CryptographyService",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+        //MessageBox.Show($"Clave AES almacenada: {Convert.ToBase64String(aesKey)}",
+                        //"Clave AES en CryptographyService",
+                        //MessageBoxButton.OK,
+                        //MessageBoxImage.Information);
     }
 
 

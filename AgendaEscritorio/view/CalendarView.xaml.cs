@@ -31,24 +31,27 @@ namespace AgendaEscritorio.view
 
 
 
-        // Método para manejar la actualización de la vista con los eventos modificados
+        /// <summary>
+        /// Actualiza el calendario con los eventos modificados agrupándolos por fecha.
+        /// </summary>
+        /// <param name="modifiedEventList">Lista de eventos modificados, donde cada evento es un diccionario con información sobre el evento.</param>
         private void UpdateCalendarWithModifiedEvents(List<Dictionary<string, object>> modifiedEventList)
         {
-            // Limpiar la información de eventos modificados por fecha
+            // Limpiar la información de eventos modificados almacenada previamente
             modifiedEvents.Clear();
 
             // Agrupar los eventos por fecha
             foreach (var eventItem in modifiedEventList)
             {
-                string eventDate = (string)eventItem["Date"];
-                if (!modifiedEvents.ContainsKey(eventDate))
+                string eventDate = (string)eventItem["Date"]; // Obtener la fecha del evento
+                if (!modifiedEvents.ContainsKey(eventDate)) // Si no hay eventos para esa fecha, inicializar la lista
                 {
                     modifiedEvents[eventDate] = new List<Dictionary<string, object>>();
                 }
-                modifiedEvents[eventDate].Add(eventItem);
+                modifiedEvents[eventDate].Add(eventItem); // Agregar el evento a la lista correspondiente a la fecha
             }
 
-            // Actualizar la vista de los días con eventos modificados
+            // Actualizar la vista del calendario para reflejar los días con eventos modificados
             PopulateCalendar();
         }
 
@@ -113,7 +116,7 @@ namespace AgendaEscritorio.view
                 // Verificar si hay eventos modificados en este día
                 if (modifiedEvents.ContainsKey(dateKey))
                 {
-                    dayButton.Background = Brushes.Red; // Cambiar color si hay eventos modificados
+                    dayButton.Background = Brushes.Green; // Cambiar color si hay eventos modificados
 
                     // Almacenar eventos y la fecha completa en el Tag del botón
                     dayButton.Tag = new { Events = modifiedEvents[dateKey], Date = dateKey };
@@ -127,32 +130,41 @@ namespace AgendaEscritorio.view
         }
 
 
+        /// <summary>
+        /// Maneja el evento de clic en un botón de día del calendario, mostrando los detalles de los eventos asociados a ese día.
+        /// </summary>
+        /// <param name="sender">El botón que fue clicado.</param>
+        /// <param name="e">Datos del evento del clic.</param>
         private void DayButton_Click(object sender, RoutedEventArgs e)
         {
+            // Convertir el objeto sender en un botón
             Button clickedButton = sender as Button;
+
+            // Verificar que el botón no sea nulo y que tenga datos en su propiedad Tag
             if (clickedButton != null && clickedButton.Tag != null)
             {
-                // Obtener los datos del Tag (eventos y fecha)
+                // Obtener los datos del Tag, que incluye los eventos y la fecha
                 dynamic tagData = clickedButton.Tag;
-                List<Dictionary<string, object>> eventsForDay = tagData.Events;
-                string fullDate = tagData.Date;
+                List<Dictionary<string, object>> eventsForDay = tagData.Events; // Lista de eventos para ese día
+                string fullDate = tagData.Date; // Fecha completa del día seleccionado
 
-                // Mostrar los detalles de los eventos
+                // Construir un texto con los detalles de los eventos
                 string allContent = "";
                 foreach (var eventItem in eventsForDay)
                 {
-                    string content = (string)eventItem["Content"];
-                    string tags = string.Join(", ", (List<string>)eventItem["Tags"]);
+                    string content = (string)eventItem["Content"]; // Contenido del evento
+                    string tags = string.Join(", ", (List<string>)eventItem["Tags"]); // Etiquetas asociadas al evento
 
+                    // Agregar la información del evento al texto acumulado
                     allContent += $"Contenido: {content}\nEtiquetas: {tags}\n\n";
                 }
 
-                // Actualizar los TextBlocks con la información completa
-                txtDetalles.Text = "Detalles del evento";
-                txtFechaDetalle.Text = $"Fecha: {fullDate}";
-                txtContenidoDetalle.Text = allContent;
+                // Actualizar los TextBlocks con la información de los eventos
+                txtDetalles.Text = "Detalles del evento"; // Título de la sección de detalles
+                txtFechaDetalle.Text = $"Fecha: {fullDate}"; // Mostrar la fecha seleccionada
+                txtContenidoDetalle.Text = allContent; // Mostrar los detalles de los eventos
 
-                // Mostrar el panel de detalles del evento
+                // Hacer visible el panel de detalles del evento
                 DetalleEventoPanel.Visibility = Visibility.Visible;
             }
         }
@@ -180,7 +192,7 @@ namespace AgendaEscritorio.view
                 await client.RequestGoBackMonthAsync(client.SessionToken, client.Username);
 
                 // Feedback opcional para el usuario
-                MessageBox.Show("Solicitud para retroceder un mes enviada correctamente.");
+                //MessageBox.Show("Solicitud para retroceder un mes enviada correctamente.");
             }
             catch (Exception ex)
             {
@@ -208,7 +220,7 @@ namespace AgendaEscritorio.view
                 await client.RequestAdvanceMonthAsync(client.SessionToken, client.Username);
 
                 // Feedback opcional para el usuario
-                MessageBox.Show("Solicitud para avanzar un mes enviada correctamente.");
+                //MessageBox.Show("Solicitud para avanzar un mes enviada correctamente.");
             }
             catch (Exception ex)
             {
@@ -235,7 +247,7 @@ namespace AgendaEscritorio.view
                 await client.RequestGoBackYearAsync(client.SessionToken, client.Username);
 
                 // Feedback opcional para el usuario
-                MessageBox.Show("Solicitud para retroceder un año enviada correctamente.");
+                //MessageBox.Show("Solicitud para retroceder un año enviada correctamente.");
             }
             catch (Exception ex)
             {
@@ -261,7 +273,7 @@ namespace AgendaEscritorio.view
                 await client.RequestAdvanceYearAsync(client.SessionToken, client.Username);
 
                 // Feedback opcional para el usuario
-                MessageBox.Show("Solicitud para avanzar un año enviada correctamente.");
+                //MessageBox.Show("Solicitud para avanzar un año enviada correctamente.");
             }
             catch (Exception ex)
             {
@@ -277,9 +289,23 @@ namespace AgendaEscritorio.view
         /// </summary>
         /// <param name="sender">El objeto que disparó el evento (el botón de cerrar).</param>
         /// <param name="e">Los argumentos del evento.</param>
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private async void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); // Cierra la ventana
+            // Mostrar un cuadro de diálogo de confirmación
+            MessageBoxResult result = MessageBox.Show("¿Estás seguro de que deseas cerrar sesión?", "Confirmar cierre de sesión", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            // Si el usuario hace clic en "Sí", cerrar sesión
+            if (result == MessageBoxResult.Yes)
+            {
+                await client.SendLogoutAsync(); // Llama al método para cerrar sesión a través del cliente
+
+                this.Close(); // Cierra la ventana actual
+            }
+            // Si el usuario hace clic en "No", no se hace nada
+            else
+            {
+                // No hacer nada, solo cerrar el cuadro de diálogo
+            }
         }
 
         /// <summary>
@@ -337,6 +363,15 @@ namespace AgendaEscritorio.view
             crearEventoPanel.Visibility = Visibility.Collapsed;
             crearGrupoPanel.Visibility = Visibility.Collapsed;
             eliminarGrupoPanel.Visibility = Visibility.Collapsed;
+            modificarEventoPanel.Visibility = Visibility.Collapsed;
+            crearGrupoPanel.Visibility = Visibility.Collapsed;
+            eliminarGrupoPanel.Visibility = Visibility.Collapsed;
+            eliminarAgendaGrupalPanel.Visibility = Visibility.Collapsed;
+            insertarTagPanel.Visibility = Visibility.Collapsed;
+            eliminarTagPanel.Visibility = Visibility.Collapsed;
+            buscarTagPanel.Visibility = Visibility.Collapsed;
+            invitarUsuarioPanel.Visibility = Visibility.Collapsed;
+
 
             // Muestra el panel solicitado, si no es nulo
             if (mostrarPanel != null)
@@ -722,8 +757,8 @@ namespace AgendaEscritorio.view
         /// <param name="e">Los argumentos del evento.</param>
         private void ModificarEvento_Click(object sender, RoutedEventArgs e)
         {
-            // Hacer visible el panel para modificar el evento
-            modificarEventoPanel.Visibility = Visibility.Visible;
+            MostrarUnicoPanel(modificarEventoPanel);
+
         }
 
 
@@ -1023,8 +1058,8 @@ namespace AgendaEscritorio.view
         /// </remarks>
         private void InsertarTag_Click(object sender, RoutedEventArgs e)
         {
-            // Hacer visible el panel para insertar fecha y tag
-            insertarTagPanel.Visibility = Visibility.Visible;
+            MostrarUnicoPanel(insertarTagPanel);
+
         }
 
 
@@ -1084,7 +1119,8 @@ namespace AgendaEscritorio.view
         private void EliminarTag_Click(object sender, RoutedEventArgs e)
         {
             // Hacer visible el panel de eliminación de tag
-            eliminarTagPanel.Visibility = Visibility.Visible;
+            MostrarUnicoPanel(eliminarTagPanel);
+           
         }
 
 
@@ -1141,8 +1177,8 @@ namespace AgendaEscritorio.view
         /// </remarks>
         private void BuscarTag_Click(object sender, RoutedEventArgs e)
         {
-            // Muestra el panel de búsqueda de tag
-            buscarTagPanel.Visibility = Visibility.Visible;
+            MostrarUnicoPanel(buscarTagPanel);
+
 
             // Maneja la visibilidad del panel de grupo basado en el estado del checkbox "Es grupal"
             chkEsGrupalBuscarTag.Checked += (s, args) =>

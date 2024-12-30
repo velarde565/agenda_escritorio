@@ -44,7 +44,11 @@
                                     <Button x:Name="btnCrearRol" Content="Crear Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnCrearRol_Click"/>
                                     <Button x:Name="btnEliminarRol" Content="Elminar Rol" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnEliminarRol_Click"/>
                                     <Button x:Name="btnMostrarPermisos" Content="Mostrar Permisos" Height="50" Background="#007BA7" Foreground="White" Margin="0,10,0,0" Click="BtnMostrarPermisos_Click"/>
+                                    <Button x:Name="btnVolver" Content="←" Height="50" Background="#007BA7" Foreground="White" FontSize="20" Margin="0,20,0,0" Click="BtnVolver_Click"/>
                                 </StackPanel>
+
+
+
 
                                 <!-- Menú de opciones de edición -->
                                 <StackPanel x:Name="editMenu" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
@@ -53,7 +57,7 @@
                                     <Button x:Name="btnCambiarFechaNacimiento" Content="Cambiar Fecha de Nacimiento" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarFechaNacimiento"/>
                                     <Button Content="Cambiar Otros Datos" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="CambiarOtrosDatos"/>
                                     <Button Content="Mostrar Datos de Usuario" Height="50" Background="#007BA7" Foreground="White" Margin="0,5" Click="MostrarDatosUsuario"/>
-                                    <Button Content="Volver" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para cambiar el nombre completo -->
@@ -63,6 +67,8 @@
                                     <TextBlock Text="Nuevo nombre completo:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtNuevoNombre" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioNombreCompleto_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
+                                    
                                 </StackPanel>
 
                                 <!-- Panel para cambiar fecha de nacimiento -->
@@ -72,6 +78,7 @@
                                     <TextBlock Text="Nueva fecha de nacimiento (dd/mm/yyyy):" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtNuevaFechaNacimiento" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioFechaNacimiento_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para cambiar otros datos -->
@@ -81,6 +88,7 @@
                                     <TextBlock Text="Otros datos:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtOtrosDatos" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioOtrosDatos_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para cambiar la contraseña -->
@@ -92,6 +100,7 @@
                                     <TextBlock Text="Nueva contraseña:" Foreground="White" Margin="0,5,0,0"/>
                                     <PasswordBox x:Name="txtNuevaContrasena" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Cambios" Width="200" Margin="0,10,0,0" Click="ConfirmarCambioContrasena_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para mostrar datos del usuario -->
@@ -106,6 +115,7 @@
                                     <TextBlock Text="Usuario a eliminar:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtUsuarioAEliminar" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Eliminación" Width="200" Margin="0,10,0,0" Click="ConfirmarEliminacionUsuario_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para crear usuario -->
@@ -125,6 +135,7 @@
                                     <TextBlock Text="Apodo:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtCrearUsuarioApodo" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Creación" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionUsuario_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para crear rol -->
@@ -140,6 +151,7 @@
                                     <CheckBox Content="Eliminar grupos" x:Name="chkEliminarGrupos" Foreground="White" Margin="0,5"/>
                                     <CheckBox Content="Eliminar agenda grupal" x:Name="chkEliminarAgendaGrupal" Foreground="White" Margin="0,5"/>
                                     <Button Content="Confirmar Creación de Rol" Width="200" Margin="0,10,0,0" Click="ConfirmarCreacionRol_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para eliminar rol -->
@@ -147,6 +159,7 @@
                                     <TextBlock Text="Rol a eliminar:" Foreground="White" Margin="0,5,0,0"/>
                                     <TextBox x:Name="txtEliminaRol" Width="200" Margin="0,5,0,10"/>
                                     <Button Content="Confirmar Eliminar de Rol" Width="200" Margin="0,10,0,0" Click="ConfirmarEliminarRol_Click"/>
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
 
                                 <!-- Panel para mostrar permisos de un rol -->
@@ -164,6 +177,7 @@
                                     <Button Content="Consultar Permisos" Width="200" Margin="0,10,0,0" Click="ConsultarPermisosRol_Click"/>
                                     <Button Content="Confirmar Edición" Width="200" Margin="0,10,0,0" Click="ConfirmarEdicion_Click"/>
                                     <Button Content="Activar/Desactivar Modo Gestión" Click="BtnModoGestion_Click" />
+                                    <Button Content="←" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10" Width="100" Click="BtnVolver_Click"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

@@ -96,39 +96,39 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendLoginAsync(System.String,System.String)">
             <summary>
-            Asynchronously sends a login request to the server with the provided username and password.
+            Envía de forma asincrónica una solicitud de inicio de sesión al servidor con el nombre de usuario y contraseña proporcionados.
             </summary>
-            <param name="username">The username for login.</param>
-            <param name="password">The password for login.</param>
-            <returns>Returns true if the login was successful, false otherwise.</returns>
+            <param name="username">El nombre de usuario para iniciar sesión.</param>
+            <param name="password">La contraseña para iniciar sesión.</param>
+            <returns>Devuelve true si el inicio de sesión fue exitoso, false en caso contrario.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.Client.ProcessLoginResponseAsync(System.String)">
             <summary>
-            Processes the login response received from the server.
+            Procesa la respuesta de inicio de sesión recibida del servidor.
             </summary>
-            <param name="response">The response message from the server.</param>
-            <returns>Returns true if login is successful, false otherwise.</returns>
+            <param name="response">El mensaje de respuesta del servidor.</param>
+            <returns>Devuelve true si el inicio de sesión es exitoso, false en caso contrario.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendHelpRequestAsync">
             <summary>
-            Asynchronously sends a help request to the server.
+            Envía de forma asincrónica una solicitud de ayuda al servidor.
             </summary>
-            <returns>Returns true if the request was successful, false otherwise.</returns>
+            <returns>Devuelve true si la solicitud fue exitosa, false en caso contrario.</returns>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestUserDataAsync(System.String,System.String,System.String)">
             <summary>
-            Asynchronously requests the user data from the server using the session token and username.
-            The request and response are encrypted using AES.
+            Solicita de forma asincrónica los datos del usuario al servidor utilizando el token de sesión y el nombre de usuario.
+            La solicitud y la respuesta están cifradas utilizando AES.
             </summary>
-            <param name="sessionToken">The session token to authenticate the request.</param>
-            <param name="username">The username for which to request data.</param>
-            <param name="nombre2">A secondary username (used for additional processing or validation).</param>
+            <param name="sessionToken">El token de sesión para autenticar la solicitud.</param>
+            <param name="username">El nombre de usuario para el cual se solicitan los datos.</param>
+            <param name="nombre2">Un nombre de usuario secundario (utilizado para procesamiento o validación adicional).</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.ProcessUserDataResponse(System.String)">
             <summary>
-            Processes the user data response received from the server.
+            Procesa la respuesta de datos de usuario recibida del servidor.
             </summary>
-            <param name="response">The response message containing user data.</param>
+            <param name="response">El mensaje de respuesta que contiene los datos del usuario.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendLogoutAsync">
             <summary>
@@ -137,9 +137,9 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.ProcessLogoutResponse(System.String)">
             <summary>
-            Processes the logout response received from the server.
+            Procesa la respuesta de cierre de sesión recibida del servidor.
             </summary>
-            <param name="response">The response message from the server after logout request.</param>
+            <param name="response">El mensaje de respuesta del servidor después de la solicitud de cierre de sesión.</param>
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendShutdownRequestAsync(System.String,System.String,System.String)">
             <summary>
@@ -230,12 +230,10 @@
         </member>
         <member name="M:AgendaEscritorio.service.Client.SendModoGestionAsync(System.String,System.String)">
             <summary>
-            Envía una solicitud al servidor para activar o desactivar el modo gestión. Los datos se envían y reciben cifrados con AES.
+            Envía una solicitud al servidor para activar o desactivar el modo gestión. Los datos se envían cifrados con AES.
             </summary>
             <param name="sessionToken">El token de sesión del usuario conectado.</param>
             <param name="username">El nombre del usuario que activa o desactiva el modo gestión.</param>
-            <param name="activarModoGestion">Indica si se debe activar o desactivar el modo gestión (true = activar, false = desactivar).</param>
-            <returns>Un código de respuesta del servidor (éxito o error).</returns>
         </member>
         <member name="M:AgendaEscritorio.service.Client.RequestChangeOtherDataAsync(System.String,System.String,System.String)">
             <summary>
@@ -1146,10 +1144,23 @@
             </summary>
             <param name="client">Instancia del cliente que se usará para interactuar con el servidor.</param>
         </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.UpdateCalendarWithModifiedEvents(System.Collections.Generic.List{System.Collections.Generic.Dictionary{System.String,System.Object}})">
+            <summary>
+            Actualiza el calendario con los eventos modificados agrupándolos por fecha.
+            </summary>
+            <param name="modifiedEventList">Lista de eventos modificados, donde cada evento es un diccionario con información sobre el evento.</param>
+        </member>
         <member name="M:AgendaEscritorio.view.CalendarView.PopulateCalendar">
             <summary>
             Rellena la vista del calendario con los días del mes actual.
             </summary>
+        </member>
+        <member name="M:AgendaEscritorio.view.CalendarView.DayButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Maneja el evento de clic en un botón de día del calendario, mostrando los detalles de los eventos asociados a ese día.
+            </summary>
+            <param name="sender">El botón que fue clicado.</param>
+            <param name="e">Datos del evento del clic.</param>
         </member>
         <member name="M:AgendaEscritorio.view.CalendarView.PreviousMonth_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
@@ -1644,12 +1655,6 @@
             Inicializa una nueva instancia de la clase <see cref="T:AgendaEscritorio.view.MainMenuView"/>.
             </summary>
             <param name="client">Instancia del cliente que se usará para las comunicaciones con el servidor.</param>
-        </member>
-        <member name="M:AgendaEscritorio.view.MainMenuView.ConfigureMenuBasedOnRole">
-            <summary>
-            Configura el menú en función del rol del usuario.
-            Si el usuario es administrador, se habilita la opción de ajustes.
-            </summary>
         </member>
         <member name="M:AgendaEscritorio.view.MainMenuView.BtnGestionPerfiles_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>

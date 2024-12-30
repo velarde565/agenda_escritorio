@@ -41,6 +41,8 @@ namespace AgendaEscritorio.view
 
 
 
+
+
         /// <summary>
         /// Maneja el evento de clic en el botón para mostrar la lista de usuarios.
         /// </summary>
@@ -667,22 +669,12 @@ namespace AgendaEscritorio.view
             string username = client.Username;  // Nombre de usuario conectado
 
             // Llamar al método para activar el modo gestión
-            int respuesta = await client.SendModoGestionAsync(sessionToken, username);  // True para activar el modo gestión
+            await client.SendModoGestionAsync(sessionToken, username);
 
-            // Comprobar la respuesta del servidor
-            if (respuesta == 213)
-            {
-                MessageBox.Show("Modo gestión activado.");
-            }
-            else if (respuesta == 112)
-            {
-                MessageBox.Show("Error: No tiene permisos suficientes.");
-            }
-            else
-            {
-                MessageBox.Show($"Error desconocido: {respuesta}");
-            }
+            // Mostrar un mensaje de éxito (ya que no esperas respuesta del servidor)
+            MessageBox.Show("Solicitud para activar el modo gestión enviada al servidor.");
         }
+
 
         /// <summary>
         /// Evento que se llama al hacer clic en el botón para mostrar el formulario de eliminación de rol.
@@ -692,6 +684,8 @@ namespace AgendaEscritorio.view
         {
             // Mostrar el panel de eliminación de rol
             inputFieldsEliminarRol.Visibility = Visibility.Visible;
+            mainMenu.Visibility = Visibility.Collapsed; // Ocultar el menú principal
+            
 
             // Limpiar el campo de texto de eliminación de rol
             txtEliminaRol.Clear();
@@ -740,7 +734,14 @@ namespace AgendaEscritorio.view
         /// <param name="e">Los argumentos del evento.</param>
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); // Cerrar la ventana o volver a la vista anterior
+            // Crear la ventana del menú principal
+            MainMenuView mainMenuView = new MainMenuView(client);
+
+            // Mostrar la ventana del menú principal
+            mainMenuView.Show();
+
+            // Cerrar la ventana actual
+            this.Close();
         }
 
         /// <summary>
@@ -771,9 +772,23 @@ namespace AgendaEscritorio.view
         /// </summary>
         /// <param name="sender">El objeto que desencadena el evento, en este caso el botón de cerrar.</param>
         /// <param name="e">Los argumentos del evento.</param>
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private async void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            // Mostrar un cuadro de diálogo de confirmación
+            MessageBoxResult result = MessageBox.Show("¿Estás seguro de que deseas cerrar sesión?", "Confirmar cierre de sesión", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            // Si el usuario hace clic en "Sí", cerrar sesión
+            if (result == MessageBoxResult.Yes)
+            {
+                await client.SendLogoutAsync(); // Llama al método para cerrar sesión a través del cliente
+
+                this.Close(); // Cierra la ventana actual
+            }
+            // Si el usuario hace clic en "No", no se hace nada
+            else
+            {
+                // No hacer nada, solo cerrar el cuadro de diálogo
+            }
         }
 
 
